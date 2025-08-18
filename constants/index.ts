@@ -24,7 +24,50 @@ import {
   freqtrade,
 } from '../assets';
 
-export const navLinks = [
+interface NavLink {
+  id: string;
+  title: string;
+}
+
+interface Service {
+  title: string;
+  icon: string;
+}
+
+interface Technology {
+  name: string;
+  icon: string;
+}
+
+interface Experience {
+  title: string;
+  company_name: string;
+  icon: string;
+  iconBg: string;
+  date: string;
+  points: string[];
+}
+
+interface Testimonial {
+  testimonial: string;
+  name: string;
+  designation: string;
+  company: string;
+  image: string;
+}
+
+interface Project {
+  name: string;
+  description: string;
+  tags: Array<{
+    name: string;
+    color: string;
+  }>;
+  image: string;
+  source_code_link: string;
+}
+
+export const navLinks: NavLink[] = [
   {
     id: 'about',
     title: 'About',
@@ -39,7 +82,7 @@ export const navLinks = [
   },
 ];
 
-const services = [
+const services: Service[] = [
   {
     title: 'Full Stack Developer',
     icon: mobile,
@@ -58,7 +101,7 @@ const services = [
   },
 ];
 
-const technologies = [
+const technologies: Technology[] = [
   {
     name: 'JavaScript',
     icon: javascript,
@@ -109,7 +152,7 @@ const technologies = [
   },
 ];
 
-const experiences = [
+const experiences: Experience[] = [
   {
     title: 'Full Stack Developer',
     company_name: 'Evans Consoles',
@@ -149,7 +192,7 @@ const experiences = [
   },
 ];
 
-const testimonials = [
+const testimonials: Testimonial[] = [
   {
     testimonial:
       'I had the pleasure of working with Aiden on a complex web development project, and I was impressed with their ability to handle multiple tasks while maintaining the highest level of quality.',
@@ -176,7 +219,7 @@ const testimonials = [
   },
 ];
 
-const projects = [
+const projects: Project[] = [
   {
     name: 'Solvex Digital Agency Platform',
     description:

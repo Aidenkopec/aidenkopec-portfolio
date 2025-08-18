@@ -7,7 +7,13 @@ import { services } from '../constants';
 import { SectionWrapper } from '../hoc';
 import { fadeIn, textVariant } from '../utils/motion';
 
-const ServiceCard = ({ index, title, icon }) => (
+interface ServiceCardProps {
+  index: number;
+  title: string;
+  icon: string;
+}
+
+const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
   <Tilt
     tiltMaxAngleX={45}
     tiltMaxAngleY={45}
@@ -34,7 +40,7 @@ const ServiceCard = ({ index, title, icon }) => (
   </Tilt>
 );
 
-const About = () => {
+const About = (): JSX.Element => {
   return (
     <>
       <motion.div variants={textVariant()}>

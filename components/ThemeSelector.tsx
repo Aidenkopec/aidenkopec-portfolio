@@ -1,17 +1,31 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { themes, setTheme, getCurrentTheme } from '../styles';
+"use client";
 
-const ThemeSelector = ({ isOpen, onClose, isMobile = false }) => {
-  const [currentTheme, setCurrentTheme] = useState(getCurrentTheme());
-  const selectorRef = useRef(null);
+import React, { useState, useEffect, useRef } from 'react';
+import { themes, setTheme, getCurrentTheme } from '../utils/styles';
+
+interface ThemeSelectorProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isMobile?: boolean;
+}
+
+interface ThemeColors {
+  primary: string;
+  accent: string;
+  secondary: string;
+}
+
+const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile = false }) => {
+  const [currentTheme, setCurrentTheme] = useState<string>(getCurrentTheme());
+  const selectorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCurrentTheme(getCurrentTheme());
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (selectorRef.current && !selectorRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectorRef.current && !selectorRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -25,7 +39,7 @@ const ThemeSelector = ({ isOpen, onClose, isMobile = false }) => {
     };
   }, [isOpen, onClose]);
 
-  const handleThemeChange = (themeKey) => {
+  const handleThemeChange = (themeKey: string) => {
     setTheme(themeKey);
     setCurrentTheme(themeKey);
     // Close the selector after a short delay for better UX
@@ -34,7 +48,7 @@ const ThemeSelector = ({ isOpen, onClose, isMobile = false }) => {
     }, 300);
   };
 
-  const getThemePreviewColors = (theme) => {
+  const getThemePreviewColors = (theme: any): ThemeColors => {
     const primary = theme['--primary-color'];
     const accent = theme['--text-color-variable'];
     const secondary = theme['--tertiary-color'];

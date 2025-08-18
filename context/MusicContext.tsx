@@ -1,14 +1,49 @@
+'use client';
+
 import React, {
   createContext,
   useContext,
   useState,
   useRef,
   useEffect,
+  ReactNode,
 } from 'react';
 
-const MusicContext = createContext();
+interface Track {
+  title: string;
+  artist: string;
+  src: string;
+}
 
-export const useMusicContext = () => {
+interface MusicContextType {
+  // State
+  isPlaying: boolean;
+  setIsPlaying: (playing: boolean) => void;
+  volume: number;
+  setVolume: (volume: number) => void;
+  currentTrack: number;
+  setCurrentTrack: (track: number) => void;
+  hasError: boolean;
+  setHasError: (error: boolean) => void;
+  isFloatingBarVisible: boolean;
+  setIsFloatingBarVisible: (visible: boolean) => void;
+  floatingBarMode: string;
+  setFloatingBarMode: (mode: string) => void;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
+  playlist: Track[];
+
+  // Actions
+  togglePlay: () => void;
+  nextTrack: () => void;
+  previousTrack: () => void;
+  selectTrack: (index: number) => void;
+  handleTrackEnd: () => void;
+  toggleFloatingBar: () => void;
+}
+
+const MusicContext = createContext<MusicContextType | undefined>(undefined);
+
+export const useMusicContext = (): MusicContextType => {
   const context = useContext(MusicContext);
   if (!context) {
     throw new Error('useMusicContext must be used within MusicProvider');
@@ -16,28 +51,34 @@ export const useMusicContext = () => {
   return context;
 };
 
-export const MusicProvider = ({ children }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(() => {
+interface MusicProviderProps {
+  children: ReactNode;
+}
+
+export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [volume, setVolume] = useState<number>(() => {
     const saved = localStorage.getItem('musicVolume');
     return saved ? parseFloat(saved) : 0.5;
   });
-  const [currentTrack, setCurrentTrack] = useState(() => {
+  const [currentTrack, setCurrentTrack] = useState<number>(() => {
     const saved = localStorage.getItem('currentTrack');
     return saved ? parseInt(saved) : 0;
   });
-  const [hasError, setHasError] = useState(false);
-  const [isFloatingBarVisible, setIsFloatingBarVisible] = useState(() => {
-    const saved = localStorage.getItem('floatingBarVisible');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
-  const [floatingBarMode, setFloatingBarMode] = useState(() => {
+  const [hasError, setHasError] = useState<boolean>(false);
+  const [isFloatingBarVisible, setIsFloatingBarVisible] = useState<boolean>(
+    () => {
+      const saved = localStorage.getItem('floatingBarVisible');
+      return saved !== null ? JSON.parse(saved) : true;
+    }
+  );
+  const [floatingBarMode, setFloatingBarMode] = useState<string>(() => {
     const saved = localStorage.getItem('floatingBarMode');
     return saved || 'standard'; // 'hidden', 'mini', 'standard'
   });
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  const playlist = [
+  const playlist: Track[] = [
     {
       title: 'Deep Space',
       artist: 'Ambient Artist',
@@ -124,7 +165,7 @@ export const MusicProvider = ({ children }) => {
     }
   };
 
-  const selectTrack = (index) => {
+  const selectTrack = (index: number) => {
     setCurrentTrack(index);
     if (isPlaying && audioRef.current) {
       setTimeout(() => {
@@ -147,8 +188,9 @@ export const MusicProvider = ({ children }) => {
 
   // Keyboard shortcuts
   useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
         return; // Don't trigger shortcuts when typing
       }
 
@@ -178,7 +220,7 @@ export const MusicProvider = ({ children }) => {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [isPlaying, currentTrack]);
 
-  const value = {
+  const value: MusicContextType = {
     // State
     isPlaying,
     setIsPlaying,

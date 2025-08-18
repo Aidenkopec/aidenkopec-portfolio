@@ -1,17 +1,19 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 import { styles } from '../styles';
 import { navLinks } from '../constants';
 import { logo, menu, close } from '../assets';
 import CustomizationMenu from './CustomizationMenu';
 
-const Navbar = () => {
-  const [active, setActive] = useState('');
-  const [toggle, setToggle] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [customizationMenuDesktop, setCustomizationMenuDesktop] = useState(false);
-  const [customizationMenuMobile, setCustomizationMenuMobile] = useState(false);
+const Navbar = (): JSX.Element => {
+  const [active, setActive] = useState<string>('');
+  const [toggle, setToggle] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
+  const [customizationMenuDesktop, setCustomizationMenuDesktop] = useState<boolean>(false);
+  const [customizationMenuMobile, setCustomizationMenuMobile] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +40,7 @@ const Navbar = () => {
     >
       <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
         <Link
-          to="/"
+          href="/"
           className="flex items-center gap-2"
           onClick={() => {
             setActive('');

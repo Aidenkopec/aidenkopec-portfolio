@@ -1,11 +1,29 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
-import { themes, setTheme, getCurrentTheme } from '../styles';
+import { themes, setTheme, getCurrentTheme } from '../utils/styles';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';
 
-const CustomizationMenu = ({ isOpen, onClose, isMobile = false }) => {
-  const [currentTheme, setCurrentTheme] = useState(getCurrentTheme());
-  const [activeTab, setActiveTab] = useState('themes');
-  const menuRef = useRef(null);
+interface CustomizationMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isMobile?: boolean;
+}
+
+interface ThemeColors {
+  primary: string;
+  accent: string;
+  secondary: string;
+}
+
+const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
+  isOpen,
+  onClose,
+  isMobile = false,
+}) => {
+  const [currentTheme, setCurrentTheme] = useState<string>(getCurrentTheme());
+  const [activeTab, setActiveTab] = useState<'themes' | 'music'>('themes');
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const {
     volume,
@@ -25,8 +43,8 @@ const CustomizationMenu = ({ isOpen, onClose, isMobile = false }) => {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -40,7 +58,7 @@ const CustomizationMenu = ({ isOpen, onClose, isMobile = false }) => {
     };
   }, [isOpen, onClose]);
 
-  const handleThemeChange = (themeKey) => {
+  const handleThemeChange = (themeKey: string) => {
     setTheme(themeKey);
     setCurrentTheme(themeKey);
     setTimeout(() => {
@@ -50,7 +68,7 @@ const CustomizationMenu = ({ isOpen, onClose, isMobile = false }) => {
     }, 300);
   };
 
-  const getThemePreviewColors = (theme) => {
+  const getThemePreviewColors = (theme: any): ThemeColors => {
     const primary = theme['--primary-color'];
     const accent = theme['--text-color-variable'];
     const secondary = theme['--tertiary-color'];

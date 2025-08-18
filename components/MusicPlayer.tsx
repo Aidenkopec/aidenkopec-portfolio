@@ -1,12 +1,20 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';
 
-const MusicPlayer = ({
+interface MusicPlayerProps {
+  mobile?: boolean;
+  externalOpen?: boolean;
+  onExternalOpenChange?: ((open: boolean) => void) | null;
+}
+
+const MusicPlayer: React.FC<MusicPlayerProps> = ({
   mobile = false,
   externalOpen = false,
   onExternalOpenChange = null,
 }) => {
-  const [showControls, setShowControls] = useState(false);
+  const [showControls, setShowControls] = useState<boolean>(false);
   
   const {
     isPlaying,

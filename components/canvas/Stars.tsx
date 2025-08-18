@@ -1,3 +1,5 @@
+"use client";
+
 // Import the necessary dependencies
 import { useState, useRef, Suspense } from "react"; // React hooks
 import { Canvas, useFrame } from "@react-three/fiber"; // react-three/fiber components for 3D rendering
@@ -5,9 +7,9 @@ import { Points, PointMaterial, Preload } from "@react-three/drei"; // Drei comp
 import * as random from "maath/random/dist/maath-random.esm"; // Import random function to generate random positions of stars
 
 // Stars component
-const Stars = (props) => {
+const Stars = (props: any) => {
   // useRef hook to get a reference to the group object in the 3D scene
-  const ref = useRef();
+  const ref = useRef<any>();
 
   // useState hook to generate an array of 5000 random 3D points inside a sphere of radius 1.2
   const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.2 }));
@@ -36,7 +38,7 @@ const Stars = (props) => {
 };
 
 // StarsCanvas component
-const StarsCanvas = () => {
+const StarsCanvas = (): JSX.Element => {
   return (
       // Create a full size div to hold the canvas, position it absolutely and set z-index to -1 so it's below other content
       <div className='w-full h-auto absolute inset-0 z-[-1]'>

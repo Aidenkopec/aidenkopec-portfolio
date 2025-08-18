@@ -1,10 +1,12 @@
+"use client";
+
 import React, { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
 
-const Earth = () => {
+const Earth = (): JSX.Element => {
   const earth = useGLTF("./planet/scene.gltf");
 
   return (
@@ -12,7 +14,7 @@ const Earth = () => {
   );
 };
 
-const EarthCanvas = () => {
+const EarthCanvas = (): JSX.Element => {
   return (
     <Canvas
       shadows

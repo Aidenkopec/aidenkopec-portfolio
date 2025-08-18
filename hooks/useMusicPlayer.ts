@@ -26,7 +26,7 @@ export const useMusicPlayer = () => {
 
   const currentSong = playlist[currentTrack];
 
-  const handleVolumeChange = (newVolume) => {
+  const handleVolumeChange = (newVolume: number) => {
     setVolume(newVolume);
   };
 
