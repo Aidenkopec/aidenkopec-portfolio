@@ -16,6 +16,7 @@ export const useMusicPlayer = () => {
     isFloatingBarVisible,
     floatingBarMode,
     setFloatingBarMode,
+    isHydrated,
     playlist,
     togglePlay,
     nextTrack,
@@ -46,6 +47,7 @@ export const useMusicPlayer = () => {
     hasError,
     isFloatingBarVisible,
     floatingBarMode,
+    isHydrated,
     playlist,
     currentSong,
     

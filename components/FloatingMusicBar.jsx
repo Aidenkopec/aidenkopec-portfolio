@@ -44,6 +44,7 @@ const FloatingMusicBar = () => {
     floatingBarMode,
     setFloatingBarMode,
     getTrackInfo,
+    isHydrated,
     togglePlay,
     nextTrack,
     previousTrack,
@@ -55,10 +56,13 @@ const FloatingMusicBar = () => {
   const titleRef = useRef(null);
   const artistRef = useRef(null);
 
-  const trackInfo = getTrackInfo();
+  // Get track info, but use defaults if not hydrated yet
+  const trackInfo = isHydrated ? getTrackInfo() : { title: 'Deep Space', artist: 'Ambient Artist' };
 
   // Check if text overflows and needs scrolling
   useEffect(() => {
+    if (!isHydrated) return; // Don't run until hydrated
+    
     const checkOverflow = () => {
       if (titleRef.current) {
         const isOverflowing =
@@ -78,7 +82,7 @@ const FloatingMusicBar = () => {
     // Also check on resize
     window.addEventListener('resize', checkOverflow);
     return () => window.removeEventListener('resize', checkOverflow);
-  }, [trackInfo.title, trackInfo.artist]);
+  }, [trackInfo.title, trackInfo.artist, isHydrated]);
 
   // Handle swipe gestures on mobile
   const handleTouchStart = (e) => {

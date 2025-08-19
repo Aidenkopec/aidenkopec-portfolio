@@ -19,36 +19,45 @@ export const useMusicContext = () => {
 
 export const MusicProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('musicVolume');
-      return saved ? parseFloat(saved) : 0.5;
-    }
-    return 0.5;
-  });
-  const [currentTrack, setCurrentTrack] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('currentTrack');
-      return saved ? parseInt(saved) : 0;
-    }
-    return 0;
-  });
   const [hasError, setHasError] = useState(false);
-  const [isFloatingBarVisible, setIsFloatingBarVisible] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('floatingBarVisible');
-      return saved !== null ? JSON.parse(saved) : true;
-    }
-    return true;
-  });
-  const [floatingBarMode, setFloatingBarMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('floatingBarMode');
-      return saved || 'standard'; // 'hidden', 'mini', 'standard'
-    }
-    return 'standard';
-  });
+  const [isHydrated, setIsHydrated] = useState(false);
+  
+  // Initialize with default values to prevent hydration mismatch
+  const [volume, setVolume] = useState(0.5);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const [isFloatingBarVisible, setIsFloatingBarVisible] = useState(true);
+  const [floatingBarMode, setFloatingBarMode] = useState('standard');
+  
   const audioRef = useRef(null);
+
+  // Load localStorage values after hydration
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Load saved values from localStorage
+      const savedVolume = localStorage.getItem('musicVolume');
+      if (savedVolume) {
+        setVolume(parseFloat(savedVolume));
+      }
+      
+      const savedTrack = localStorage.getItem('currentTrack');
+      if (savedTrack) {
+        setCurrentTrack(parseInt(savedTrack));
+      }
+      
+      const savedFloatingBarVisible = localStorage.getItem('floatingBarVisible');
+      if (savedFloatingBarVisible !== null) {
+        setIsFloatingBarVisible(JSON.parse(savedFloatingBarVisible));
+      }
+      
+      const savedFloatingBarMode = localStorage.getItem('floatingBarMode');
+      if (savedFloatingBarMode) {
+        setFloatingBarMode(savedFloatingBarMode);
+      }
+      
+      // Mark as hydrated
+      setIsHydrated(true);
+    }
+  }, []);
 
   const playlist = [
     {
@@ -68,30 +77,38 @@ export const MusicProvider = ({ children }) => {
     },
   ];
 
-  // Persist volume changes
+  // Persist volume changes (only after hydration)
   useEffect(() => {
-    localStorage.setItem('musicVolume', volume.toString());
+    if (isHydrated) {
+      localStorage.setItem('musicVolume', volume.toString());
+    }
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
-  }, [volume]);
+  }, [volume, isHydrated]);
 
-  // Persist current track changes
+  // Persist current track changes (only after hydration)
   useEffect(() => {
-    localStorage.setItem('currentTrack', currentTrack.toString());
-  }, [currentTrack]);
+    if (isHydrated) {
+      localStorage.setItem('currentTrack', currentTrack.toString());
+    }
+  }, [currentTrack, isHydrated]);
 
-  // Persist floating bar visibility and mode
+  // Persist floating bar visibility and mode (only after hydration)
   useEffect(() => {
-    localStorage.setItem(
-      'floatingBarVisible',
-      JSON.stringify(isFloatingBarVisible)
-    );
-  }, [isFloatingBarVisible]);
+    if (isHydrated) {
+      localStorage.setItem(
+        'floatingBarVisible',
+        JSON.stringify(isFloatingBarVisible)
+      );
+    }
+  }, [isFloatingBarVisible, isHydrated]);
 
   useEffect(() => {
-    localStorage.setItem('floatingBarMode', floatingBarMode);
-  }, [floatingBarMode]);
+    if (isHydrated) {
+      localStorage.setItem('floatingBarMode', floatingBarMode);
+    }
+  }, [floatingBarMode, isHydrated]);
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -205,6 +222,7 @@ export const MusicProvider = ({ children }) => {
     setIsFloatingBarVisible,
     floatingBarMode,
     setFloatingBarMode,
+    isHydrated,
     audioRef,
     playlist,
 
