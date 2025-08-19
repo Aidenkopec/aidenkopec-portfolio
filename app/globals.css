@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Base Color Palette */
@@ -8,46 +8,46 @@
   --color-black-100: #100d25;
   --color-black-200: #090325;
   --color-white-100: #f3f3f3;
-  
+
   /* Text and Accent Colors */
-  --color-text-color-variable: #915EFF;
-  --color-gradient-start: #915EFF;
+  --color-text-color-variable: #915eff;
+  --color-gradient-start: #915eff;
   --color-gradient-end: rgba(145, 94, 255, 0);
-  
+
   /* Background Patterns */
-  --bg-hero-pattern: url('/images/herobg.png');
-  --bg-hero-pattern-adjusted: url('/images/herobg_adjusted.png');
-  --bg-hero-pattern-midnight: url('/images/herobg_midnight_blue.png');
-  --bg-hero-pattern-green: url('/images/greenbg.png');
-  
+  --bg-hero-pattern: url('/backgrounds/hero-bg.png');
+  --bg-hero-pattern-adjusted: url('/backgrounds/hero-bg-adjusted.png');
+  --bg-hero-pattern-midnight: url('/backgrounds/hero-bg-midnight-blue.png');
+  --bg-hero-pattern-green: url('/backgrounds/hero-bg-green.png');
+
   /* Custom Spacing */
   --spacing-padding-x: 1.5rem; /* px-6 */
   --spacing-padding-x-sm: 4rem; /* sm:px-16 */
   --spacing-padding-y: 1.5rem; /* py-6 */
   --spacing-padding-y-sm: 4rem; /* sm:py-16 */
   --spacing-padding-combined: 2.5rem; /* py-10 */
-  
+
   /* Typography Scales */
   --text-hero-head-base: 2.5rem; /* 40px */
   --text-hero-head-xs: 3.125rem; /* 50px */
   --text-hero-head-sm: 3.75rem; /* 60px */
   --text-hero-head-lg: 5rem; /* 80px */
   --leading-hero-head-lg: 6.125rem; /* 98px */
-  
+
   --text-hero-sub-base: 1rem; /* 16px */
   --text-hero-sub-xs: 1.25rem; /* 20px */
   --text-hero-sub-sm: 1.625rem; /* 26px */
   --text-hero-sub-lg: 1.875rem; /* 30px */
   --leading-hero-sub-lg: 2.5rem; /* 40px */
-  
+
   --text-section-head-base: 1.875rem; /* 30px */
   --text-section-head-xs: 2.5rem; /* 40px */
   --text-section-head-sm: 3.125rem; /* 50px */
   --text-section-head-md: 3.75rem; /* 60px */
-  
+
   --text-section-sub-base: 0.875rem; /* 14px */
   --text-section-sub-sm: 1.125rem; /* 18px */
-  
+
   /* Font Families */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -62,7 +62,7 @@
   --black-100: #140a23;
   --black-200: #05020a;
   --white-100: #f8f5ff;
-  --hero-pattern: url('/images/herobg.png');
+  --hero-pattern: url('/backgrounds/hero-bg.png');
   --text-color-variable: #a855f7;
   --gradient-start: #a855f7;
   --gradient-end: rgba(168, 85, 247, 0);
@@ -74,11 +74,19 @@
 }
 
 .dynamic-gradient {
-  background: linear-gradient(180deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--gradient-start) 0%,
+    var(--gradient-end) 100%
+  );
 }
 
 .black-gradient {
-  background: linear-gradient(90deg, var(--black-100) 0%, var(--black-200) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--black-100) 0%,
+    var(--black-200) 100%
+  );
 }
 
 /* Responsive Utility Classes for Custom Styles */
