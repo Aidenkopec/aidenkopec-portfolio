@@ -15,7 +15,8 @@ const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [customizationMenuDesktop, setCustomizationMenuDesktop] =
     useState<boolean>(false);
-  const [customizationMenuMobile, setCustomizationMenuMobile] = useState<boolean>(false);
+  const [customizationMenuMobile, setCustomizationMenuMobile] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,10 +50,16 @@ const Navbar: React.FC = () => {
             window.scrollTo(0, 0);
           }}
         >
-          <Image src={logo} alt="logo" width={36} height={36} className="w-9 h-9 object-contain" />
+          <Image
+            src={logo}
+            alt="logo"
+            width={36}
+            height={36}
+            className="w-9 h-9 object-contain"
+          />
           <p className="text-white text-[18px] font-bold cursor-pointer flex ">
             Aiden Kopec &nbsp;
-            <span className="sm:block hidden"> | Software Developer</span>
+            <span className="sm:block hidden"> | Full Stack Developer</span>
           </p>
         </Link>
 

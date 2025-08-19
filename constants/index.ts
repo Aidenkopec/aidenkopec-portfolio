@@ -145,7 +145,7 @@ const experiences: Experience[] = [
     ],
   },
   {
-    title: 'Full Stack Engineer',
+    title: 'Full Stack Developer',
     company_name: 'One Piece IT',
     icon: opit,
     iconBg: '#383E56',
