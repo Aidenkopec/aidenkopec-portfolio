@@ -21,13 +21,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
     tiltMaxAngleY={45}
     scale={1}
     transitionSpeed={450}
-    className="xs:w-[250px] w-full"
+    className="w-full"
   >
     <motion.div
       variants={fadeIn('right', 'spring', index * 0.5, 0.75) as any}
       className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card"
     >
-      <div className="bg-tertiary rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col">
+      <div className="bg-tertiary rounded-[20px] py-5 px-6 sm:px-12 min-h-[280px] flex justify-evenly items-center flex-col">
         <Image
           src={icon}
           alt={`${title} service icon`}
@@ -36,8 +36,22 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
           className="object-contain"
         />
 
-        <h3 className="text-white text-[20px] font-bold text-center">
-          {title}
+        <h3 className="text-white text-[18px] sm:text-[20px] font-bold text-center leading-tight">
+          {title.split(' ').length > 3 ? (
+            <>
+              {title
+                .split(' ')
+                .slice(0, Math.ceil(title.split(' ').length / 2))
+                .join(' ')}
+              <br />
+              {title
+                .split(' ')
+                .slice(Math.ceil(title.split(' ').length / 2))
+                .join(' ')}
+            </>
+          ) : (
+            title
+          )}
         </h3>
       </div>
     </motion.div>
@@ -89,8 +103,8 @@ const About: React.FC = () => {
         <br />
       </motion.p>
 
-      <div className="mt-20 flex flex-wrap gap-10">
-        {services.map((service, index) => (
+      <div className="mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-4 lg:gap-8">
+        {services.map((service: any, index: number) => (
           <ServiceCard key={service.title} index={index} {...service} />
         ))}
       </div>

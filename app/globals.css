@@ -89,6 +89,17 @@
   );
 }
 
+.green-pink-gradient {
+  background: '#00cea8';
+  background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
+  background: -webkit-linear-gradient(-90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
+}
+
+.shadow-card {
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.4), 0 0 40px rgba(168, 85, 247, 0.2),
+    0 0 60px rgba(255, 107, 107, 0.1);
+}
+
 /* Responsive Utility Classes for Custom Styles */
 .hero-head-text {
   font-weight: 900;
