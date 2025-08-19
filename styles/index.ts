@@ -100,9 +100,9 @@ export const themes: Themes = {
 // Theme management functions
 export const getCurrentTheme = (): string => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('selectedTheme') || 'default';
+    return localStorage.getItem('selectedTheme') || 'obsidian';
   }
-  return 'default';
+  return 'obsidian';
 };
 
 export const setTheme = (themeKey: string): void => {
@@ -116,5 +116,12 @@ export const setTheme = (themeKey: string): void => {
       });
       localStorage.setItem('selectedTheme', themeKey);
     }
+  }
+};
+
+export const initializeTheme = (): void => {
+  if (typeof window !== 'undefined') {
+    const savedTheme = getCurrentTheme();
+    setTheme(savedTheme);
   }
 };

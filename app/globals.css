@@ -1,21 +1,21 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Base Color Palette */
-  --color-primary: #0a0514;
-  --color-secondary: #aaa6c3;
-  --color-tertiary: #151030;
-  --color-black-100: #100d25;
-  --color-black-200: #090325;
-  --color-white-100: #f3f3f3;
+  /* Dynamic Color Palette - References our CSS variables */
+  --color-primary: var(--primary-color);
+  --color-secondary: var(--secondary-color);
+  --color-tertiary: var(--tertiary-color);
+  --color-black-100: var(--black-100);
+  --color-black-200: var(--black-200);
+  --color-white-100: var(--white-100);
 
   /* Text and Accent Colors */
-  --color-text-color-variable: #915eff;
-  --color-gradient-start: #915eff;
-  --color-gradient-end: rgba(145, 94, 255, 0);
+  --color-text-color-variable: var(--text-color-variable);
+  --color-gradient-start: var(--gradient-start);
+  --color-gradient-end: var(--gradient-end);
 
-  /* Background Patterns */
-  --bg-hero-pattern: url('/backgrounds/hero-bg.png');
+  /* Background Patterns - Dynamic */
+  --bg-hero-pattern: var(--hero-pattern);
   --bg-hero-pattern-adjusted: url('/backgrounds/hero-bg-adjusted.png');
   --bg-hero-pattern-midnight: url('/backgrounds/hero-bg-midnight-blue.png');
   --bg-hero-pattern-green: url('/backgrounds/hero-bg-green.png');
@@ -55,17 +55,17 @@
 
 /* Dynamic Theme Variables */
 :root {
-  /* Default theme variables (Cosmic Voyage) */
-  --primary-color: #0a0514;
-  --secondary-color: #aaa6c3;
-  --tertiary-color: #1a0f2e;
-  --black-100: #140a23;
-  --black-200: #05020a;
-  --white-100: #f8f5ff;
-  --hero-pattern: url('/backgrounds/hero-bg.png');
-  --text-color-variable: #a855f7;
-  --gradient-start: #a855f7;
-  --gradient-end: rgba(168, 85, 247, 0);
+  /* Default theme variables (Obsidian Black) */
+  --primary-color: #0a0a0a;
+  --secondary-color: #ffffff;
+  --tertiary-color: #1a1a1a;
+  --black-100: #141414;
+  --black-200: #000000;
+  --white-100: #ffffff;
+  --hero-pattern: url('/backgrounds/hero-bg-adjusted.png');
+  --text-color-variable: #ff6b6b;
+  --gradient-start: #ff6b6b;
+  --gradient-end: rgba(255, 107, 107, 0);
 }
 
 /* Custom Utilities */
@@ -118,7 +118,7 @@
 }
 
 .hero-sub-text {
-  color: #dfd9ff;
+  color: #ffffff;
   font-weight: 500;
   font-size: var(--text-hero-sub-base);
   line-height: 1.5;

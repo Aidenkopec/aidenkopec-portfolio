@@ -81,10 +81,10 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
       ref={menuRef}
       className={`absolute top-full ${isMobile ? 'left-0' : 'right-0'} mt-2 ${
         isMobile ? 'w-80' : 'w-96'
-      } bg-black-100 border border-[#232631] rounded-xl shadow-2xl z-[9999] overflow-hidden`}
+      } bg-black-100 border border-tertiary rounded-xl shadow-2xl z-[9999] overflow-hidden`}
     >
       {/* Header with tabs */}
-      <div className="p-4 border-b border-[#232631]">
+      <div className="p-4 border-b border-tertiary">
         <div className="flex justify-between items-center mb-3">
           <h3 className="text-white text-lg font-semibold">Customizations</h3>
           <button
@@ -100,7 +100,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             onClick={() => setActiveTab('themes')}
             className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all ${
               activeTab === 'themes'
-                ? 'bg-[#915EFF] text-white shadow-lg'
+                ? 'bg-[var(--text-color-variable)] text-white shadow-lg'
                 : 'text-secondary hover:text-white'
             }`}
           >
@@ -110,7 +110,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             onClick={() => setActiveTab('music')}
             className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all ${
               activeTab === 'music'
-                ? 'bg-[#915EFF] text-white shadow-lg'
+                ? 'bg-[var(--text-color-variable)] text-white shadow-lg'
                 : 'text-secondary hover:text-white'
             }`}
           >
@@ -140,8 +140,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     relative p-3 rounded-lg cursor-pointer transition-all duration-300 border
                     ${
                       isSelected
-                        ? 'border-[#ff6b6b] bg-[#1a1a1a] shadow-lg'
-                        : 'border-[#232631] hover:border-[#ff6b6b] bg-tertiary hover:bg-[#1a1a1a]'
+                        ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
+                        : 'border-tertiary hover:border-[var(--text-color-variable)] bg-tertiary hover:bg-[var(--tertiary-color)]'
                     }
                   `}
                 >
@@ -170,7 +170,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     </div>
 
                     {isSelected && (
-                      <div className="text-[#915EFF] text-sm font-medium">
+                      <div className="text-[var(--text-color-variable)] text-sm font-medium">
                         ✓ Active
                       </div>
                     )}
@@ -201,7 +201,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 <button
                   onClick={toggleFloatingBar}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    isFloatingBarVisible ? 'bg-[#915EFF]' : 'bg-gray-600'
+                    isFloatingBarVisible ? 'bg-[var(--text-color-variable)]' : 'bg-gray-600'
                   }`}
                 >
                   <span
@@ -221,7 +221,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       onClick={() => setFloatingBarMode('mini')}
                       className={`px-3 py-1 text-xs rounded-md transition-colors ${
                         floatingBarMode === 'mini'
-                          ? 'bg-[#915EFF] text-white'
+                          ? 'bg-[var(--text-color-variable)] text-white'
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
@@ -231,7 +231,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       onClick={() => setFloatingBarMode('standard')}
                       className={`px-3 py-1 text-xs rounded-md transition-colors ${
                         floatingBarMode === 'standard'
-                          ? 'bg-[#915EFF] text-white'
+                          ? 'bg-[var(--text-color-variable)] text-white'
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
@@ -269,7 +269,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   }
                   className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
                   style={{
-                    background: `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${
+                    background: `linear-gradient(to right, var(--text-color-variable) 0%, var(--text-color-variable) ${
                       volume * 100
                     }%, #4b5563 ${volume * 100}%, #4b5563 100%)`,
                   }}
@@ -290,7 +290,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     onClick={() => selectTrack(index)}
                     className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
                       currentTrack === index
-                        ? 'bg-[#915EFF] text-white'
+                        ? 'bg-[var(--text-color-variable)] text-white'
                         : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                     }`}
                   >
@@ -347,7 +347,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-[#232631]">
+      <div className="p-3 border-t border-tertiary">
         <p className="text-secondary text-xs text-center">
           {activeTab === 'themes'
             ? 'Themes are automatically saved'
@@ -362,7 +362,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
           height: 16px;
           width: 16px;
           border-radius: 50%;
-          background: #8b5cf6;
+          background: var(--text-color-variable);
           cursor: pointer;
           box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
         }
@@ -371,7 +371,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
           height: 16px;
           width: 16px;
           border-radius: 50%;
-          background: #8b5cf6;
+          background: var(--text-color-variable);
           cursor: pointer;
           border: none;
           box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);

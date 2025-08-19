@@ -66,7 +66,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
       ref={selectorRef}
       className={`absolute top-full ${isMobile ? 'left-0' : 'right-0'} mt-2 ${
         isMobile ? 'w-72' : 'w-80'
-      } bg-black-100 border border-[#232631] rounded-xl p-4 shadow-2xl z-[9999]`}
+      } bg-black-100 border border-tertiary rounded-xl p-4 shadow-2xl z-[9999]`}
     >
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-white text-lg font-semibold">Choose Theme</h3>
@@ -95,8 +95,8 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
                 relative p-3 rounded-lg cursor-pointer transition-all duration-300 border
                 ${
                   isSelected
-                    ? 'border-[#ff6b6b] bg-[#1a1a1a] shadow-lg'
-                    : 'border-[#232631] hover:border-[#ff6b6b] bg-tertiary hover:bg-[#1a1a1a]'
+                    ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
+                    : 'border-tertiary hover:border-[var(--text-color-variable)] bg-tertiary hover:bg-[var(--tertiary-color)]'
                 }
               `}
             >
@@ -125,7 +125,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
                 </div>
 
                 {isSelected && (
-                  <div className="text-[#915EFF] text-sm font-medium">
+                  <div className="text-[var(--text-color-variable)] text-sm font-medium">
                     ✓ Active
                   </div>
                 )}
@@ -143,7 +143,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
         })}
       </div>
 
-      <div className="mt-4 pt-3 border-t border-[#232631]">
+      <div className="mt-4 pt-3 border-t border-tertiary">
         <p className="text-secondary text-xs text-center">
           Themes are automatically saved
         </p>

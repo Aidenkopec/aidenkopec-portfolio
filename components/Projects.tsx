@@ -565,7 +565,7 @@ class GitHubService {
 // Loading component
 const LoadingSpinner: React.FC = () => (
   <div className="flex items-center justify-center p-4">
-    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#915EFF]"></div>
+    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--text-color-variable)]"></div>
   </div>
 );
 
@@ -592,7 +592,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         tiltMaxAngleY={25}
         scale={1.02}
         transitionSpeed={450}
-        className="bg-tertiary p-5 rounded-2xl w-full h-full flex flex-col border border-[#232631] hover:border-[#915EFF] transition-colors duration-300"
+        className="bg-tertiary p-5 rounded-2xl w-full h-full flex flex-col border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
       >
         <div className="relative w-full h-[200px]">
           <Image
@@ -660,7 +660,7 @@ const StatCard: React.FC<StatCardProps> = ({
       tiltMaxAngleY={15}
       scale={1.02}
       transitionSpeed={450}
-      className="bg-tertiary p-4 rounded-xl border border-[#232631] hover:border-[#915EFF] transition-colors duration-300"
+      className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
     >
       <div className="flex items-center justify-between mb-2">
         <div className="text-white text-xl font-bold">
@@ -670,7 +670,7 @@ const StatCard: React.FC<StatCardProps> = ({
             value
           )}
         </div>
-        {icon && <div className="text-[#915EFF] text-lg">{icon}</div>}
+        {icon && <div className="text-[var(--text-color-variable)] text-lg">{icon}</div>}
       </div>
       <p className="text-secondary text-xs font-medium">{title}</p>
     </Tilt>
@@ -687,7 +687,7 @@ const LanguageBar: React.FC<LanguageBarProps> = ({ language, index }) => (
       <span className="text-white text-sm font-medium">{language.name}</span>
       <span className="text-secondary text-xs">{language.percentage}%</span>
     </div>
-    <div className="w-full bg-[#232631] rounded-full h-1.5">
+    <div className="w-full bg-tertiary rounded-full h-1.5">
       <motion.div
         className="h-1.5 rounded-full"
         style={{ backgroundColor: language.color }}
@@ -713,7 +713,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-tertiary p-4 rounded-xl border border-[#232631]">
+      <div className="bg-tertiary p-4 rounded-xl border border-tertiary">
         <h4 className="text-white font-semibold text-[16px] mb-4">
           Contribution Activity
         </h4>
@@ -773,7 +773,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   }
 
   return (
-    <div className="bg-tertiary p-4 rounded-xl border border-[#232631] hover:border-[#915EFF] transition-colors duration-300">
+    <div className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300">
       <div className="flex justify-between items-center mb-4">
         <h4 className="text-secondary font-semibold text-[16px]">
           {total} contributions in{' '}
@@ -1150,7 +1150,7 @@ const Projects: React.FC = () => {
               tiltMaxAngleY={15}
               scale={1.02}
               transitionSpeed={450}
-              className="bg-tertiary p-4 rounded-xl border border-[#232631] hover:border-[#915EFF] transition-colors duration-300 h-full"
+              className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300 h-full"
             >
               <h4 className="text-white font-semibold text-[16px] mb-4">
                 Recent Commits
@@ -1207,7 +1207,7 @@ const Projects: React.FC = () => {
               tiltMaxAngleY={15}
               scale={1.02}
               transitionSpeed={450}
-              className="bg-tertiary p-4 rounded-xl border border-[#232631] hover:border-[#915EFF] transition-colors duration-300 h-full"
+              className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300 h-full"
             >
               <h4 className="text-white font-semibold text-[16px] mb-4">
                 Top Programming Languages
