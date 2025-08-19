@@ -2,12 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';
 
-const MusicPlayer = ({
+interface MusicPlayerProps {
+  mobile?: boolean;
+  externalOpen?: boolean;
+  onExternalOpenChange?: ((isOpen: boolean) => void) | null;
+}
+
+interface Track {
+  title: string;
+  artist: string;
+}
+
+const MusicPlayer: React.FC<MusicPlayerProps> = ({
   mobile = false,
   externalOpen = false,
   onExternalOpenChange = null,
 }) => {
-  const [showControls, setShowControls] = useState(false);
+  const [showControls, setShowControls] = useState<boolean>(false);
   
   const {
     isPlaying,
@@ -35,6 +46,14 @@ const MusicPlayer = ({
       onExternalOpenChange(showControls);
     }
   }, [showControls, onExternalOpenChange]);
+
+  const handleVolumeInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    handleVolumeChange(parseFloat(e.target.value));
+  };
+
+  const handleTrackSelect = (index: number): void => {
+    selectTrack(index);
+  };
 
   return (
     <div className="relative">
@@ -161,7 +180,7 @@ const MusicPlayer = ({
               max="1"
               step="0.1"
               value={volume}
-              onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+              onChange={handleVolumeInputChange}
               className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
               style={{
                 background: `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${
@@ -175,10 +194,10 @@ const MusicPlayer = ({
           <div className="mt-3 pt-3 border-t border-gray-700">
             <p className="text-gray-400 text-xs mb-2">Playlist</p>
             <div className="space-y-1 max-h-32 overflow-y-auto">
-              {playlist.map((track, index) => (
+              {playlist.map((track: Track, index: number) => (
                 <button
                   key={index}
-                  onClick={() => selectTrack(index)}
+                  onClick={() => handleTrackSelect(index)}
                   className={`w-full text-left px-2 py-1 rounded text-xs transition-colors ${
                     currentTrack === index
                       ? 'bg-purple-600 text-white'

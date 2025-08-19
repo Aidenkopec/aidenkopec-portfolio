@@ -10,8 +10,26 @@ export const styles = {
   sectionSubText: 'section-sub-text',
 };
 
+interface Theme {
+  name: string;
+  '--primary-color': string;
+  '--secondary-color': string;
+  '--tertiary-color': string;
+  '--black-100': string;
+  '--black-200': string;
+  '--white-100': string;
+  '--hero-pattern': string;
+  '--text-color-variable': string;
+  '--gradient-start': string;
+  '--gradient-end': string;
+}
+
+interface Themes {
+  [key: string]: Theme;
+}
+
 // Theme definitions with your custom specifications
-export const themes = {
+export const themes: Themes = {
   obsidian: {
     name: 'Obsidian Black',
     '--primary-color': '#0a0a0a',
@@ -66,7 +84,7 @@ export const themes = {
   },
   crimsonFire: {
     name: 'Crimson Fire',
-    '--primary-color': '#1a0a0a',
+    '--primary-color': '#1a1a0a',
     '--secondary-color': '#ffcdd2',
     '--tertiary-color': '#7f1d1d',
     '--black-100': '#450a0a',
@@ -80,14 +98,14 @@ export const themes = {
 };
 
 // Theme management functions
-export const getCurrentTheme = () => {
+export const getCurrentTheme = (): string => {
   if (typeof window !== 'undefined') {
     return localStorage.getItem('selectedTheme') || 'default';
   }
   return 'default';
 };
 
-export const setTheme = (themeKey) => {
+export const setTheme = (themeKey: string): void => {
   if (typeof window !== 'undefined') {
     const theme = themes[themeKey];
     if (theme) {

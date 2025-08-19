@@ -9,13 +9,13 @@ import { navLinks } from '../constants';
 const logo = '/assets/logo.svg';
 import CustomizationMenu from './CustomizationMenu';
 
-const Navbar = () => {
-  const [active, setActive] = useState('');
-  const [toggle, setToggle] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+const Navbar: React.FC = () => {
+  const [active, setActive] = useState<string>('');
+  const [toggle, setToggle] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
   const [customizationMenuDesktop, setCustomizationMenuDesktop] =
-    useState(false);
-  const [customizationMenuMobile, setCustomizationMenuMobile] = useState(false);
+    useState<boolean>(false);
+  const [customizationMenuMobile, setCustomizationMenuMobile] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {

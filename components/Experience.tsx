@@ -12,9 +12,22 @@ import 'react-vertical-timeline-component/style.min.css';
 import { styles } from '../styles';
 import { experiences } from '../constants';
 import { SectionWrapper } from '../hoc';
-import { textVariant } from '../utils/motion';
+import { textVariant } from '../utils';
 
-const ExperienceCard = ({ experience }) => {
+interface Experience {
+  title: string;
+  company_name: string;
+  icon: any;
+  iconBg: string;
+  date: string;
+  points: string[];
+}
+
+interface ExperienceCardProps {
+  experience: Experience;
+}
+
+const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
   return (
     <VerticalTimelineElement
       contentStyle={{
@@ -47,7 +60,7 @@ const ExperienceCard = ({ experience }) => {
       </div>
 
       <ul className="mt-5 list-disc ml-5 space-y-2">
-        {experience.points.map((point, index) => (
+        {experience.points.map((point: string, index: number) => (
           <li
             key={`experience-point-${index}`}
             className="text-white-100 text-[14px] pl-1 tracking-wider"
@@ -60,10 +73,10 @@ const ExperienceCard = ({ experience }) => {
   );
 };
 
-const Experience = () => {
+const Experience: React.FC = () => {
   return (
     <>
-      <motion.div variants={textVariant()}>
+      <motion.div variants={textVariant() as any}>
         <p className={`${styles.sectionSubText} text-center`}>
           What I have done so far
         </p>
@@ -74,7 +87,7 @@ const Experience = () => {
 
       <div className="mt-20 flex flex-col">
         <VerticalTimeline>
-          {experiences.map((experience, index) => (
+          {experiences.map((experience: Experience, index: number) => (
             <ExperienceCard
               key={`experience-${index}`}
               experience={experience}

@@ -7,7 +7,7 @@ import { styles } from '../styles';
 import { github } from '../public/assets';
 import { SectionWrapper } from '../hoc';
 import { projects } from '../constants';
-import { fadeIn, textVariant } from '../utils/motion';
+import { fadeIn, textVariant } from '../utils';
 
 // GitHub API configuration
 const GITHUB_USERNAME = 'Aidenkopec';
@@ -15,7 +15,7 @@ const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 // Language colors from GitHub
-const LANGUAGE_COLORS = {
+const LANGUAGE_COLORS: Record<string, string> = {
   JavaScript: '#f1e05a',
   TypeScript: '#2b7489',
   Python: '#3572A5',
@@ -33,26 +33,179 @@ const CACHE_KEY = 'github_data_cache';
 const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hour in ms
 const CACHE_VERSION = 2;
 
+// Type definitions
+interface GitHubUser {
+  login: string;
+  avatar_url: string;
+  html_url: string;
+  name: string;
+  company: string | null;
+  blog: string;
+  location: string | null;
+  email: string | null;
+  bio: string | null;
+  public_repos: number;
+  public_gists: number;
+  followers: number;
+  following: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface GitHubRepository {
+  id: number;
+  name: string;
+  full_name: string;
+  description: string | null;
+  private: boolean;
+  fork: boolean;
+  html_url: string;
+  clone_url: string;
+  stargazers_count: number;
+  watchers_count: number;
+  language: string | null;
+  languages_url: string;
+  forks_count: number;
+  archived: boolean;
+  disabled: boolean;
+  open_issues_count: number;
+  topics: string[];
+  visibility: string;
+  pushed_at: string;
+  created_at: string;
+  updated_at: string;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
+}
+
+interface Language {
+  name: string;
+  percentage: number;
+  color: string;
+  bytes: number;
+}
+
+interface Commit {
+  date: string;
+  message: string;
+  repo: string;
+  sha: string;
+}
+
+interface ContributionDay {
+  contributionCount: number;
+  date: string;
+  color?: string;
+}
+
+interface ContributionWeek {
+  contributionDays: ContributionDay[];
+}
+
+interface CommitDay {
+  date: string;
+  count: number;
+  level: number;
+}
+
+interface CommitWeek extends Array<CommitDay> {}
+
+interface ContributionCalendar {
+  totalContributions: number;
+  weeks: ContributionWeek[] | CommitWeek[];
+}
+
+interface GitHubStats {
+  totalStars: number;
+  totalForks: number;
+  contributionYears: number;
+}
+
+interface GitHubData {
+  user: GitHubUser | null;
+  repositories: GitHubRepository[];
+  languages: Language[];
+  commits: Commit[];
+  commitGraph: any[];
+  commitCalendar?: ContributionCalendar;
+  stats: GitHubStats;
+}
+
+interface LoadingState {
+  user: boolean;
+  repos: boolean;
+  languages: boolean;
+  commits: boolean;
+}
+
+interface CacheData {
+  version: number;
+  data: GitHubData;
+  timestamp: number;
+}
+
+interface ProjectTag {
+  name: string;
+  color: string;
+}
+
+interface Project {
+  name: string;
+  description: string;
+  tags: ProjectTag[];
+  image: any;
+  source_code_link: string;
+}
+
+interface ProjectCardProps extends Project {
+  index: number;
+}
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: string;
+  index: number;
+  loading: boolean;
+}
+
+interface LanguageBarProps {
+  language: Language;
+  index: number;
+}
+
+interface CommitGraphProps {
+  commitCalendar?: ContributionCalendar;
+  loading: boolean;
+  selectedYear: string;
+  setSelectedYear: (year: string) => void;
+  availableYears: number[];
+}
+
 // GitHub API service
 class GitHubService {
-  static async fetchUserData() {
+  static async fetchUserData(): Promise<GitHubUser | null> {
     try {
-      const headers = GITHUB_TOKEN
+      const headers: HeadersInit = GITHUB_TOKEN
         ? { Authorization: `token ${GITHUB_TOKEN}` }
         : {};
-      let response = null;
+      let response: Response;
       if (GITHUB_TOKEN) {
         // Authenticated endpoint returns the viewer; fallback to specific user
-        response = await fetch(`${GITHUB_API_BASE}/user`, { headers });
+        response = await fetch(`${GITHUB_API_BASE}/user`, {
+          headers,
+        });
         if (!response.ok) {
           response = await fetch(
             `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}`,
-            { headers }
+            { headers: headers as HeadersInit }
           );
         }
       } else {
         response = await fetch(`${GITHUB_API_BASE}/users/${GITHUB_USERNAME}`, {
-          headers,
+          headers: headers as HeadersInit,
         });
       }
 
@@ -67,18 +220,18 @@ class GitHubService {
         return null;
       }
 
-      return data;
+      return data as GitHubUser;
     } catch (error) {
       return null;
     }
   }
 
-  static async fetchRepositories() {
+  static async fetchRepositories(): Promise<GitHubRepository[]> {
     try {
-      const headers = GITHUB_TOKEN
+      const headers: HeadersInit = GITHUB_TOKEN
         ? { Authorization: `token ${GITHUB_TOKEN}` }
         : {};
-      let response = null;
+      let response: Response;
       if (GITHUB_TOKEN) {
         // Include private repos, owned by the user
         response = await fetch(
@@ -109,7 +262,7 @@ class GitHubService {
         return [];
       }
 
-      let repos = Array.isArray(data) ? data : [];
+      let repos: GitHubRepository[] = Array.isArray(data) ? data : [];
       // If using /user/repos, filter to target owner
       if (GITHUB_TOKEN && repos.length > 0) {
         const target = (GITHUB_USERNAME || '').toLowerCase();
@@ -121,9 +274,9 @@ class GitHubService {
     }
   }
 
-  static async fetchLanguages(repos) {
+  static async fetchLanguages(repos: GitHubRepository[]): Promise<Language[]> {
     try {
-      const languageStats = {};
+      const languageStats: Record<string, number> = {};
       let totalBytes = 0;
 
       for (let i = 0; i < Math.min(repos.length, 20); i++) {
@@ -134,7 +287,7 @@ class GitHubService {
         }
 
         try {
-          const headers = GITHUB_TOKEN
+          const headers: HeadersInit = GITHUB_TOKEN
             ? { Authorization: `token ${GITHUB_TOKEN}` }
             : {};
           const response = await fetch(repo.languages_url, { headers });
@@ -143,7 +296,7 @@ class GitHubService {
             continue;
           }
 
-          const languages = await response.json();
+          const languages = (await response.json()) as Record<string, number>;
 
           if (
             languages &&
@@ -174,10 +327,10 @@ class GitHubService {
     }
   }
 
-  static async fetchCommitActivity() {
+  static async fetchCommitActivity(): Promise<Commit[]> {
     try {
       const repos = (await this.fetchRepositories()).filter((r) => !r.fork);
-      const commitActivity = [];
+      const commitActivity: Commit[] = [];
       const oneYearAgo = new Date();
       oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
       const usernameLower = (GITHUB_USERNAME || '').toLowerCase();
@@ -190,7 +343,7 @@ class GitHubService {
         }
 
         try {
-          const headers = GITHUB_TOKEN
+          const headers: HeadersInit = GITHUB_TOKEN
             ? { Authorization: `token ${GITHUB_TOKEN}` }
             : {};
           let page = 1;
@@ -215,7 +368,7 @@ class GitHubService {
               break;
             }
 
-            commits.forEach((commit) => {
+            commits.forEach((commit: any) => {
               const authorLogin = commit.author?.login?.toLowerCase();
               const committerLogin = commit.committer?.login?.toLowerCase();
               const include =
@@ -247,15 +400,17 @@ class GitHubService {
         }
       }
 
-      return commitActivity.sort((a, b) => new Date(b.date) - new Date(a.date));
+      return commitActivity.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
     } catch (error) {
       return [];
     }
   }
 
-  static async fetchRecentCommitsFromEvents(limit = 20) {
+  static async fetchRecentCommitsFromEvents(limit = 20): Promise<Commit[]> {
     try {
-      const headers = GITHUB_TOKEN
+      const headers: HeadersInit = GITHUB_TOKEN
         ? { Authorization: `token ${GITHUB_TOKEN}` }
         : {};
       const eventsUrl = GITHUB_TOKEN
@@ -272,7 +427,7 @@ class GitHubService {
         return [];
       }
 
-      const commits = [];
+      const commits: Commit[] = [];
       for (const event of events) {
         if (
           event.type === 'PushEvent' &&
@@ -300,8 +455,8 @@ class GitHubService {
     }
   }
 
-  static generateCommitGraph(commits) {
-    const weeks = [];
+  static generateCommitGraph(commits: Commit[]): ContributionCalendar {
+    const weeks: CommitWeek[] = [];
     const today = new Date();
     const startDate = new Date(today);
     startDate.setDate(today.getDate() - 364);
@@ -310,7 +465,7 @@ class GitHubService {
       const weekStart = new Date(startDate);
       weekStart.setDate(startDate.getDate() + week * 7);
 
-      const days = [];
+      const days: CommitDay[] = [];
       for (let day = 0; day < 7; day++) {
         const currentDate = new Date(weekStart);
         currentDate.setDate(weekStart.getDate() + day);
@@ -335,7 +490,7 @@ class GitHubService {
     };
   }
 
-  static getContributionLevel(count) {
+  static getContributionLevel(count: number): number {
     if (count === 0) return 0;
     if (count <= 3) return 1;
     if (count <= 6) return 2;
@@ -343,14 +498,16 @@ class GitHubService {
     return 4;
   }
 
-  static async fetchContributionCalendar(year = null) {
+  static async fetchContributionCalendar(
+    year: number | null = null
+  ): Promise<ContributionCalendar> {
     if (!GITHUB_TOKEN) {
       const commits = await this.fetchCommitActivity();
       return this.generateCommitGraph(commits);
     }
 
-    let fromDate = null;
-    let toDate = null;
+    let fromDate: string | null = null;
+    let toDate: string | null = null;
     if (year) {
       fromDate = `${year}-01-01T00:00:00Z`;
       toDate = `${year}-12-31T23:59:59Z`;
@@ -406,14 +563,14 @@ class GitHubService {
 }
 
 // Loading component
-const LoadingSpinner = () => (
+const LoadingSpinner: React.FC = () => (
   <div className="flex items-center justify-center p-4">
     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#915EFF]"></div>
   </div>
 );
 
 // Project Card Component (Enhanced)
-const ProjectCard = ({
+const ProjectCard: React.FC<ProjectCardProps> = ({
   index,
   name,
   description,
@@ -421,9 +578,13 @@ const ProjectCard = ({
   image,
   source_code_link,
 }) => {
+  const handleSourceClick = (): void => {
+    window.open(source_code_link, '_blank');
+  };
+
   return (
     <motion.div
-      variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
+      variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
       className="flex flex-col"
     >
       <Tilt
@@ -444,7 +605,7 @@ const ProjectCard = ({
 
           <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
             <div
-              onClick={() => window.open(source_code_link, '_blank')}
+              onClick={handleSourceClick}
               className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform"
             >
               <Image
@@ -483,9 +644,15 @@ const ProjectCard = ({
 };
 
 // GitHub Stats Card Component
-const StatCard = ({ title, value, icon, index, loading }) => (
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  icon,
+  index,
+  loading,
+}) => (
   <motion.div
-    variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
+    variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
     className="flex-1 min-w-[160px]"
   >
     <Tilt
@@ -511,9 +678,9 @@ const StatCard = ({ title, value, icon, index, loading }) => (
 );
 
 // Language Bar Component
-const LanguageBar = ({ language, index }) => (
+const LanguageBar: React.FC<LanguageBarProps> = ({ language, index }) => (
   <motion.div
-    variants={fadeIn('right', 'spring', index * 0.1, 0.75)}
+    variants={fadeIn('right', 'spring', index * 0.1, 0.75) as any}
     className="mb-2"
   >
     <div className="flex justify-between items-center mb-1">
@@ -533,13 +700,17 @@ const LanguageBar = ({ language, index }) => (
 );
 
 // Commit Graph Component (Compact)
-const CommitGraph = ({
+const CommitGraph: React.FC<CommitGraphProps> = ({
   commitCalendar,
   loading,
   selectedYear,
   setSelectedYear,
   availableYears,
 }) => {
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setSelectedYear(e.target.value);
+  };
+
   if (loading) {
     return (
       <div className="bg-tertiary p-4 rounded-xl border border-[#232631]">
@@ -554,7 +725,7 @@ const CommitGraph = ({
   const weeks = commitCalendar?.weeks || [];
   const total = commitCalendar?.totalContributions || 0;
 
-  const getContributionColor = (level) => {
+  const getContributionColor = (level: number): string => {
     // Dark colors for no contributions, green progression for activity
     const colors = [
       '#1f2937', // No contributions - dark gray (much darker)
@@ -567,12 +738,16 @@ const CommitGraph = ({
   };
 
   // Improved month labels with span
-  const monthLabels = [];
+  const monthLabels: { label: string; span: number }[] = [];
   if (weeks.length > 0) {
-    let currentMonth = null;
+    let currentMonth: string | null = null;
     let startWeek = 0;
     weeks.forEach((week, index) => {
-      if (week.contributionDays && week.contributionDays.length > 0) {
+      if (
+        'contributionDays' in week &&
+        week.contributionDays &&
+        week.contributionDays.length > 0
+      ) {
         const firstDay = new Date(week.contributionDays[0].date);
         const monthName = firstDay.toLocaleString('default', {
           month: 'short',
@@ -606,7 +781,7 @@ const CommitGraph = ({
         </h4>
         <select
           value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
+          onChange={handleYearChange}
           className="bg-[#1d1836] text-secondary border border-[#232631] hover:border-[#915EFF] rounded px-2 py-1 text-sm cursor-pointer transition-colors"
         >
           <option value="last">Last year</option>
@@ -706,8 +881,8 @@ const CommitGraph = ({
   );
 };
 
-const Projects = () => {
-  const [githubData, setGithubData] = useState({
+const Projects: React.FC = () => {
+  const [githubData, setGithubData] = useState<GitHubData>({
     user: null,
     repositories: [],
     languages: [],
@@ -720,26 +895,26 @@ const Projects = () => {
     },
   });
 
-  const [loading, setLoading] = useState({
+  const [loading, setLoading] = useState<LoadingState>({
     user: true,
     repos: true,
     languages: true,
     commits: true,
   });
 
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const currentYear = new Date().getFullYear();
-  const [selectedYear, setSelectedYear] = useState('last');
+  const [selectedYear, setSelectedYear] = useState<string>('last');
   const availableYears = [currentYear, currentYear - 1, currentYear - 2];
 
   useEffect(() => {
-    const fetchGitHubData = async () => {
+    const fetchGitHubData = async (): Promise<void> => {
       try {
         // Check cache first
         const cachedData = localStorage.getItem(CACHE_KEY);
         if (cachedData) {
-          const parsed = JSON.parse(cachedData);
+          const parsed: CacheData = JSON.parse(cachedData);
           const { data, timestamp, version } = parsed || {};
           const isFresh =
             typeof timestamp === 'number' &&
@@ -800,7 +975,7 @@ const Projects = () => {
             ? commitsFromEvents
             : await GitHubService.fetchCommitActivity();
 
-        const freshData = {
+        const freshData: GitHubData = {
           user: userData,
           repositories: repositories.slice(0, 6),
           languages,
@@ -843,9 +1018,10 @@ const Projects = () => {
   }, []);
 
   useEffect(() => {
-    const fetchForYear = async () => {
+    const fetchForYear = async (): Promise<void> => {
       setLoading((prev) => ({ ...prev, commits: true }));
-      const yearToFetch = selectedYear === 'last' ? null : selectedYear;
+      const yearToFetch =
+        selectedYear === 'last' ? null : parseInt(selectedYear);
       const commitCalendar = await GitHubService.fetchContributionCalendar(
         yearToFetch
       );
@@ -875,14 +1051,14 @@ const Projects = () => {
 
   return (
     <>
-      <motion.div variants={textVariant()}>
+      <motion.div variants={textVariant() as any}>
         <p className={`${styles.sectionSubText}`}>My work & contributions</p>
         <h2 className={`${styles.sectionHeadText}`}>Projects & Code.</h2>
       </motion.div>
 
       <div className="w-full flex">
         <motion.p
-          variants={fadeIn('', '', 0.1, 1)}
+          variants={fadeIn('up', 'spring', 0.1, 1) as any}
           className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
         >
           Explore my development journey through featured projects and live
@@ -895,20 +1071,20 @@ const Projects = () => {
       </div>
 
       {/* Featured Projects Section */}
-      <motion.div variants={textVariant()} className="mt-16">
+      <motion.div variants={textVariant() as any} className="mt-16">
         <h3 className="text-white font-bold text-[24px] mb-8">
           Featured Projects
         </h3>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mb-20">
-        {projects.map((project, index) => (
+        {projects.map((project: Project, index: number) => (
           <ProjectCard key={`project-${index}`} index={index} {...project} />
         ))}
       </div>
 
       {/* GitHub Activity Dashboard Section */}
-      <motion.div variants={textVariant()} className="mt-20">
+      <motion.div variants={textVariant() as any} className="mt-20">
         <h3 className="text-white font-bold text-[24px] mb-8">
           GitHub Activity Dashboard
         </h3>
@@ -950,7 +1126,7 @@ const Projects = () => {
       <div className="grid grid-cols-1 gap-8 mb-12">
         {/* Full Width - Contribution Graph */}
         <motion.div
-          variants={fadeIn('up', 'spring', 0.3, 0.75)}
+          variants={fadeIn('up', 'spring', 0.3, 0.75) as any}
           className="w-full"
         >
           <CommitGraph
@@ -966,7 +1142,7 @@ const Projects = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Recent Commits Card */}
           <motion.div
-            variants={fadeIn('right', 'spring', 0.4, 0.75)}
+            variants={fadeIn('right', 'spring', 0.4, 0.75) as any}
             className="flex-1"
           >
             <Tilt
@@ -987,7 +1163,9 @@ const Projects = () => {
                   {githubData.commits.slice(0, 5).map((commit, index) => (
                     <motion.div
                       key={`${commit.sha || commit.date}-${index}`}
-                      variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
+                      variants={
+                        fadeIn('up', 'spring', index * 0.1, 0.75) as any
+                      }
                       className="p-3 bg-[#1d1836] rounded-lg border border-[#232631] hover:border-[#915EFF] transition-colors duration-300"
                     >
                       <div className="flex items-center gap-3 mb-1">
@@ -1021,7 +1199,7 @@ const Projects = () => {
 
           {/* Programming Languages Card */}
           <motion.div
-            variants={fadeIn('left', 'spring', 0.4, 0.75)}
+            variants={fadeIn('left', 'spring', 0.4, 0.75) as any}
             className="flex-1"
           >
             <Tilt
@@ -1057,7 +1235,7 @@ const Projects = () => {
       {/* Error State */}
       {error && (
         <motion.div
-          variants={fadeIn('up', 'spring', 0.2, 0.75)}
+          variants={fadeIn('up', 'spring', 0.2, 0.75) as any}
           className="mt-8 p-4 bg-red-900/20 border border-red-600/30 rounded-lg text-center"
         >
           <p className="text-red-400 text-sm mb-2">{error}</p>

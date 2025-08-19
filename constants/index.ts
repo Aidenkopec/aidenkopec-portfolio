@@ -92,11 +92,11 @@ export const navLinks: NavLink[] = [
 const services: Service[] = [
   {
     title: 'Full Stack Developer',
-    icon: fullStackDeveloper, // This now points to fullStackDeveloper.png
+    icon: fullStackDeveloper,
   },
   {
     title: 'Frontend Developer',
-    icon: frontendDeveloper, // This now points to frontendDeveloper.png
+    icon: frontendDeveloper,
   },
   {
     title: 'Backend Automation & ERP',
@@ -104,7 +104,7 @@ const services: Service[] = [
   },
   {
     title: 'DevOps & Infrastructure',
-    icon: devopsInfrastructure, // This now points to devopsInfrastructure.png
+    icon: devopsInfrastructure,
   },
 ];
 
@@ -139,8 +139,8 @@ const experiences: Experience[] = [
     date: 'January 2024 - Present',
     points: [
       'Developed 40+ custom KPI reports and 10 real-time dashboards, saving thousands of labor hours annually and resolving $2M+ in inventory discrepancies within finance',
-      'Built full-stack Bill of Materials (BOM) platform translating complex 3D CAD outputs into actionable manufacturing instructions, dramatically improving shop floor accuracy',
-      'Implemented dynamic budgeting system (P3) and automated ERP workflows using BullMQ, achieving 20x deployment speed improvement and migrating core systems from React to Vue',
+      'Built full-stack Bill of Materials platform translating complex 3D CAD outputs into actionable manufacturing instructions, dramatically improving shop floor accuracy',
+      'Implemented dynamic budgeting system and automated ERP workflows using BullMQ, achieving 20x deployment speed improvement and migrating core systems from React to Vue',
       'Engineered real-time inventory tracking platform with interactive global mapping system, displaying live locations of products worldwide',
     ],
   },
@@ -268,8 +268,8 @@ const projects: Project[] = [
         color: 'orange-text-gradient',
       },
     ],
-    image: freqtrade, // Will need new image
-    source_code_link: 'https://github.com', // Private repo
+    image: freqtrade,
+    source_code_link: 'https://github.com',
   },
 ];
 

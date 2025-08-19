@@ -7,9 +7,15 @@ import Image from 'next/image';
 import { styles } from '../styles';
 import { services } from '../constants';
 import { SectionWrapper } from '../hoc';
-import { fadeIn, textVariant } from '../utils/motion';
+import { fadeIn, textVariant } from '../utils';
 
-const ServiceCard = ({ index, title, icon }) => (
+interface ServiceCardProps {
+  index: number;
+  title: string;
+  icon: string;
+}
+
+const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
   <Tilt
     tiltMaxAngleX={45}
     tiltMaxAngleY={45}
@@ -18,7 +24,7 @@ const ServiceCard = ({ index, title, icon }) => (
     className="xs:w-[250px] w-full"
   >
     <motion.div
-      variants={fadeIn('right', 'spring', index * 0.5, 0.75)}
+      variants={fadeIn('right', 'spring', index * 0.5, 0.75) as any}
       className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card"
     >
       <div className="bg-tertiary rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col">
@@ -38,16 +44,16 @@ const ServiceCard = ({ index, title, icon }) => (
   </Tilt>
 );
 
-const About = () => {
+const About: React.FC = () => {
   return (
     <>
-      <motion.div variants={textVariant()}>
+      <motion.div variants={textVariant() as any}>
         <p className={styles.sectionSubText}>Introduction</p>
         <h2 className={styles.sectionHeadText}>Overview.</h2>
       </motion.div>
 
       <motion.p
-        variants={fadeIn('', '', 0.1, 1)}
+        variants={fadeIn('up', 'spring', 0.1, 1) as any}
         className="mt-4 text-secondary text-[17px] max-w-3xl leading-[30px]"
       >
         I'm a Full Stack Software Developer with a proven track record of

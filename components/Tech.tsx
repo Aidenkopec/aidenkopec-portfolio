@@ -5,7 +5,7 @@ import { BallCanvas } from './canvas';
 import { SectionWrapper } from '../hoc';
 import { technologies } from '../constants';
 
-const Tech = () => {
+const Tech: React.FC = () => {
   const technologiesWithIcons = technologies.filter(
     (technology) => technology.icon
   );

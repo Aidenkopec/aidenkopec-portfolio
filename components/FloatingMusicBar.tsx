@@ -3,41 +3,50 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';
 
+interface IconProps {
+  className?: string;
+}
+
 // Icon components adapted for the portfolio theme
 const Icons = {
-  play: (props) => (
+  play: (props: IconProps) => (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path d="M8 5v14l11-7z" />
     </svg>
   ),
-  pause: (props) => (
+  pause: (props: IconProps) => (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
     </svg>
   ),
-  skipPrevious: (props) => (
+  skipPrevious: (props: IconProps) => (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
     </svg>
   ),
-  skipNext: (props) => (
+  skipNext: (props: IconProps) => (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
     </svg>
   ),
-  close: (props) => (
+  close: (props: IconProps) => (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
     </svg>
   ),
-  music: (props) => (
+  music: (props: IconProps) => (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
     </svg>
   ),
 };
 
-const FloatingMusicBar = () => {
+interface TrackInfo {
+  title: string;
+  artist: string;
+}
+
+const FloatingMusicBar: React.FC = () => {
   const {
     isPlaying,
     isFloatingBarVisible,
@@ -50,20 +59,22 @@ const FloatingMusicBar = () => {
     previousTrack,
   } = useMusicPlayer();
 
-  const [touchStart, setTouchStart] = useState(null);
-  const [shouldScrollTitle, setShouldScrollTitle] = useState(false);
-  const [shouldScrollArtist, setShouldScrollArtist] = useState(false);
-  const titleRef = useRef(null);
-  const artistRef = useRef(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [shouldScrollTitle, setShouldScrollTitle] = useState<boolean>(false);
+  const [shouldScrollArtist, setShouldScrollArtist] = useState<boolean>(false);
+  const titleRef = useRef<HTMLDivElement>(null);
+  const artistRef = useRef<HTMLDivElement>(null);
 
   // Get track info, but use defaults if not hydrated yet
-  const trackInfo = isHydrated ? getTrackInfo() : { title: 'Deep Space', artist: 'Ambient Artist' };
+  const trackInfo: TrackInfo = isHydrated 
+    ? getTrackInfo() 
+    : { title: 'Deep Space', artist: 'Ambient Artist' };
 
   // Check if text overflows and needs scrolling
   useEffect(() => {
     if (!isHydrated) return; // Don't run until hydrated
     
-    const checkOverflow = () => {
+    const checkOverflow = (): void => {
       if (titleRef.current) {
         const isOverflowing =
           titleRef.current.scrollWidth > titleRef.current.clientWidth;
@@ -85,11 +96,11 @@ const FloatingMusicBar = () => {
   }, [trackInfo.title, trackInfo.artist, isHydrated]);
 
   // Handle swipe gestures on mobile
-  const handleTouchStart = (e) => {
+  const handleTouchStart = (e: React.TouchEvent): void => {
     setTouchStart(e.touches[0].clientX);
   };
 
-  const handleTouchEnd = (e) => {
+  const handleTouchEnd = (e: React.TouchEvent): void => {
     if (!touchStart) return;
 
     const touchEnd = e.changedTouches[0].clientX;
@@ -105,7 +116,7 @@ const FloatingMusicBar = () => {
     setTouchStart(null);
   };
 
-  const closeDock = () => setFloatingBarMode('hidden');
+  const closeDock = (): void => setFloatingBarMode('hidden');
 
   // Hidden state - show small button
   if (!isFloatingBarVisible || floatingBarMode === 'hidden') {

@@ -1,8 +1,8 @@
-import { useMusicContext } from '../context/MusicContext';
+import { useMusicContext } from '../context';
 
 export const useMusicPlayer = () => {
   const context = useMusicContext();
-  
+
   if (!context) {
     throw new Error('useMusicPlayer must be used within MusicProvider');
   }
@@ -27,7 +27,7 @@ export const useMusicPlayer = () => {
 
   const currentSong = playlist[currentTrack];
 
-  const handleVolumeChange = (newVolume) => {
+  const handleVolumeChange = (newVolume: number): void => {
     setVolume(newVolume);
   };
 
@@ -50,7 +50,7 @@ export const useMusicPlayer = () => {
     isHydrated,
     playlist,
     currentSong,
-    
+
     // Actions
     togglePlay,
     nextTrack,
@@ -59,7 +59,7 @@ export const useMusicPlayer = () => {
     handleVolumeChange,
     toggleFloatingBar,
     setFloatingBarMode,
-    
+
     // Helpers
     getTrackInfo,
   };

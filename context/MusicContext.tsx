@@ -5,11 +5,45 @@ import React, {
   useState,
   useRef,
   useEffect,
+  ReactNode,
 } from 'react';
 
-const MusicContext = createContext();
+interface Track {
+  title: string;
+  artist: string;
+  src: string;
+}
 
-export const useMusicContext = () => {
+interface MusicContextType {
+  // State
+  isPlaying: boolean;
+  setIsPlaying: (playing: boolean) => void;
+  volume: number;
+  setVolume: (volume: number) => void;
+  currentTrack: number;
+  setCurrentTrack: (track: number) => void;
+  hasError: boolean;
+  setHasError: (error: boolean) => void;
+  isFloatingBarVisible: boolean;
+  setIsFloatingBarVisible: (visible: boolean) => void;
+  floatingBarMode: string;
+  setFloatingBarMode: (mode: string) => void;
+  isHydrated: boolean;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
+  playlist: Track[];
+
+  // Actions
+  togglePlay: () => void;
+  nextTrack: () => void;
+  previousTrack: () => void;
+  selectTrack: (index: number) => void;
+  handleTrackEnd: () => void;
+  toggleFloatingBar: () => void;
+}
+
+const MusicContext = createContext<MusicContextType | undefined>(undefined);
+
+export const useMusicContext = (): MusicContextType => {
   const context = useContext(MusicContext);
   if (!context) {
     throw new Error('useMusicContext must be used within MusicProvider');
@@ -17,18 +51,23 @@ export const useMusicContext = () => {
   return context;
 };
 
-export const MusicProvider = ({ children }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
-  
+interface MusicProviderProps {
+  children: ReactNode;
+}
+
+export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+
   // Initialize with default values to prevent hydration mismatch
-  const [volume, setVolume] = useState(0.5);
-  const [currentTrack, setCurrentTrack] = useState(0);
-  const [isFloatingBarVisible, setIsFloatingBarVisible] = useState(true);
-  const [floatingBarMode, setFloatingBarMode] = useState('standard');
-  
-  const audioRef = useRef(null);
+  const [volume, setVolume] = useState<number>(0.5);
+  const [currentTrack, setCurrentTrack] = useState<number>(0);
+  const [isFloatingBarVisible, setIsFloatingBarVisible] =
+    useState<boolean>(true);
+  const [floatingBarMode, setFloatingBarMode] = useState<string>('standard');
+
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   // Load localStorage values after hydration
   useEffect(() => {
@@ -38,28 +77,29 @@ export const MusicProvider = ({ children }) => {
       if (savedVolume) {
         setVolume(parseFloat(savedVolume));
       }
-      
+
       const savedTrack = localStorage.getItem('currentTrack');
       if (savedTrack) {
         setCurrentTrack(parseInt(savedTrack));
       }
-      
-      const savedFloatingBarVisible = localStorage.getItem('floatingBarVisible');
+
+      const savedFloatingBarVisible =
+        localStorage.getItem('floatingBarVisible');
       if (savedFloatingBarVisible !== null) {
         setIsFloatingBarVisible(JSON.parse(savedFloatingBarVisible));
       }
-      
+
       const savedFloatingBarMode = localStorage.getItem('floatingBarMode');
       if (savedFloatingBarMode) {
         setFloatingBarMode(savedFloatingBarMode);
       }
-      
+
       // Mark as hydrated
       setIsHydrated(true);
     }
   }, []);
 
-  const playlist = [
+  const playlist: Track[] = [
     {
       title: 'Deep Space',
       artist: 'Ambient Artist',
@@ -110,7 +150,7 @@ export const MusicProvider = ({ children }) => {
     }
   }, [floatingBarMode, isHydrated]);
 
-  const togglePlay = () => {
+  const togglePlay = (): void => {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -125,7 +165,7 @@ export const MusicProvider = ({ children }) => {
     }
   };
 
-  const nextTrack = () => {
+  const nextTrack = (): void => {
     const nextIndex = (currentTrack + 1) % playlist.length;
     setCurrentTrack(nextIndex);
     if (isPlaying && audioRef.current) {
@@ -139,7 +179,7 @@ export const MusicProvider = ({ children }) => {
     }
   };
 
-  const previousTrack = () => {
+  const previousTrack = (): void => {
     const prevIndex =
       currentTrack === 0 ? playlist.length - 1 : currentTrack - 1;
     setCurrentTrack(prevIndex);
@@ -154,7 +194,7 @@ export const MusicProvider = ({ children }) => {
     }
   };
 
-  const selectTrack = (index) => {
+  const selectTrack = (index: number): void => {
     setCurrentTrack(index);
     if (isPlaying && audioRef.current) {
       setTimeout(() => {
@@ -167,18 +207,19 @@ export const MusicProvider = ({ children }) => {
     }
   };
 
-  const handleTrackEnd = () => {
+  const handleTrackEnd = (): void => {
     nextTrack();
   };
 
-  const toggleFloatingBar = () => {
+  const toggleFloatingBar = (): void => {
     setIsFloatingBarVisible(!isFloatingBarVisible);
   };
 
   // Keyboard shortcuts
   useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
         return; // Don't trigger shortcuts when typing
       }
 
@@ -208,7 +249,7 @@ export const MusicProvider = ({ children }) => {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [isPlaying, currentTrack]);
 
-  const value = {
+  const value: MusicContextType = {
     // State
     isPlaying,
     setIsPlaying,

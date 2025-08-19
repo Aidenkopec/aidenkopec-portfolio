@@ -1,0 +1,1 @@
+export { useMusicPlayer } from './useMusicPlayer';

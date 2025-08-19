@@ -6,19 +6,27 @@ import emailjs from '@emailjs/browser';
 import { styles } from '../styles';
 import { EarthCanvas } from './canvas';
 import { SectionWrapper } from '../hoc';
-import { slideIn } from '../utils/motion';
+import { slideIn } from '../utils';
 
-const Contact = () => {
-  const formRef = useRef();
-  const [form, setForm] = useState({
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+const Contact: React.FC = () => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [form, setForm] = useState<FormData>({
     name: '',
     email: '',
     message: '',
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
     const { target } = e;
     const { name, value } = target;
 
@@ -28,14 +36,14 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     setLoading(true);
 
     emailjs
       .send(
-        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
+        process.env.VITE_APP_EMAILJS_SERVICE_ID!,
+        process.env.VITE_APP_EMAILJS_TEMPLATE_ID!,
         {
           from_name: form.name,
           to_name: 'Aiden Kopec',
@@ -43,7 +51,7 @@ const Contact = () => {
           to_email: 'aidenkopec@icloud.com',
           message: form.message,
         },
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
+        process.env.VITE_APP_EMAILJS_PUBLIC_KEY!
       )
       .then(
         () => {
@@ -70,7 +78,7 @@ const Contact = () => {
       className={`xl:mt-12 flex xl:flex-row flex-col-reverse gap-10 overflow-hidden`}
     >
       <motion.div
-        variants={slideIn('left', 'tween', 0.2, 1)}
+        variants={slideIn('left', 'tween', 0.2, 1) as any}
         className="flex-[0.75] bg-black-100 p-8 rounded-2xl"
       >
         <p className={styles.sectionSubText}>Get in touch</p>
@@ -125,7 +133,7 @@ const Contact = () => {
       </motion.div>
 
       <motion.div
-        variants={slideIn('right', 'tween', 0.2, 1)}
+        variants={slideIn('right', 'tween', 0.2, 1) as any}
         className="xl:flex-1 xl:h-auto md:h-[550px] h-[350px]"
       >
         <EarthCanvas />
