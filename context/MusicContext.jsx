@@ -1,3 +1,4 @@
+'use client';
 import React, {
   createContext,
   useContext,
@@ -19,21 +20,33 @@ export const useMusicContext = () => {
 export const MusicProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(() => {
-    const saved = localStorage.getItem('musicVolume');
-    return saved ? parseFloat(saved) : 0.5;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('musicVolume');
+      return saved ? parseFloat(saved) : 0.5;
+    }
+    return 0.5;
   });
   const [currentTrack, setCurrentTrack] = useState(() => {
-    const saved = localStorage.getItem('currentTrack');
-    return saved ? parseInt(saved) : 0;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('currentTrack');
+      return saved ? parseInt(saved) : 0;
+    }
+    return 0;
   });
   const [hasError, setHasError] = useState(false);
   const [isFloatingBarVisible, setIsFloatingBarVisible] = useState(() => {
-    const saved = localStorage.getItem('floatingBarVisible');
-    return saved !== null ? JSON.parse(saved) : true;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('floatingBarVisible');
+      return saved !== null ? JSON.parse(saved) : true;
+    }
+    return true;
   });
   const [floatingBarMode, setFloatingBarMode] = useState(() => {
-    const saved = localStorage.getItem('floatingBarMode');
-    return saved || 'standard'; // 'hidden', 'mini', 'standard'
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('floatingBarMode');
+      return saved || 'standard'; // 'hidden', 'mini', 'standard'
+    }
+    return 'standard';
   });
   const audioRef = useRef(null);
 

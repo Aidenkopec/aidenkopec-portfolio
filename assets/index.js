@@ -87,3 +87,11 @@ export {
   launchcode,
   evans,
 };
+
+// Add asset paths for Next.js optimization
+export const assetPaths = {
+  logo: '/assets/logo.svg',
+  desktop_pc: '/desktop_pc/scene.gltf',
+  planet: '/planet/scene.gltf',
+  // Add other static asset paths as needed
+};

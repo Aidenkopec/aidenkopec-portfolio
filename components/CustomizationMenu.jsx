@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { themes, setTheme, getCurrentTheme } from '../styles';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';

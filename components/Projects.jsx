@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
@@ -10,7 +11,7 @@ import { fadeIn, textVariant } from '../utils/motion';
 // GitHub API configuration
 const GITHUB_USERNAME = 'Aidenkopec';
 const GITHUB_API_BASE = 'https://api.github.com';
-const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 // Language colors from GitHub
 const LANGUAGE_COLORS = {

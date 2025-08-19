@@ -1,4 +1,5 @@
 // Import the necessary dependencies
+'use client';
 import { useState, useRef, Suspense } from "react"; // React hooks
 import { Canvas, useFrame } from "@react-three/fiber"; // react-three/fiber components for 3D rendering
 import { Points, PointMaterial, Preload } from "@react-three/drei"; // Drei components for using points in 3D space and material properties
