@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
+import Image from 'next/image';
 import { styles } from '../styles';
 import { github } from '../public/assets';
 import { SectionWrapper } from '../hoc';
@@ -433,10 +434,12 @@ const ProjectCard = ({
         className="bg-tertiary p-5 rounded-2xl w-full h-full flex flex-col border border-[#232631] hover:border-[#915EFF] transition-colors duration-300"
       >
         <div className="relative w-full h-[200px]">
-          <img
+          <Image
             src={image}
-            alt="project_image"
-            className="w-full h-full object-cover rounded-xl"
+            alt={`${name} project screenshot`}
+            fill
+            className="object-cover rounded-xl"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
           <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
@@ -444,10 +447,12 @@ const ProjectCard = ({
               onClick={() => window.open(source_code_link, '_blank')}
               className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform"
             >
-              <img
+              <Image
                 src={github}
                 alt="source code"
-                className="w-1/2 h-1/2 object-contain"
+                width={20}
+                height={20}
+                className="object-contain"
               />
             </div>
           </div>

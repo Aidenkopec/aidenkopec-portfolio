@@ -1,10 +1,12 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { styles } from '../styles';
 import { navLinks } from '../constants';
-import { logo, menu, close } from '../public/assets';
+// Direct paths for public folder assets - this is the correct Next.js approach
+const logo = '/assets/logo.svg';
 import CustomizationMenu from './CustomizationMenu';
 
 const Navbar = () => {
@@ -47,7 +49,7 @@ const Navbar = () => {
             window.scrollTo(0, 0);
           }}
         >
-          <img src={logo} alt="logo" className="w-9 h-9 object-contain" />
+          <Image src={logo} alt="logo" width={36} height={36} className="w-9 h-9 object-contain" />
           <p className="text-white text-[18px] font-bold cursor-pointer flex ">
             Aiden Kopec &nbsp;
             <span className="sm:block hidden"> | Software Developer</span>

@@ -2,6 +2,7 @@
 import React from 'react';
 import Tilt from 'react-parallax-tilt';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 import { styles } from '../styles';
 import { services } from '../constants';
@@ -21,10 +22,12 @@ const ServiceCard = ({ index, title, icon }) => (
       className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card"
     >
       <div className="bg-tertiary rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col">
-        <img
+        <Image
           src={icon}
-          alt="web-development"
-          className="w-16 h-16 object-contain"
+          alt={`${title} service icon`}
+          width={64}
+          height={64}
+          className="object-contain"
         />
 
         <h3 className="text-white text-[20px] font-bold text-center">
