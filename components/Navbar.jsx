@@ -4,14 +4,15 @@ import Link from 'next/link';
 
 import { styles } from '../styles';
 import { navLinks } from '../constants';
-import { logo, menu, close } from '../assets';
+import { logo, menu, close } from '../public/assets';
 import CustomizationMenu from './CustomizationMenu';
 
 const Navbar = () => {
   const [active, setActive] = useState('');
   const [toggle, setToggle] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [customizationMenuDesktop, setCustomizationMenuDesktop] = useState(false);
+  const [customizationMenuDesktop, setCustomizationMenuDesktop] =
+    useState(false);
   const [customizationMenuMobile, setCustomizationMenuMobile] = useState(false);
 
   useEffect(() => {
@@ -68,7 +69,9 @@ const Navbar = () => {
             ))}
             <li className="flex items-center gap-4 relative">
               <button
-                onClick={() => setCustomizationMenuDesktop(!customizationMenuDesktop)}
+                onClick={() =>
+                  setCustomizationMenuDesktop(!customizationMenuDesktop)
+                }
                 className="text-secondary hover:text-white text-[18px] font-medium cursor-pointer transition-colors"
               >
                 Customizations
@@ -149,7 +152,9 @@ const Navbar = () => {
               <li className="pt-2 relative">
                 <button
                   className="text-secondary text-[16px] font-medium cursor-pointer hover:text-white transition-colors"
-                  onClick={() => setCustomizationMenuMobile(!customizationMenuMobile)}
+                  onClick={() =>
+                    setCustomizationMenuMobile(!customizationMenuMobile)
+                  }
                 >
                   Customizations
                 </button>
