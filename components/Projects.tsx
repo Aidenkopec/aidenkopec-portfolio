@@ -592,7 +592,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         tiltMaxAngleY={25}
         scale={1.02}
         transitionSpeed={450}
-        className="bg-tertiary p-5 rounded-2xl w-full h-full flex flex-col border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
+        className="bg-tertiary p-5 rounded-2xl w-full h-full flex flex-col border-2 border-[var(--tertiary-color)] hover:border-[var(--text-color-variable)] transition-colors duration-300"
       >
         <div className="relative w-full h-[200px]">
           <Image
@@ -631,7 +631,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             {tags.map((tag) => (
               <p
                 key={`${name}-${tag.name}`}
-                className={`text-[12px] px-2 py-1 rounded-full border border-current ${tag.color}`}
+                className={`text-[12px] px-3 py-1.5 rounded-full border border-gray-500 bg-gray-800/50 backdrop-blur-sm ${tag.color}`}
               >
                 #{tag.name}
               </p>
@@ -670,7 +670,11 @@ const StatCard: React.FC<StatCardProps> = ({
             value
           )}
         </div>
-        {icon && <div className="text-[var(--text-color-variable)] text-lg">{icon}</div>}
+        {icon && (
+          <div className="text-[var(--text-color-variable)] text-lg">
+            {icon}
+          </div>
+        )}
       </div>
       <p className="text-secondary text-xs font-medium">{title}</p>
     </Tilt>

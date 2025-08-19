@@ -201,7 +201,7 @@ const projects: Project[] = [
       'Founded and operated a digital agency delivering full-stack web applications, GPT-powered AI integrations, and SEO solutions. Led 8 client projects from planning to deployment, delivering production-ready platforms with modern technologies and achieving significant business growth for clients.',
     tags: [
       {
-        name: 'Next,js',
+        name: 'Next.js',
         color: 'green-text-gradient',
       },
       {

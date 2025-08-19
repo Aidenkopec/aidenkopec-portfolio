@@ -191,6 +191,56 @@
   }
 }
 
+/* Text Gradient Classes for Project Tags */
+.blue-text-gradient {
+  background: linear-gradient(90deg, #00d4ff 0%, #0099cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #00d4ff;
+}
+
+.green-text-gradient {
+  background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #00ff88;
+}
+
+.pink-text-gradient {
+  background: linear-gradient(90deg, #ff6b9d 0%, #c44569 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #ff6b9d;
+}
+
+.orange-text-gradient {
+  background: linear-gradient(90deg, #ffa726 0%, #ff7043 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #ffa726;
+}
+
+/* Project Tag Styling */
+.blue-text-gradient {
+  color: #00d4ff !important;
+}
+
+.green-text-gradient {
+  color: #00ff88 !important;
+}
+
+.pink-text-gradient {
+  color: #ff6b9d !important;
+}
+
+.orange-text-gradient {
+  color: #ffa726 !important;
+}
+
 /* Padding Utilities */
 .padding-x {
   padding-left: var(--spacing-padding-x);
@@ -236,4 +286,21 @@ body {
   background: var(--primary-color);
   color: var(--white-100);
   font-family: var(--font-sans);
+}
+
+/* Theme Color Utility Classes */
+.bg-tertiary {
+  background-color: var(--tertiary-color);
+}
+
+.bg-black-100 {
+  background-color: var(--black-100);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.text-white {
+  color: var(--white-100);
 }
