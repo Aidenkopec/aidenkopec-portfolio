@@ -3,7 +3,7 @@ import React from 'react';
 import { motion, type Variants } from 'framer-motion';
 
 import { styles } from '../styles';
-import { SectionWrapper } from '../hoc';
+import SectionWrapper from '../hoc/SectionWrapper';
 import { fadeIn, textVariant } from '../utils';
 import { testimonials } from '../constants';
 
@@ -56,26 +56,28 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
 
 const Testimonials: React.FC = () => {
   return (
-    <section className="mt-12 rounded-[20px] bg-black-100">
-      <div
-        className={`min-h-[300px] rounded-2xl bg-tertiary ${styles.padding}`}
-      >
-        <motion.div variants={textVariant() as unknown as Variants}>
-          <p className={styles.sectionSubText}>WHAT OTHERS SAY</p>
-          <h2 className={styles.sectionHeadText}>Testimonials.</h2>
-        </motion.div>
-      </div>
-
-      {/* Mobile: 1 column stacked.  md+: 3 columns in a row. */}
-      <div className={`-mt-20 pb-14 ${styles.paddingX}`}>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {testimonials.map((t: Testimonial, index: number) => (
-            <FeedbackCard key={t.name} index={index} {...t} />
-          ))}
+    <SectionWrapper idName="">
+      <section className="mt-12 rounded-[20px] bg-black-100">
+        <div
+          className={`min-h-[300px] rounded-2xl bg-tertiary ${styles.padding}`}
+        >
+          <motion.div variants={textVariant() as unknown as Variants}>
+            <p className={styles.sectionSubText}>WHAT OTHERS SAY</p>
+            <h2 className={styles.sectionHeadText}>Testimonials.</h2>
+          </motion.div>
         </div>
-      </div>
-    </section>
+
+        {/* Mobile: 1 column stacked.  md+: 3 columns in a row. */}
+        <div className={`-mt-20 pb-14 ${styles.paddingX}`}>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {testimonials.map((t: Testimonial, index: number) => (
+              <FeedbackCard key={t.name} index={index} {...t} />
+            ))}
+          </div>
+        </div>
+      </section>
+    </SectionWrapper>
   );
 };
 
-export default SectionWrapper(Testimonials, '');
+export default Testimonials;

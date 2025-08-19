@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  experimental: {
+    useCache: true, // Enable 'use cache' directive for Next.js 15.4.6
+  },
   images: {
     // Enable modern image formats for better compression
     formats: ['image/webp', 'image/avif'],

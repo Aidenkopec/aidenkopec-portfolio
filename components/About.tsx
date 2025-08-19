@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 import { styles } from '../styles';
 import { services } from '../constants';
-import { SectionWrapper } from '../hoc';
+import SectionWrapper from '../hoc/SectionWrapper';
 import { fadeIn, textVariant } from '../utils';
 
 interface ServiceCardProps {
@@ -60,7 +60,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
 
 const About: React.FC = () => {
   return (
-    <>
+    <SectionWrapper idName="about">
       <motion.div variants={textVariant() as any}>
         <p className={styles.sectionSubText}>Introduction</p>
         <h2 className={styles.sectionHeadText}>Overview.</h2>
@@ -108,8 +108,8 @@ const About: React.FC = () => {
           <ServiceCard key={service.title} index={index} {...service} />
         ))}
       </div>
-    </>
+    </SectionWrapper>
   );
 };
 
-export default SectionWrapper(About, 'about');
+export default About;

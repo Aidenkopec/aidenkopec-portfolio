@@ -11,7 +11,7 @@ import 'react-vertical-timeline-component/style.min.css';
 
 import { styles } from '../styles';
 import { experiences } from '../constants';
-import { SectionWrapper } from '../hoc';
+import SectionWrapper from '../hoc/SectionWrapper';
 import { textVariant } from '../utils';
 
 interface Experience {
@@ -75,7 +75,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
 
 const Experience: React.FC = () => {
   return (
-    <>
+    <SectionWrapper idName="work">
       <motion.div variants={textVariant() as any}>
         <p className={`${styles.sectionSubText} text-center`}>
           What I have done so far
@@ -95,8 +95,8 @@ const Experience: React.FC = () => {
           ))}
         </VerticalTimeline>
       </div>
-    </>
+    </SectionWrapper>
   );
 };
 
-export default SectionWrapper(Experience, 'work');
+export default Experience;
