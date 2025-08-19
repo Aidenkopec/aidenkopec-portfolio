@@ -11,10 +11,18 @@ import {
 
 import CanvasLoader from "../Loader";
 
-const Ball = (props) => {
+interface BallProps {
+  imgUrl: string | { src: string };
+}
+
+interface BallCanvasProps {
+  icon: string | { src: string };
+}
+
+const Ball: React.FC<BallProps> = (props) => {
   // Handle both URL strings and Next.js image import objects
   const textureUrl = typeof props.imgUrl === 'string' ? props.imgUrl : props.imgUrl?.src || props.imgUrl;
-  const [decal] = useTexture([textureUrl]);
+  const [decal] = useTexture([textureUrl as string]);
 
   return (
     <Float speed={1.75} rotationIntensity={1} floatIntensity={2}>
@@ -33,14 +41,13 @@ const Ball = (props) => {
           rotation={[2 * Math.PI, 0, 6.25]}
           scale={1}
           map={decal}
-          flatShading
         />
       </mesh>
     </Float>
   );
 };
 
-const BallCanvas = ({ icon }) => {
+const BallCanvas: React.FC<BallCanvasProps> = ({ icon }) => {
   return (
     <Canvas
       frameloop='demand'
