@@ -7,10 +7,11 @@ import Projects from '@/components/Projects';
 import Feedbacks from '@/components/Feedbacks';
 import Contact from '@/components/Contact';
 import FloatingMusicBar from '@/components/FloatingMusicBar';
+import StarsCanvas from '@/components/canvas/Stars';
 
 export default function Home() {
   return (
-    <div className="relative z-0 bg-primary">
+    <div className="relative z-0 bg-primary max-w-full overflow-x-hidden">
       <div className="bg-hero-pattern bg-cover bg-no-repeat bg-center">
         <Navbar />
         <Hero />
@@ -20,7 +21,10 @@ export default function Home() {
       <Tech />
       <Projects />
       <Feedbacks />
-      <Contact />
+      <div className="relative z-0">
+        <Contact />
+        <StarsCanvas />
+      </div>
       <FloatingMusicBar />
     </div>
   );
