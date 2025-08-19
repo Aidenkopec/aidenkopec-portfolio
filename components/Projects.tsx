@@ -730,13 +730,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   const total = commitCalendar?.totalContributions || 0;
 
   const getContributionColor = (level: number): string => {
-    // Dark colors for no contributions, green progression for activity
+    // Theme-appropriate colors for contributions with fallbacks
     const colors = [
-      '#1f2937', // No contributions - dark gray (much darker)
-      '#059669', // Low contributions - dark green
-      '#10b981', // Medium contributions - medium green
-      '#34d399', // High contributions - light green
-      '#6ee7b7', // Very high contributions - soft mint green
+      'var(--black-100, #1f2937)', // No contributions - theme dark color
+      'var(--text-color-variable, #ff6b6b)', // Low contributions - theme accent color
+      'var(--gradient-start, #00cea8)', // Medium contributions - theme gradient start
+      'var(--gradient-end, #bf61ff)', // High contributions - theme gradient end
+      'var(--secondary-color, #ffffff)', // Very high contributions - theme secondary color
     ];
     return colors[level] || colors[0];
   };
@@ -786,7 +786,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
         <select
           value={selectedYear}
           onChange={handleYearChange}
-          className="bg-[#1d1836] text-secondary border border-[#232631] hover:border-[#915EFF] rounded px-2 py-1 text-sm cursor-pointer transition-colors"
+          className="bg-black-100 text-secondary border border-tertiary hover:border-[var(--text-color-variable)] rounded px-2 py-1 text-sm cursor-pointer transition-colors"
         >
           <option value="last">Last year</option>
           {availableYears.map((year) => (
@@ -825,7 +825,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                           duration: 0.2,
                           delay: (weekIndex * 7 + dayIndex) * 0.001,
                         }}
-                        className="rounded-sm cursor-pointer hover:ring-1 hover:ring-[#915EFF] transition-all w-[6px] h-[6px] sm:w-2 sm:h-2"
+                        className="rounded-sm cursor-pointer hover:ring-1 hover:ring-[var(--text-color-variable)] transition-all w-[6px] h-[6px] sm:w-2 sm:h-2"
                         style={{
                           backgroundColor: getContributionColor(
                             day.contributionCount === 0
@@ -851,7 +851,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                           duration: 0.2,
                           delay: (weekIndex * 7 + dayIndex) * 0.001,
                         }}
-                        className="rounded-sm cursor-pointer hover:ring-1 hover:ring-[#915EFF] transition-all w-[6px] h-[6px] sm:w-2 sm:h-2"
+                        className="rounded-sm cursor-pointer hover:ring-1 hover:ring-[var(--text-color-variable)] transition-all w-[6px] h-[6px] sm:w-2 sm:h-2"
                         style={{
                           backgroundColor: getContributionColor(day.level),
                         }}
@@ -1170,7 +1170,7 @@ const Projects: React.FC = () => {
                       variants={
                         fadeIn('up', 'spring', index * 0.1, 0.75) as any
                       }
-                      className="p-3 bg-[#1d1836] rounded-lg border border-[#232631] hover:border-[#915EFF] transition-colors duration-300"
+                      className="p-3 bg-black-100 rounded-lg border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
                     >
                       <div className="flex items-center gap-3 mb-1">
                         <span className="text-white text-sm font-medium truncate">
@@ -1178,7 +1178,7 @@ const Projects: React.FC = () => {
                             ? commit.message.substring(0, 50) + '...'
                             : commit.message}
                         </span>
-                        <span className="text-[#915EFF] text-xs font-mono bg-[#232631] px-2 py-1 rounded">
+                        <span className="text-[var(--text-color-variable)] text-xs font-mono bg-tertiary px-2 py-1 rounded">
                           {commit.sha.substring(0, 7)}
                         </span>
                       </div>

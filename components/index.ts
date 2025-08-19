@@ -10,7 +10,7 @@ import About from './About';
 import Tech from './Tech';
 import Experience from './Experience';
 import Projects from './Projects';
-import Feedbacks from './Feedbacks';
+import Testimonials from './Testimonials';
 import Contact from './Contact';
 import CanvasLoader from './Loader';
 import MusicPlayer from './MusicPlayer';
@@ -25,7 +25,7 @@ export {
   Tech,
   Experience,
   Projects,
-  Feedbacks,
+  Testimonials,
   Contact,
   CanvasLoader,
   EarthCanvas,
