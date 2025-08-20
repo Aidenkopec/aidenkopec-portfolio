@@ -337,12 +337,12 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                               day.contributionCount === 0
                                 ? 0
                                 : day.contributionCount <= 3
-                                ? 1
-                                : day.contributionCount <= 6
-                                ? 2
-                                : day.contributionCount <= 9
-                                ? 3
-                                : 4;
+                                  ? 1
+                                  : day.contributionCount <= 6
+                                    ? 2
+                                    : day.contributionCount <= 9
+                                      ? 3
+                                      : 4;
 
                             const date = new Date(day.date);
                             const formattedDate = date.toLocaleDateString(
