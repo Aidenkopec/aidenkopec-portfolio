@@ -7,11 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('API Key loaded:', !!process.env.RESEND_API_KEY);
-    
     const { name, email, message } = await request.json();
-    console.log('Received form data:', { name, email, message: message.length + ' chars' });
-
     // Validate required fields
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -49,10 +45,13 @@ export async function POST(request: NextRequest) {
     console.error('Detailed error sending emails:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      error
+      error,
     });
     return NextResponse.json(
-      { error: 'Failed to send emails', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Failed to send emails',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }

@@ -1,7 +1,12 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Preload, useGLTF, Environment } from '@react-three/drei';
+import {
+  OrbitControls,
+  Preload,
+  useGLTF,
+  Environment,
+} from '@react-three/drei';
 import * as THREE from 'three';
 
 import CanvasLoader from '../Loader';
@@ -16,30 +21,26 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
   // Enable shadows on all meshes in the GLTF model and debug materials
   React.useEffect(() => {
     if (computer.scene) {
-      console.log('GLTF Scene loaded:', computer.scene);
       computer.scene.traverse((child: any) => {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
           // Debug and refine material properties
           if (child.material) {
-            console.log('Material found:', {
-              name: child.name,
-              materialType: child.material.type,
-              color: child.material.color,
-              metalness: child.material.metalness,
-              roughness: child.material.roughness,
-              emissive: child.material.emissive
-            });
-            
             // Reduce metalness and adjust roughness for less shine
             if (child.material.metalness !== undefined) {
-              child.material.metalness = Math.min(child.material.metalness * 0.3, 0.2);
+              child.material.metalness = Math.min(
+                child.material.metalness * 0.3,
+                0.2
+              );
             }
             if (child.material.roughness !== undefined) {
-              child.material.roughness = Math.max(child.material.roughness, 0.6);
+              child.material.roughness = Math.max(
+                child.material.roughness,
+                0.6
+              );
             }
-            
+
             // Force material update to ensure lighting changes take effect
             child.material.needsUpdate = true;
           }
@@ -114,11 +115,11 @@ const ComputersCanvas: React.FC = () => {
       shadows={{ enabled: true, type: THREE.PCFSoftShadowMap }}
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
-      gl={{ 
+      gl={{
         preserveDrawingBuffer: true,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 0.6,
-        outputColorSpace: THREE.SRGBColorSpace
+        outputColorSpace: THREE.SRGBColorSpace,
       }}
     >
       <Suspense fallback={<CanvasLoader />}>

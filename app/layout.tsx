@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { MusicProvider } from '@/context/MusicContext';
 import { ThemeProvider } from 'next-themes';
-import ThemeManager from '@/components/ThemeManager';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -80,11 +79,16 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          themes={['obsidian', 'cosmicVoyage', 'midnightBlue', 'deepForest', 'crimsonFire']}
+          themes={[
+            'obsidian',
+            'cosmicVoyage',
+            'midnightBlue',
+            'deepForest',
+            'crimsonFire',
+          ]}
           defaultTheme="obsidian"
           enableSystem={false}
         >
-          <ThemeManager />
           <MusicProvider>{children}</MusicProvider>
         </ThemeProvider>
       </body>

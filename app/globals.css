@@ -68,6 +68,58 @@
   --gradient-end: rgba(255, 107, 107, 0);
 }
 
+html.cosmicVoyage {
+  --primary-color: #0a0514;
+  --secondary-color: #aaa6c3;
+  --tertiary-color: #1a0f2e;
+  --black-100: #140a23;
+  --black-200: #05020a;
+  --white-100: #f8f5ff;
+  --hero-pattern: url('/backgrounds/hero-bg.png');
+  --text-color-variable: #a855f7;
+  --gradient-start: #a855f7;
+  --gradient-end: rgba(168, 85, 247, 0);
+}
+
+html.midnightBlue {
+  --primary-color: #0c1621;
+  --secondary-color: #8892b0;
+  --tertiary-color: #1e293b;
+  --black-100: #0f172a;
+  --black-200: #020617;
+  --white-100: #f1f5f9;
+  --hero-pattern: url('/backgrounds/hero-bg-midnight-blue.png');
+  --text-color-variable: #06b6d4;
+  --gradient-start: #06b6d4;
+  --gradient-end: rgba(6, 182, 212, 0);
+}
+
+html.deepForest {
+  --primary-color: #0a1a0a;
+  --secondary-color: #64ffda;
+  --tertiary-color: #14532d;
+  --black-100: #052e16;
+  --black-200: #022c22;
+  --white-100: #f0fdf4;
+  --hero-pattern: url('/backgrounds/hero-bg-green.png');
+  --text-color-variable: #10b981;
+  --gradient-start: #10b981;
+  --gradient-end: rgba(16, 185, 129, 0);
+}
+
+html.crimsonFire {
+  --primary-color: #1a1a0a;
+  --secondary-color: #ffcdd2;
+  --tertiary-color: #7f1d1d;
+  --black-100: #450a0a;
+  --black-200: #0c0404;
+  --white-100: #fef2f2;
+  --hero-pattern: url('/backgrounds/hero-bg-adjusted.png');
+  --text-color-variable: #ef4444;
+  --gradient-start: #ef4444;
+  --gradient-end: rgba(239, 68, 68, 0);
+}
+
 /* Custom Utilities */
 .bg-hero-pattern {
   background-image: var(--hero-pattern);
@@ -96,7 +148,9 @@
 }
 
 .shadow-card {
-  box-shadow: 0 0 20px rgba(0, 212, 170, 0.4), 0 0 40px rgba(168, 85, 247, 0.2),
+  box-shadow:
+    0 0 20px rgba(0, 212, 170, 0.4),
+    0 0 40px rgba(168, 85, 247, 0.2),
     0 0 60px rgba(255, 107, 107, 0.1);
 }
 

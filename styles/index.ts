@@ -110,22 +110,23 @@ export const themes: Themes = {
 };
 
 // Utility function to apply theme CSS variables
-export const applyThemeVars = (themeKey: string): void => {
-  if (typeof window !== 'undefined') {
-    const theme = themes[themeKey];
-    if (theme && theme.cssVars) {
-      Object.entries(theme.cssVars).forEach(([property, value]) => {
-        document.documentElement.style.setProperty(property, value);
-      });
-    }
-  }
-};
+// This function is no longer needed as theme variables are applied via CSS classes.
+// export const applyThemeVars = (themeKey: string): void => {
+//   if (typeof window !== 'undefined') {
+//     const theme = themes[themeKey];
+//     if (theme && theme.cssVars) {
+//       Object.entries(theme.cssVars).forEach(([property, value]) => {
+//         document.documentElement.style.setProperty(property, value);
+//       });
+//     }
+//   }
+// };
 
 // Helper function to get theme preview colors for UI
 export const getThemePreviewColors = (themeKey: string) => {
   const theme = themes[themeKey];
   if (!theme) return null;
-  
+
   return {
     primary: theme.cssVars['--primary-color'],
     accent: theme.cssVars['--text-color-variable'],

@@ -9,13 +9,11 @@ interface ThemeSelectorProps {
   isMobile?: boolean;
 }
 
-interface ThemeColors {
-  primary: string;
-  accent: string;
-  secondary: string;
-}
-
-const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile = false }) => {
+const ThemeSelector: React.FC<ThemeSelectorProps> = ({
+  isOpen,
+  onClose,
+  isMobile = false,
+}) => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const selectorRef = useRef<HTMLDivElement>(null);
@@ -26,7 +24,10 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (selectorRef.current && !selectorRef.current.contains(event.target as Node)) {
+      if (
+        selectorRef.current &&
+        !selectorRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
@@ -47,7 +48,6 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
       onClose();
     }, 300);
   };
-
 
   if (!isOpen || !mounted) return null;
 
