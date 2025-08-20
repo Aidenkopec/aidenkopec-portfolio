@@ -18,14 +18,8 @@ const GITHUB_USERNAME = 'Aidenkopec';
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-// Add logging for environment variables for debugging
-console.log('GitHub Service - Environment Check:');
-console.log('GITHUB_TOKEN exists:', !!GITHUB_TOKEN);
-
 // Cached fetch helper with Next.js explicit caching
 const githubFetch = cache(async (url: string, options?: RequestInit) => {
-  console.log('GitHub API Call:', url);
-
   const headers: HeadersInit = {
     'User-Agent': 'GitHub-Portfolio-App',
     ...(GITHUB_TOKEN && { Authorization: `token ${GITHUB_TOKEN}` }),
@@ -238,7 +232,6 @@ function getContributionLevel(count: number): number {
 export const getGitHubData = cache(
   async (year: string = 'last'): Promise<GitHubData> => {
     try {
-      console.log('Fetching all GitHub data in parallel...');
       const [userData, repositories, commits, commitCalendar] =
         await Promise.all([
           fetchUserData(),
