@@ -173,17 +173,17 @@ const experiences: Experience[] = [
 const testimonials: Testimonial[] = [
   {
     testimonial:
-      'I had the pleasure of working with Aiden on a complex web development project, and I was impressed with their ability to handle multiple tasks while maintaining the highest level of quality.',
-    name: 'Ethan Nguyen',
-    designation: 'Software Developer',
-    company: 'SAIT',
+      'Aiden was instrumental in helping us build a robust directory for the oil and gas industry. He brought strong technical skills and was easy to work with throughout the project.',
+    name: 'Daniel Kernaghan',
+    designation: 'CEO',
+    company: 'Gadget Rentals',
   },
   {
     testimonial:
-      'Aiden is an exceptional developer and a joy to work with. His passion for programming and problem-solving is unmatched.',
-    name: 'Nelson Torres',
-    designation: 'Software Engineer',
-    company: 'ByteForge',
+      'Aiden built the website for Spartatech Coatings from the ground up. He delivered exactly what I needed with speed and professionalism.',
+    name: 'Liam Hennessey',
+    designation: 'CEO',
+    company: 'Spartatech Coatings',
   },
   {
     testimonial:

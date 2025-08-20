@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import Image from 'next/image';
 import { github } from '../public/assets';
 import { fadeIn, textVariant } from '../utils';
 import { styles } from '../styles';
-import { 
-  formatCommitMessage, 
+import {
+  formatCommitMessage,
   getContributionColor,
   type GitHubData,
-  type ContributionCalendar 
+  type ContributionCalendar,
 } from '../lib/github-utils';
 
 // Types for component props
@@ -40,7 +40,6 @@ interface StatCardProps {
   loading: boolean;
 }
 
-
 interface CommitGraphProps {
   commitCalendar?: ContributionCalendar;
   loading: boolean;
@@ -48,6 +47,14 @@ interface CommitGraphProps {
   setSelectedYear: (year: string) => void;
   availableYears: number[];
   onYearChange: (year: string) => void;
+}
+
+interface TooltipData {
+  content: string;
+  date: string;
+  x: number;
+  y: number;
+  visible: boolean;
 }
 
 // Project Card Component
@@ -162,7 +169,6 @@ const StatCard: React.FC<StatCardProps> = ({
   </motion.div>
 );
 
-
 // Commit Graph Component
 const CommitGraph: React.FC<CommitGraphProps> = ({
   commitCalendar,
@@ -172,10 +178,42 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   availableYears,
   onYearChange,
 }) => {
+  const [tooltip, setTooltip] = useState<TooltipData>({
+    content: '',
+    date: '',
+    x: 0,
+    y: 0,
+    visible: false,
+  });
+
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     const newYear = e.target.value;
     setSelectedYear(newYear);
     onYearChange(newYear);
+  };
+
+  const showTooltip = (
+    event: React.MouseEvent,
+    content: string,
+    date: string
+  ) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+
+    // Use viewport coordinates for fixed positioning
+    const x = rect.left + rect.width / 2;
+    const y = rect.top - 10; // 10px above the element
+
+    setTooltip({
+      content,
+      date,
+      x,
+      y,
+      visible: true,
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltip((prev) => ({ ...prev, visible: false }));
   };
 
   if (loading) {
@@ -230,7 +268,10 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   }
 
   return (
-    <div className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300">
+    <div
+      className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
+      style={{ position: 'relative', overflow: 'visible' }}
+    >
       <div className="flex justify-between items-center mb-4">
         <h4 className="text-secondary font-semibold text-[16px]">
           {total} contributions in{' '}
@@ -251,82 +292,179 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
       </div>
 
       {weeks.length > 0 ? (
-        <div className="overflow-x-auto">
-          <div
-            className="flex mb-1 text-xs text-secondary mx-auto"
-            style={{ maxWidth: '520px' }}
-          >
-            {monthLabels.map(({ label, span }, i) => (
-              <div key={i} style={{ flex: span }} className="text-center">
-                {label}
+        <div className="w-full">
+          {/* Month Labels */}
+          <div className="overflow-x-auto scrollbar-hide">
+            <div
+              className="min-w-fit mx-auto py-6"
+              style={{ width: 'max-content' }}
+            >
+              <div className="flex mb-2 text-xs text-secondary justify-start pl-6">
+                {monthLabels.map(({ label, span }, i) => (
+                  <div
+                    key={i}
+                    className="text-center flex-shrink-0"
+                    style={{
+                      width: `${span * (12 + 2)}px`, // 12px square + 2px gap
+                      minWidth: `${span * (12 + 2)}px`,
+                    }}
+                  >
+                    {label}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div
-            className="flex gap-0.5 mb-3 mx-auto"
-            style={{ maxWidth: '520px' }}
-          >
-            {weeks.map((week, weekIndex) => (
-              <div key={weekIndex} className="flex flex-col gap-0.5">
-                {'contributionDays' in week
-                  ? week.contributionDays.map((day, dayIndex) => (
-                      <motion.div
-                        key={`${weekIndex}-${dayIndex}`}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{
-                          duration: 0.2,
-                          delay: (weekIndex * 7 + dayIndex) * 0.001,
-                        }}
-                        className="rounded-sm cursor-pointer hover:ring-1 hover:ring-[var(--text-color-variable)] transition-all w-[6px] h-[6px] sm:w-2 sm:h-2"
-                        style={{
-                          backgroundColor: getContributionColor(
-                            day.contributionCount === 0
-                              ? 0
-                              : day.contributionCount <= 3
-                              ? 1
-                              : day.contributionCount <= 6
-                              ? 2
-                              : day.contributionCount <= 9
-                              ? 3
-                              : 4
-                          ),
-                        }}
-                        title={`${day.contributionCount} contributions on ${day.date}`}
-                      />
-                    ))
-                  : week.map((day, dayIndex) => (
-                      <motion.div
-                        key={`${weekIndex}-${dayIndex}`}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{
-                          duration: 0.2,
-                          delay: (weekIndex * 7 + dayIndex) * 0.001,
-                        }}
-                        className="rounded-sm cursor-pointer hover:ring-1 hover:ring-[var(--text-color-variable)] transition-all w-[6px] h-[6px] sm:w-2 sm:h-2"
-                        style={{
-                          backgroundColor: getContributionColor(day.level),
-                        }}
-                        title={`${day.count} contributions on ${day.date}`}
-                      />
-                    ))}
-              </div>
-            ))}
-          </div>
 
-          <div className="flex items-center justify-between text-xs text-secondary max-w-[520px] mx-auto">
-            <span>Less</span>
-            <div className="flex gap-0.5">
-              {[0, 1, 2, 3, 4].map((level) => (
-                <div
-                  key={level}
-                  className="rounded-sm w-[6px] h-[6px] sm:w-2 sm:h-2"
-                  style={{ backgroundColor: getContributionColor(level) }}
-                />
-              ))}
+              {/* Day Labels */}
+              <div className="flex mb-3">
+                {/* Day of week labels */}
+                <div className="flex flex-col gap-[2px] mr-2 text-xs text-secondary justify-start pt-1">
+                  <div className="h-3 text-[10px] leading-3">Mon</div>
+                  <div className="h-3 text-[10px] leading-3"></div>
+                  <div className="h-3 text-[10px] leading-3">Wed</div>
+                  <div className="h-3 text-[10px] leading-3"></div>
+                  <div className="h-3 text-[10px] leading-3">Fri</div>
+                  <div className="h-3 text-[10px] leading-3"></div>
+                  <div className="h-3 text-[10px] leading-3">Sun</div>
+                </div>
+
+                {/* Contribution Grid */}
+                <div className="flex gap-[2px]">
+                  {weeks.map((week, weekIndex) => (
+                    <div key={weekIndex} className="flex flex-col gap-[2px]">
+                      {'contributionDays' in week
+                        ? week.contributionDays.map((day, dayIndex) => {
+                            const contributionLevel =
+                              day.contributionCount === 0
+                                ? 0
+                                : day.contributionCount <= 3
+                                ? 1
+                                : day.contributionCount <= 6
+                                ? 2
+                                : day.contributionCount <= 9
+                                ? 3
+                                : 4;
+
+                            const date = new Date(day.date);
+                            const formattedDate = date.toLocaleDateString(
+                              'en-US',
+                              {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              }
+                            );
+
+                            return (
+                              <motion.div
+                                key={`${weekIndex}-${dayIndex}`}
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{
+                                  duration: 0.2,
+                                  delay: (weekIndex * 7 + dayIndex) * 0.001,
+                                }}
+                                className="w-3 h-3 rounded-[2px] cursor-pointer hover:ring-2 hover:ring-[var(--text-color-variable)] hover:ring-opacity-50 transition-all duration-200 hover:scale-110"
+                                style={{
+                                  backgroundColor:
+                                    getContributionColor(contributionLevel),
+                                }}
+                                onMouseEnter={(e) =>
+                                  showTooltip(
+                                    e,
+                                    day.contributionCount === 0
+                                      ? 'No contributions'
+                                      : `${day.contributionCount} contribution${
+                                          day.contributionCount !== 1 ? 's' : ''
+                                        }`,
+                                    formattedDate
+                                  )
+                                }
+                                onMouseLeave={hideTooltip}
+                              ></motion.div>
+                            );
+                          })
+                        : week.map((day, dayIndex) => {
+                            const date = new Date(day.date);
+                            const formattedDate = date.toLocaleDateString(
+                              'en-US',
+                              {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              }
+                            );
+
+                            return (
+                              <motion.div
+                                key={`${weekIndex}-${dayIndex}`}
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{
+                                  duration: 0.2,
+                                  delay: (weekIndex * 7 + dayIndex) * 0.001,
+                                }}
+                                className="w-3 h-3 rounded-[2px] cursor-pointer hover:ring-2 hover:ring-[var(--text-color-variable)] hover:ring-opacity-50 transition-all duration-200 hover:scale-110"
+                                style={{
+                                  backgroundColor: getContributionColor(
+                                    day.level
+                                  ),
+                                }}
+                                onMouseEnter={(e) =>
+                                  showTooltip(
+                                    e,
+                                    day.count === 0
+                                      ? 'No contributions'
+                                      : `${day.count} contribution${
+                                          day.count !== 1 ? 's' : ''
+                                        }`,
+                                    formattedDate
+                                  )
+                                }
+                                onMouseLeave={hideTooltip}
+                              ></motion.div>
+                            );
+                          })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Enhanced Legend */}
+              <div className="flex items-center justify-between text-xs text-secondary mt-4">
+                <div className="text-[11px] opacity-75">
+                  Contribution levels
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[11px]">Less</span>
+                    <div className="flex gap-1">
+                      {[
+                        { level: 0, label: 'None', range: '0' },
+                        { level: 1, label: 'Low', range: '1-3' },
+                        { level: 2, label: 'Medium', range: '4-6' },
+                        { level: 3, label: 'High', range: '7-9' },
+                        { level: 4, label: 'Very High', range: '10+' },
+                      ].map(({ level, label, range }) => (
+                        <div
+                          key={level}
+                          className="w-3 h-3 rounded-[2px] cursor-help transition-transform hover:scale-125"
+                          style={{
+                            backgroundColor: getContributionColor(level),
+                          }}
+                          onMouseEnter={(e) =>
+                            showTooltip(e, label, `${range} contributions`)
+                          }
+                          onMouseLeave={hideTooltip}
+                        ></div>
+                      ))}
+                    </div>
+                    <span className="text-[11px]">More</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <span>More</span>
           </div>
         </div>
       ) : (
@@ -334,12 +472,52 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
           No contribution data available
         </div>
       )}
+
+      {/* Fixed Position Tooltip */}
+      {tooltip.visible && (
+        <div
+          className="fixed pointer-events-none z-[99999] transition-opacity duration-200"
+          style={{
+            left: tooltip.x,
+            top: tooltip.y,
+            transform: 'translate(-50%, -100%)',
+          }}
+        >
+          <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-2xl border border-gray-600 whitespace-nowrap">
+            <div className="font-medium text-white">{tooltip.content}</div>
+            <div className="text-gray-300 text-[11px]">{tooltip.date}</div>
+            {/* Arrow */}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+          </div>
+        </div>
+      )}
+
+      {/* Debug info */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed top-4 right-4 bg-black text-white p-2 text-xs z-[100000] rounded">
+          Tooltip: {tooltip.visible ? 'visible' : 'hidden'} | Content:{' '}
+          {tooltip.content}
+        </div>
+      )}
+
+      {/* Custom scrollbar styles */}
+      <style jsx global>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };
 
 // Main client components
-export const ProjectCards: React.FC<{ projects: Project[] }> = ({ projects }) => {
+export const ProjectCards: React.FC<{ projects: Project[] }> = ({
+  projects,
+}) => {
   return (
     <>
       {projects.map((project: Project, index: number) => (
@@ -349,7 +527,9 @@ export const ProjectCards: React.FC<{ projects: Project[] }> = ({ projects }) =>
   );
 };
 
-export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({ githubData }) => {
+export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
+  githubData,
+}) => {
   const loading = false; // Data is already loaded on server
 
   return (
@@ -386,10 +566,14 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({ githubData }
   );
 };
 
-export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({ githubData }) => {
+export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
+  githubData,
+}) => {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<string>('last');
-  const [contributionData, setContributionData] = useState<ContributionCalendar | undefined>(githubData.commitCalendar);
+  const [contributionData, setContributionData] = useState<
+    ContributionCalendar | undefined
+  >(githubData.commitCalendar);
   const [loading, setLoading] = useState(false);
   const availableYears = [currentYear, currentYear - 1, currentYear - 2];
 
@@ -446,9 +630,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({ githubDa
               {githubData.commits.slice(0, 5).map((commit, index) => (
                 <motion.div
                   key={`${commit.sha || commit.date}-${index}`}
-                  variants={
-                    fadeIn('up', 'spring', index * 0.1, 0.75) as any
-                  }
+                  variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
                   className="p-3 bg-black-100 rounded-lg border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
                 >
                   <div className="flex items-center gap-3 mb-1">
@@ -498,24 +680,23 @@ export const ProjectsDescription: React.FC = () => {
         variants={fadeIn('up', 'spring', 0.1, 1) as any}
         className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
       >
-        Explore my development journey through featured projects and live
-        GitHub contributions. From full-stack applications to AI-powered
-        tools, each project represents a commitment to quality code and
-        innovative solutions. The live GitHub data showcases consistent coding
-        practices, diverse technology stack, and collaborative project
-        development.
+        Explore my development journey through featured projects and live GitHub
+        contributions. From full-stack applications to AI-powered tools, each
+        project represents a commitment to quality code and innovative
+        solutions. The live GitHub data showcases consistent coding practices,
+        diverse technology stack, and collaborative project development.
       </motion.p>
     </div>
   );
 };
 
-export const ProjectsSectionHeader: React.FC<{ title: string; className?: string }> = ({ title, className = "" }) => {
+export const ProjectsSectionHeader: React.FC<{
+  title: string;
+  className?: string;
+}> = ({ title, className = '' }) => {
   return (
     <motion.div variants={textVariant() as any} className={className}>
-      <h3 className="text-white font-bold text-[24px] mb-8">
-        {title}
-      </h3>
+      <h3 className="text-white font-bold text-[24px] mb-8">{title}</h3>
     </motion.div>
   );
 };
-
