@@ -217,17 +217,25 @@ const fetchRecentCommits = cache(async (): Promise<Commit[]> => {
   }
 });
 
-const fetchContributionCalendar = cache(async (): Promise<ContributionCalendar> => {
+const fetchContributionCalendar = cache(async (year?: string): Promise<ContributionCalendar> => {
   if (!GITHUB_TOKEN) {
     // Fallback: generate from commit data
     const commits = await fetchRecentCommits();
-    return generateCommitGraph(commits);
+    return generateCommitGraph(commits, year);
+  }
+
+  // Build GraphQL query with optional date range for specific years
+  let contributionsCollectionArgs = '';
+  if (year && year !== 'last') {
+    const fromDate = `${year}-01-01T00:00:00Z`;
+    const toDate = `${year}-12-31T23:59:59Z`;
+    contributionsCollectionArgs = `(from: "${fromDate}", to: "${toDate}")`;
   }
 
   const query = `
     query {
       viewer {
-        contributionsCollection {
+        contributionsCollection${contributionsCollectionArgs} {
           contributionCalendar {
             totalContributions
             weeks {
@@ -258,22 +266,37 @@ const fetchContributionCalendar = cache(async (): Promise<ContributionCalendar> 
 
     // Fallback if GraphQL fails
     const commits = await fetchRecentCommits();
-    return generateCommitGraph(commits);
+    return generateCommitGraph(commits, year);
   } catch (error) {
     console.error('Error fetching contribution calendar:', error);
     const commits = await fetchRecentCommits();
-    return generateCommitGraph(commits);
+    return generateCommitGraph(commits, year);
   }
 });
 
 // Helper function to generate commit graph from commits data
-function generateCommitGraph(commits: Commit[]): ContributionCalendar {
+function generateCommitGraph(commits: Commit[], year?: string): ContributionCalendar {
   const weeks: CommitWeek[] = [];
-  const today = new Date();
-  const startDate = new Date(today);
-  startDate.setDate(today.getDate() - 364);
+  let startDate: Date;
+  let endDate: Date;
 
-  for (let week = 0; week < 52; week++) {
+  if (year && year !== 'last') {
+    // For specific year, use Jan 1 to Dec 31
+    startDate = new Date(`${year}-01-01`);
+    endDate = new Date(`${year}-12-31`);
+  } else {
+    // For 'last' year, use past 365 days
+    const today = new Date();
+    startDate = new Date(today);
+    startDate.setDate(today.getDate() - 364);
+    endDate = today;
+  }
+
+  // Calculate number of weeks needed
+  const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  const totalWeeks = Math.ceil(totalDays / 7);
+
+  for (let week = 0; week < totalWeeks; week++) {
     const weekStart = new Date(startDate);
     weekStart.setDate(startDate.getDate() + week * 7);
 
@@ -281,6 +304,11 @@ function generateCommitGraph(commits: Commit[]): ContributionCalendar {
     for (let day = 0; day < 7; day++) {
       const currentDate = new Date(weekStart);
       currentDate.setDate(weekStart.getDate() + day);
+
+      // Skip dates outside our target range
+      if (currentDate > endDate) {
+        break;
+      }
 
       const dayCommits = commits.filter((commit) => {
         const commitDate = new Date(commit.date);
@@ -311,7 +339,7 @@ function getContributionLevel(count: number): number {
 }
 
 // Main GET handler with parallel data fetching
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: Request): Promise<NextResponse> {
   try {
     // Parallel data fetching for optimal performance
     const [userData, repositories] = await Promise.all([
@@ -332,10 +360,14 @@ export async function GET(): Promise<NextResponse> {
     const createdAt = new Date(userData.created_at || '2022-01-10');
     const contributionYears = new Date().getFullYear() - createdAt.getFullYear();
 
+    // Get year parameter from request
+    const url = new URL(request?.url || '');
+    const year = url.searchParams.get('year') || 'last';
+
     // Fetch remaining data in parallel
     const [commits, commitCalendar] = await Promise.all([
       fetchRecentCommits(),
-      fetchContributionCalendar(),
+      fetchContributionCalendar(year),
     ]);
 
     const githubData: GitHubData = {

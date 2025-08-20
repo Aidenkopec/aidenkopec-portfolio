@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import Image from 'next/image';
@@ -47,6 +47,7 @@ interface CommitGraphProps {
   selectedYear: string;
   setSelectedYear: (year: string) => void;
   availableYears: number[];
+  onYearChange: (year: string) => void;
 }
 
 // Project Card Component
@@ -169,9 +170,12 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   selectedYear,
   setSelectedYear,
   availableYears,
+  onYearChange,
 }) => {
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
-    setSelectedYear(e.target.value);
+    const newYear = e.target.value;
+    setSelectedYear(newYear);
+    onYearChange(newYear);
   };
 
   if (loading) {
@@ -385,8 +389,24 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({ githubData }
 export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({ githubData }) => {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<string>('last');
+  const [contributionData, setContributionData] = useState<ContributionCalendar | undefined>(githubData.commitCalendar);
+  const [loading, setLoading] = useState(false);
   const availableYears = [currentYear, currentYear - 1, currentYear - 2];
-  const loading = false; // Data is already loaded on server
+
+  const fetchContributionData = async (year: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/github?year=${year}`);
+      if (response.ok) {
+        const data = await response.json();
+        setContributionData(data.commitCalendar);
+      }
+    } catch (error) {
+      console.error('Error fetching contribution data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-8 mb-12">
@@ -396,11 +416,12 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({ githubDa
         className="w-full"
       >
         <CommitGraph
-          commitCalendar={githubData.commitCalendar}
+          commitCalendar={contributionData}
           loading={loading}
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
           availableYears={availableYears}
+          onYearChange={fetchContributionData}
         />
       </motion.div>
 
