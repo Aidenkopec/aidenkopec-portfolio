@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { themes, setTheme, getCurrentTheme } from '../styles';
+import { useTheme } from 'next-themes';
+import { themes, getThemePreviewColors } from '../styles';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';
 
 interface CustomizationMenuProps {
@@ -20,7 +21,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   onClose,
   isMobile = false,
 }) => {
-  const [currentTheme, setCurrentTheme] = useState(getCurrentTheme());
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<'themes' | 'music'>('themes');
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +40,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   } = useMusicPlayer();
 
   useEffect(() => {
-    setCurrentTheme(getCurrentTheme());
+    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -59,7 +61,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
 
   const handleThemeChange = (themeKey: string) => {
     setTheme(themeKey);
-    setCurrentTheme(themeKey);
     setTimeout(() => {
       if (activeTab === 'themes') {
         onClose();
@@ -67,14 +68,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     }, 300);
   };
 
-  const getThemePreviewColors = (theme: any): ThemeColors => {
-    const primary = theme['--primary-color'];
-    const accent = theme['--text-color-variable'];
-    const secondary = theme['--tertiary-color'];
-    return { primary, accent, secondary };
-  };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   return (
     <div
@@ -124,9 +119,9 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
         {activeTab === 'themes' ? (
           /* Themes Tab */
           <div className="p-4 space-y-3">
-            {Object.entries(themes).map(([themeKey, theme]) => {
-              const colors = getThemePreviewColors(theme);
-              const isSelected = currentTheme === themeKey;
+            {Object.entries(themes).map(([themeKey, themeData]) => {
+              const colors = getThemePreviewColors(themeKey);
+              const isSelected = theme === themeKey;
 
               return (
                 <div
@@ -148,24 +143,28 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h4 className="text-white font-medium text-sm mb-2">
-                        {(theme as any).name}
+                        {themeData.name}
                       </h4>
                       <div className="flex items-center gap-2">
-                        <div
-                          className="w-4 h-4 rounded-full border border-gray-600"
-                          style={{ backgroundColor: colors.primary }}
-                          title="Primary Color"
-                        />
-                        <div
-                          className="w-4 h-4 rounded-full border border-gray-600"
-                          style={{ backgroundColor: colors.accent }}
-                          title="Accent Color"
-                        />
-                        <div
-                          className="w-4 h-4 rounded-full border border-gray-600"
-                          style={{ backgroundColor: colors.secondary }}
-                          title="Secondary Color"
-                        />
+                        {colors && (
+                          <>
+                            <div
+                              className="w-4 h-4 rounded-full border border-gray-600"
+                              style={{ backgroundColor: colors.primary }}
+                              title="Primary Color"
+                            />
+                            <div
+                              className="w-4 h-4 rounded-full border border-gray-600"
+                              style={{ backgroundColor: colors.accent }}
+                              title="Accent Color"
+                            />
+                            <div
+                              className="w-4 h-4 rounded-full border border-gray-600"
+                              style={{ backgroundColor: colors.secondary }}
+                              title="Secondary Color"
+                            />
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -176,12 +175,14 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     )}
                   </div>
 
-                  <div
-                    className="absolute top-0 right-0 w-1 h-full rounded-r-lg"
-                    style={{
-                      background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
-                    }}
-                  />
+                  {colors && (
+                    <div
+                      className="absolute top-0 right-0 w-1 h-full rounded-r-lg"
+                      style={{
+                        background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
+                      }}
+                    />
+                  )}
                 </div>
               );
             })}

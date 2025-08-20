@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { MusicProvider } from '@/context/MusicContext';
-import ThemeInitializer from '@/components/ThemeInitializer';
+import { ThemeProvider } from 'next-themes';
+import ThemeManager from '@/components/ThemeManager';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -73,12 +74,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeInitializer />
-        <MusicProvider>{children}</MusicProvider>
+        <ThemeProvider
+          attribute="class"
+          themes={['obsidian', 'cosmicVoyage', 'midnightBlue', 'deepForest', 'crimsonFire']}
+          defaultTheme="obsidian"
+          enableSystem={false}
+        >
+          <ThemeManager />
+          <MusicProvider>{children}</MusicProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,11 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { themes, setTheme, getCurrentTheme } from '../styles';
-
-interface Theme {
-  name: string;
-  [key: string]: string;
-}
+import { useTheme } from 'next-themes';
+import { themes, getThemePreviewColors } from '../styles';
 
 interface ThemeSelectorProps {
   isOpen: boolean;
@@ -20,11 +16,12 @@ interface ThemeColors {
 }
 
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile = false }) => {
-  const [currentTheme, setCurrentTheme] = useState<string>(getCurrentTheme());
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const selectorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setCurrentTheme(getCurrentTheme());
+    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -45,21 +42,14 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
 
   const handleThemeChange = (themeKey: string): void => {
     setTheme(themeKey);
-    setCurrentTheme(themeKey);
     // Close the selector after a short delay for better UX
     setTimeout(() => {
       onClose();
     }, 300);
   };
 
-  const getThemePreviewColors = (theme: Theme): ThemeColors => {
-    const primary = theme['--primary-color'];
-    const accent = theme['--text-color-variable'];
-    const secondary = theme['--tertiary-color'];
-    return { primary, accent, secondary };
-  };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   return (
     <div
@@ -79,9 +69,9 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
       </div>
 
       <div className="space-y-3 max-h-80 overflow-y-auto">
-        {Object.entries(themes).map(([themeKey, theme]) => {
-          const colors = getThemePreviewColors(theme);
-          const isSelected = currentTheme === themeKey;
+        {Object.entries(themes).map(([themeKey, themeData]) => {
+          const colors = getThemePreviewColors(themeKey);
+          const isSelected = theme === themeKey;
 
           return (
             <div
@@ -103,24 +93,28 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <h4 className="text-white font-medium text-sm mb-2">
-                    {theme.name}
+                    {themeData.name}
                   </h4>
                   <div className="flex items-center gap-2">
-                    <div
-                      className="w-4 h-4 rounded-full border border-gray-600"
-                      style={{ backgroundColor: colors.primary }}
-                      title="Primary Color"
-                    />
-                    <div
-                      className="w-4 h-4 rounded-full border border-gray-600"
-                      style={{ backgroundColor: colors.accent }}
-                      title="Accent Color"
-                    />
-                    <div
-                      className="w-4 h-4 rounded-full border border-gray-600"
-                      style={{ backgroundColor: colors.secondary }}
-                      title="Secondary Color"
-                    />
+                    {colors && (
+                      <>
+                        <div
+                          className="w-4 h-4 rounded-full border border-gray-600"
+                          style={{ backgroundColor: colors.primary }}
+                          title="Primary Color"
+                        />
+                        <div
+                          className="w-4 h-4 rounded-full border border-gray-600"
+                          style={{ backgroundColor: colors.accent }}
+                          title="Accent Color"
+                        />
+                        <div
+                          className="w-4 h-4 rounded-full border border-gray-600"
+                          style={{ backgroundColor: colors.secondary }}
+                          title="Secondary Color"
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -132,12 +126,14 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose, isMobile
               </div>
 
               {/* Theme preview gradient */}
-              <div
-                className="absolute top-0 right-0 w-1 h-full rounded-r-lg"
-                style={{
-                  background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
-                }}
-              />
+              {colors && (
+                <div
+                  className="absolute top-0 right-0 w-1 h-full rounded-r-lg"
+                  style={{
+                    background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
+                  }}
+                />
+              )}
             </div>
           );
         })}
