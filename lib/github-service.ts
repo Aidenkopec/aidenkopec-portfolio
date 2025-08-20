@@ -4,7 +4,6 @@ import 'server-only';
 import type {
   GitHubUser,
   GitHubRepository,
-  Language,
   Commit,
   ContributionCalendar,
   GitHubStats,
@@ -40,7 +39,6 @@ const fetchGitHubData = cache(async (): Promise<GitHubData> => {
     return {
       user: null,
       repositories: [],
-      languages: [],
       commits: [],
       stats: {
         totalStars: 0,
@@ -77,10 +75,6 @@ export const getGitHubRepositories = cache(async (): Promise<GitHubRepository[]>
   return data.repositories;
 });
 
-export const getGitHubLanguages = cache(async (): Promise<Language[]> => {
-  const data = await getGitHubData();
-  return data.languages;
-});
 
 export const getGitHubCommits = cache(async (): Promise<Commit[]> => {
   const data = await getGitHubData();
@@ -114,10 +108,6 @@ export const getRepository = cache(async (repoName: string): Promise<GitHubRepos
 });
 
 // Function to get language by name
-export const getLanguage = cache(async (languageName: string): Promise<Language | null> => {
-  const languages = await getGitHubLanguages();
-  return languages.find(lang => lang.name === languageName) || null;
-});
 
 // Function to get recent commits for a specific repository
 export const getCommitsForRepo = cache(async (repoName: string): Promise<Commit[]> => {
@@ -132,12 +122,10 @@ export default {
   preloadGitHubData,
   getGitHubUser,
   getGitHubRepositories,
-  getGitHubLanguages,
   getGitHubCommits,
   getGitHubStats,
   getContributionCalendar,
   isGitHubDataAvailable,
   getRepository,
-  getLanguage,
   getCommitsForRepo,
 };

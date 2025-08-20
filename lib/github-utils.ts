@@ -48,12 +48,6 @@ export interface GitHubRepository {
   };
 }
 
-export interface Language {
-  name: string;
-  percentage: number;
-  color: string;
-  bytes: number;
-}
 
 export interface Commit {
   date: string;
@@ -94,7 +88,6 @@ export interface GitHubStats {
 export interface GitHubData {
   user: GitHubUser | null;
   repositories: GitHubRepository[];
-  languages: Language[];
   commits: Commit[];
   commitCalendar?: ContributionCalendar;
   stats: GitHubStats;

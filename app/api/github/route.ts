@@ -7,19 +7,6 @@ const GITHUB_USERNAME = 'Aidenkopec';
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-// Language colors from GitHub
-const LANGUAGE_COLORS: Record<string, string> = {
-  JavaScript: '#f1e05a',
-  TypeScript: '#2b7489',
-  Python: '#3572A5',
-  Java: '#b07219',
-  HTML: '#e34c26',
-  CSS: '#563d7c',
-  Vue: '#4fc08d',
-  React: '#61dafb',
-  'Jupyter Notebook': '#da5b0b',
-  Shell: '#89e051',
-};
 
 // Types
 interface GitHubUser {
@@ -68,12 +55,6 @@ interface GitHubRepository {
   };
 }
 
-interface Language {
-  name: string;
-  percentage: number;
-  color: string;
-  bytes: number;
-}
 
 interface Commit {
   date: string;
@@ -114,7 +95,6 @@ interface GitHubStats {
 interface GitHubData {
   user: GitHubUser | null;
   repositories: GitHubRepository[];
-  languages: Language[];
   commits: Commit[];
   commitCalendar?: ContributionCalendar;
   stats: GitHubStats;
@@ -196,51 +176,6 @@ const fetchRepositories = cache(async (): Promise<GitHubRepository[]> => {
   }
 });
 
-const fetchLanguages = cache(async (repos: GitHubRepository[]): Promise<Language[]> => {
-  try {
-    const languageStats: Record<string, number> = {};
-    let totalBytes = 0;
-
-    // Fetch languages for top 20 repos in parallel
-    const topRepos = repos.filter(r => !r.fork).slice(0, 20);
-    const languagePromises = topRepos.map(async (repo) => {
-      try {
-        const languages = await githubFetch(repo.languages_url);
-        if (languages && typeof languages === 'object' && !Array.isArray(languages)) {
-          return languages;
-        }
-        return {};
-      } catch {
-        return {};
-      }
-    });
-
-    const languageResults = await Promise.all(languagePromises);
-    
-    // Aggregate language statistics
-    languageResults.forEach((languages) => {
-      Object.entries(languages).forEach(([lang, bytes]) => {
-        if (typeof bytes === 'number') {
-          languageStats[lang] = (languageStats[lang] || 0) + bytes;
-          totalBytes += bytes;
-        }
-      });
-    });
-
-    return Object.entries(languageStats)
-      .map(([name, bytes]) => ({
-        name,
-        percentage: Math.round((bytes / totalBytes) * 100),
-        color: LANGUAGE_COLORS[name] || '#858585',
-        bytes,
-      }))
-      .sort((a, b) => b.percentage - a.percentage)
-      .slice(0, 6);
-  } catch (error) {
-    console.error('Error fetching languages:', error);
-    return [];
-  }
-});
 
 const fetchRecentCommits = cache(async (): Promise<Commit[]> => {
   try {
@@ -398,8 +333,7 @@ export async function GET(): Promise<NextResponse> {
     const contributionYears = new Date().getFullYear() - createdAt.getFullYear();
 
     // Fetch remaining data in parallel
-    const [languages, commits, commitCalendar] = await Promise.all([
-      fetchLanguages(repositories.filter(r => !r.fork).slice(0, 10)),
+    const [commits, commitCalendar] = await Promise.all([
       fetchRecentCommits(),
       fetchContributionCalendar(),
     ]);
@@ -407,7 +341,6 @@ export async function GET(): Promise<NextResponse> {
     const githubData: GitHubData = {
       user: userData,
       repositories: repositories.slice(0, 6),
-      languages,
       commits: commits.slice(0, 5),
       commitCalendar,
       stats: {

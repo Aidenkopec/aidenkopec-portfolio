@@ -40,14 +40,6 @@ interface StatCardProps {
   loading: boolean;
 }
 
-interface LanguageBarProps {
-  language: {
-    name: string;
-    percentage: number;
-    color: string;
-  };
-  index: number;
-}
 
 interface CommitGraphProps {
   commitCalendar?: ContributionCalendar;
@@ -169,27 +161,6 @@ const StatCard: React.FC<StatCardProps> = ({
   </motion.div>
 );
 
-// Language Bar Component
-const LanguageBar: React.FC<LanguageBarProps> = ({ language, index }) => (
-  <motion.div
-    variants={fadeIn('right', 'spring', index * 0.1, 0.75) as any}
-    className="mb-2"
-  >
-    <div className="flex justify-between items-center mb-1">
-      <span className="text-white text-sm font-medium">{language.name}</span>
-      <span className="text-secondary text-xs">{language.percentage}%</span>
-    </div>
-    <div className="w-full bg-tertiary rounded-full h-1.5">
-      <motion.div
-        className="h-1.5 rounded-full"
-        style={{ backgroundColor: language.color }}
-        initial={{ width: 0 }}
-        animate={{ width: `${language.percentage}%` }}
-        transition={{ duration: 1.5, delay: index * 0.1 }}
-      />
-    </div>
-  </motion.div>
-);
 
 // Commit Graph Component
 const CommitGraph: React.FC<CommitGraphProps> = ({
@@ -433,92 +404,58 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({ githubDa
         />
       </motion.div>
 
-      {/* Recent Commits and Languages in Flex Layout */}
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Recent Commits Card */}
-        <motion.div
-          variants={fadeIn('right', 'spring', 0.4, 0.75) as any}
-          className="flex-1"
+      {/* Recent Commits Section */}
+      <motion.div
+        variants={fadeIn('up', 'spring', 0.4, 0.75) as any}
+        className="w-full"
+      >
+        <Tilt
+          tiltMaxAngleX={15}
+          tiltMaxAngleY={15}
+          scale={1.02}
+          transitionSpeed={450}
+          className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
         >
-          <Tilt
-            tiltMaxAngleX={15}
-            tiltMaxAngleY={15}
-            scale={1.02}
-            transitionSpeed={450}
-            className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300 h-full"
-          >
-            <h4 className="text-white font-semibold text-[16px] mb-4">
-              Recent Commits
-            </h4>
+          <h4 className="text-white font-semibold text-[16px] mb-4">
+            Recent Commits
+          </h4>
 
-            {githubData.commits && githubData.commits.length > 0 ? (
-              <div className="space-y-3">
-                {githubData.commits.slice(0, 5).map((commit, index) => (
-                  <motion.div
-                    key={`${commit.sha || commit.date}-${index}`}
-                    variants={
-                      fadeIn('up', 'spring', index * 0.1, 0.75) as any
-                    }
-                    className="p-3 bg-black-100 rounded-lg border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
-                  >
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-white text-sm font-medium truncate">
-                        {formatCommitMessage(commit.message, 50)}
-                      </span>
-                      <span className="text-[var(--text-color-variable)] text-xs font-mono bg-tertiary px-2 py-1 rounded">
-                        {commit.sha.substring(0, 7)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs text-secondary">
-                      <span className="flex items-center gap-1">
-                        📁 {commit.repo}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        📅 {new Date(commit.date).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center text-secondary py-4 text-sm">
-                No recent commits found
-              </div>
-            )}
-          </Tilt>
-        </motion.div>
-
-        {/* Programming Languages Card */}
-        <motion.div
-          variants={fadeIn('left', 'spring', 0.4, 0.75) as any}
-          className="flex-1"
-        >
-          <Tilt
-            tiltMaxAngleX={15}
-            tiltMaxAngleY={15}
-            scale={1.02}
-            transitionSpeed={450}
-            className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300 h-full"
-          >
-            <h4 className="text-white font-semibold text-[16px] mb-4">
-              Top Programming Languages
-            </h4>
-            {githubData.languages.length > 0 ? (
-              githubData.languages.map((language, index) => (
-                <LanguageBar
-                  key={language.name}
-                  language={language}
-                  index={index}
-                />
-              ))
-            ) : (
-              <div className="text-center text-secondary py-4 text-sm">
-                No language data available
-              </div>
-            )}
-          </Tilt>
-        </motion.div>
-      </div>
+          {githubData.commits && githubData.commits.length > 0 ? (
+            <div className="space-y-3">
+              {githubData.commits.slice(0, 5).map((commit, index) => (
+                <motion.div
+                  key={`${commit.sha || commit.date}-${index}`}
+                  variants={
+                    fadeIn('up', 'spring', index * 0.1, 0.75) as any
+                  }
+                  className="p-3 bg-black-100 rounded-lg border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
+                >
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="text-white text-sm font-medium truncate">
+                      {formatCommitMessage(commit.message, 50)}
+                    </span>
+                    <span className="text-[var(--text-color-variable)] text-xs font-mono bg-tertiary px-2 py-1 rounded">
+                      {commit.sha.substring(0, 7)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-secondary">
+                    <span className="flex items-center gap-1">
+                      📁 {commit.repo}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      📅 {new Date(commit.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-secondary py-4 text-sm">
+              No recent commits found
+            </div>
+          )}
+        </Tilt>
+      </motion.div>
     </div>
   );
 };
