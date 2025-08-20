@@ -1,26 +1,360 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
+@theme {
+  /* Dynamic Color Palette - References our CSS variables */
+  --color-primary: var(--primary-color);
+  --color-secondary: var(--secondary-color);
+  --color-tertiary: var(--tertiary-color);
+  --color-black-100: var(--black-100);
+  --color-black-200: var(--black-200);
+  --color-white-100: var(--white-100);
+
+  /* Text and Accent Colors */
+  --color-text-color-variable: var(--text-color-variable);
+  --color-gradient-start: var(--gradient-start);
+  --color-gradient-end: var(--gradient-end);
+
+  /* Background Patterns - Dynamic */
+  --bg-hero-pattern: var(--hero-pattern);
+  --bg-hero-pattern-adjusted: url('/backgrounds/hero-bg-adjusted.png');
+  --bg-hero-pattern-midnight: url('/backgrounds/hero-bg-midnight-blue.png');
+  --bg-hero-pattern-green: url('/backgrounds/hero-bg-green.png');
+
+  /* Custom Spacing */
+  --spacing-padding-x: 1.5rem; /* px-6 */
+  --spacing-padding-x-sm: 4rem; /* sm:px-16 */
+  --spacing-padding-y: 1.5rem; /* py-6 */
+  --spacing-padding-y-sm: 4rem; /* sm:py-16 */
+  --spacing-padding-combined: 2.5rem; /* py-10 */
+
+  /* Typography Scales */
+  --text-hero-head-base: 2.5rem; /* 40px */
+  --text-hero-head-xs: 3.125rem; /* 50px */
+  --text-hero-head-sm: 3.75rem; /* 60px */
+  --text-hero-head-lg: 5rem; /* 80px */
+  --leading-hero-head-lg: 6.125rem; /* 98px */
+
+  --text-hero-sub-base: 1rem; /* 16px */
+  --text-hero-sub-xs: 1.25rem; /* 20px */
+  --text-hero-sub-sm: 1.625rem; /* 26px */
+  --text-hero-sub-lg: 1.875rem; /* 30px */
+  --leading-hero-sub-lg: 2.5rem; /* 40px */
+
+  --text-section-head-base: 1.875rem; /* 30px */
+  --text-section-head-xs: 2.5rem; /* 40px */
+  --text-section-head-sm: 3.125rem; /* 50px */
+  --text-section-head-md: 3.75rem; /* 60px */
+
+  --text-section-sub-base: 0.875rem; /* 14px */
+  --text-section-sub-sm: 1.125rem; /* 18px */
+
+  /* Font Families */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* Dynamic Theme Variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Default theme variables (Obsidian Black) */
+  --primary-color: #0a0a0a;
+  --secondary-color: #ffffff;
+  --tertiary-color: #1a1a1a;
+  --black-100: #141414;
+  --black-200: #000000;
+  --white-100: #ffffff;
+  --hero-pattern: url('/backgrounds/hero-bg-adjusted.png');
+  --text-color-variable: #ff6b6b;
+  --gradient-start: #ff6b6b;
+  --gradient-end: rgba(255, 107, 107, 0);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html.cosmicVoyage {
+  --primary-color: #0a0514;
+  --secondary-color: #aaa6c3;
+  --tertiary-color: #1a0f2e;
+  --black-100: #140a23;
+  --black-200: #05020a;
+  --white-100: #f8f5ff;
+  --hero-pattern: url('/backgrounds/hero-bg.png');
+  --text-color-variable: #a855f7;
+  --gradient-start: #a855f7;
+  --gradient-end: rgba(168, 85, 247, 0);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html.midnightBlue {
+  --primary-color: #0c1621;
+  --secondary-color: #8892b0;
+  --tertiary-color: #1e293b;
+  --black-100: #0f172a;
+  --black-200: #020617;
+  --white-100: #f1f5f9;
+  --hero-pattern: url('/backgrounds/hero-bg-midnight-blue.png');
+  --text-color-variable: #06b6d4;
+  --gradient-start: #06b6d4;
+  --gradient-end: rgba(6, 182, 212, 0);
+}
+
+html.deepForest {
+  --primary-color: #0a1a0a;
+  --secondary-color: #64ffda;
+  --tertiary-color: #14532d;
+  --black-100: #052e16;
+  --black-200: #022c22;
+  --white-100: #f0fdf4;
+  --hero-pattern: url('/backgrounds/hero-bg-green.png');
+  --text-color-variable: #10b981;
+  --gradient-start: #10b981;
+  --gradient-end: rgba(16, 185, 129, 0);
+}
+
+html.crimsonFire {
+  --primary-color: #1a1a0a;
+  --secondary-color: #ffcdd2;
+  --tertiary-color: #7f1d1d;
+  --black-100: #450a0a;
+  --black-200: #0c0404;
+  --white-100: #fef2f2;
+  --hero-pattern: url('/backgrounds/hero-bg-adjusted.png');
+  --text-color-variable: #ef4444;
+  --gradient-start: #ef4444;
+  --gradient-end: rgba(239, 68, 68, 0);
+}
+
+/* Custom Utilities */
+.bg-hero-pattern {
+  background-image: var(--hero-pattern);
+}
+
+.dynamic-gradient {
+  background: linear-gradient(
+    180deg,
+    var(--gradient-start) 0%,
+    var(--gradient-end) 100%
+  );
+}
+
+.black-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--black-100) 0%,
+    var(--black-200) 100%
+  );
+}
+
+.green-pink-gradient {
+  background: '#00cea8';
+  background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
+  background: -webkit-linear-gradient(-90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
+}
+
+.shadow-card {
+  box-shadow:
+    0 0 20px rgba(0, 212, 170, 0.4),
+    0 0 40px rgba(168, 85, 247, 0.2),
+    0 0 60px rgba(255, 107, 107, 0.1);
+}
+
+/* Responsive Utility Classes for Custom Styles */
+.hero-head-text {
+  font-weight: 900;
+  color: white;
+  font-size: var(--text-hero-head-base);
+  line-height: 1.2;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 475px) {
+  .hero-head-text {
+    font-size: var(--text-hero-head-xs);
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-head-text {
+    font-size: var(--text-hero-head-sm);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-head-text {
+    font-size: var(--text-hero-head-lg);
+    line-height: var(--leading-hero-head-lg);
+  }
+}
+
+.hero-sub-text {
+  color: #ffffff;
+  font-weight: 500;
+  font-size: var(--text-hero-sub-base);
+  line-height: 1.5;
+}
+
+@media (min-width: 475px) {
+  .hero-sub-text {
+    font-size: var(--text-hero-sub-xs);
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-sub-text {
+    font-size: var(--text-hero-sub-sm);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-sub-text {
+    font-size: var(--text-hero-sub-lg);
+    line-height: var(--leading-hero-sub-lg);
+  }
+}
+
+.section-head-text {
+  color: white;
+  font-weight: 900;
+  font-size: var(--text-section-head-base);
+}
+
+@media (min-width: 475px) {
+  .section-head-text {
+    font-size: var(--text-section-head-xs);
+  }
+}
+
+@media (min-width: 640px) {
+  .section-head-text {
+    font-size: var(--text-section-head-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  .section-head-text {
+    font-size: var(--text-section-head-md);
+  }
+}
+
+.section-sub-text {
+  font-size: var(--text-section-sub-base);
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (min-width: 640px) {
+  .section-sub-text {
+    font-size: var(--text-section-sub-sm);
+  }
+}
+
+/* Text Gradient Classes for Project Tags */
+.blue-text-gradient {
+  background: linear-gradient(90deg, #00d4ff 0%, #0099cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #00d4ff;
+}
+
+.green-text-gradient {
+  background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #00ff88;
+}
+
+.pink-text-gradient {
+  background: linear-gradient(90deg, #ff6b9d 0%, #c44569 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #ff6b9d;
+}
+
+.orange-text-gradient {
+  background: linear-gradient(90deg, #ffa726 0%, #ff7043 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #ffa726;
+}
+
+/* Project Tag Styling */
+.blue-text-gradient {
+  color: #00d4ff !important;
+}
+
+.green-text-gradient {
+  color: #00ff88 !important;
+}
+
+.pink-text-gradient {
+  color: #ff6b9d !important;
+}
+
+.orange-text-gradient {
+  color: #ffa726 !important;
+}
+
+/* Padding Utilities */
+.padding-x {
+  padding-left: var(--spacing-padding-x);
+  padding-right: var(--spacing-padding-x);
+}
+
+@media (min-width: 640px) {
+  .padding-x {
+    padding-left: var(--spacing-padding-x-sm);
+    padding-right: var(--spacing-padding-x-sm);
+  }
+}
+
+.padding-y {
+  padding-top: var(--spacing-padding-y);
+  padding-bottom: var(--spacing-padding-y);
+}
+
+@media (min-width: 640px) {
+  .padding-y {
+    padding-top: var(--spacing-padding-y-sm);
+    padding-bottom: var(--spacing-padding-y-sm);
+  }
+}
+
+.padding {
+  padding-left: var(--spacing-padding-x);
+  padding-right: var(--spacing-padding-x);
+  padding-top: var(--spacing-padding-y);
+  padding-bottom: var(--spacing-padding-combined);
+}
+
+@media (min-width: 640px) {
+  .padding {
+    padding-left: var(--spacing-padding-x-sm);
+    padding-right: var(--spacing-padding-x-sm);
+    padding-top: var(--spacing-padding-y-sm);
+    padding-bottom: var(--spacing-padding-y-sm);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--primary-color);
+  color: var(--white-100);
+  font-family: var(--font-sans);
+}
+
+/* Theme Color Utility Classes */
+.bg-tertiary {
+  background-color: var(--tertiary-color);
+}
+
+.bg-black-100 {
+  background-color: var(--black-100);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.text-white {
+  color: var(--white-100);
 }
