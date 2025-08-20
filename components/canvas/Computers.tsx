@@ -1,7 +1,8 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Preload, useGLTF } from '@react-three/drei';
+import { OrbitControls, Preload, useGLTF, Environment } from '@react-three/drei';
+import * as THREE from 'three';
 
 import CanvasLoader from '../Loader';
 
@@ -12,22 +13,71 @@ interface ComputersProps {
 const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
   const computer = useGLTF('/models/desktop-pc/scene.gltf');
 
+  // Enable shadows on all meshes in the GLTF model and debug materials
+  React.useEffect(() => {
+    if (computer.scene) {
+      console.log('GLTF Scene loaded:', computer.scene);
+      computer.scene.traverse((child: any) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          // Debug and refine material properties
+          if (child.material) {
+            console.log('Material found:', {
+              name: child.name,
+              materialType: child.material.type,
+              color: child.material.color,
+              metalness: child.material.metalness,
+              roughness: child.material.roughness,
+              emissive: child.material.emissive
+            });
+            
+            // Reduce metalness and adjust roughness for less shine
+            if (child.material.metalness !== undefined) {
+              child.material.metalness = Math.min(child.material.metalness * 0.3, 0.2);
+            }
+            if (child.material.roughness !== undefined) {
+              child.material.roughness = Math.max(child.material.roughness, 0.6);
+            }
+            
+            // Force material update to ensure lighting changes take effect
+            child.material.needsUpdate = true;
+          }
+        }
+      });
+    }
+  }, [computer.scene]);
+
   return (
     <mesh>
-      <hemisphereLight intensity={0.15} groundColor="black" />
+      {/* Subtle ambient light for dark theme */}
+      <ambientLight intensity={0.4} />
+      {/* Focused spotlight hitting the monitor */}
       <spotLight
-        position={[-20, 50, 10]}
-        angle={0.12}
-        penumbra={1}
-        intensity={1}
+        position={[2, 8, 4]}
+        target-position={[0, 0, 0]}
+        intensity={3.0}
+        angle={0.3}
+        penumbra={0.4}
+        distance={15}
+        decay={2}
         castShadow
-        shadow-mapSize={1024}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        color="#e6f3ff"
       />
-      <pointLight intensity={1} />
+      {/* Subtle rim lighting from behind */}
+      <directionalLight
+        position={[-3, 4, -2]}
+        intensity={0.8}
+        color="#4a90e2"
+      />
+      {/* Dark environment for moody atmosphere */}
+      <Environment preset="night" />
       <primitive
         object={computer.scene}
         scale={isMobile ? 0.7 : 0.75}
-        position={isMobile ? [0, -3, -2.2] : [0, -3.25, -1.5]}
+        position={isMobile ? [0, -2.5, -2.2] : [0, -2.8, -1.5]}
         rotation={[-0.01, -0.2, -0.1]}
       />
     </mesh>
@@ -60,11 +110,16 @@ const ComputersCanvas: React.FC = () => {
 
   return (
     <Canvas
-      frameloop="demand"
-      shadows
+      frameloop="always"
+      shadows={{ enabled: true, type: THREE.PCFSoftShadowMap }}
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
-      gl={{ preserveDrawingBuffer: true }}
+      gl={{ 
+        preserveDrawingBuffer: true,
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: 0.6,
+        outputColorSpace: THREE.SRGBColorSpace
+      }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
