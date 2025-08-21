@@ -61,8 +61,42 @@ const FloatingMusicBar: React.FC = () => {
 
   const [shouldScrollTitle, setShouldScrollTitle] = useState<boolean>(false);
   const [shouldScrollArtist, setShouldScrollArtist] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
   const titleRef = useRef<HTMLSpanElement>(null);
   const artistRef = useRef<HTMLSpanElement>(null);
+
+  // Detect mobile device and set initial mode
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = window.innerWidth <= 768; // Standard mobile breakpoint
+      setIsMobile(isMobileDevice);
+
+      // Only auto-hide on mobile if user hasn't interacted yet
+      if (
+        isMobileDevice &&
+        !hasUserInteracted &&
+        floatingBarMode !== 'hidden'
+      ) {
+        setFloatingBarMode('hidden');
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [floatingBarMode, setFloatingBarMode, hasUserInteracted]);
+
+  // Track user interactions to prevent auto-hiding after they've used the music bar
+  const handleShowMusicBar = () => {
+    setHasUserInteracted(true);
+    setFloatingBarMode('standard');
+  };
+
+  const handleHideMusicBar = () => {
+    setFloatingBarMode('hidden');
+  };
 
   // Get track info, but use defaults if not hydrated yet
   const trackInfo: TrackInfo = isHydrated
@@ -95,7 +129,7 @@ const FloatingMusicBar: React.FC = () => {
     return () => window.removeEventListener('resize', checkOverflow);
   }, [trackInfo.title, trackInfo.artist, isHydrated]);
 
-  const closeDock = (): void => setFloatingBarMode('hidden');
+  const closeDock = (): void => handleHideMusicBar();
 
   // Hidden state - show small button
   if (!isFloatingBarVisible || floatingBarMode === 'hidden') {
@@ -108,7 +142,7 @@ const FloatingMusicBar: React.FC = () => {
           <motion.button
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            onClick={() => setFloatingBarMode('standard')}
+            onClick={handleShowMusicBar}
             className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 pointer-events-auto hover:scale-105"
             title="Show music controls"
           >
@@ -135,7 +169,7 @@ const FloatingMusicBar: React.FC = () => {
             <div className="flex items-center gap-1.5 bg-black/80 backdrop-blur-md border border-gray-800/50 rounded-full px-2.5 py-1.5 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ease-out">
               <div
                 className="w-7 h-7 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex-shrink-0 flex items-center justify-center hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 ease-out cursor-pointer"
-                onClick={() => setFloatingBarMode('standard')}
+                onClick={handleShowMusicBar}
               >
                 <Icons.music className="w-3.5 h-3.5 text-secondary " />
               </div>
