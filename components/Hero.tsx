@@ -32,7 +32,6 @@ const Hero: React.FC = () => {
       </div>
 
       <ComputersCanvas />
-
     </section>
   );
 };
