@@ -59,7 +59,7 @@ const BlogNavbar: React.FC = () => {
               <li key={nav.id}>
                 <Link
                   href={nav.href}
-                  className="text-secondary hover:text-white text-[18px] font-medium cursor-pointer transition-colors duration-200"
+                  className="text-white hover:text-white text-[18px] font-medium cursor-pointer transition-colors duration-200"
                 >
                   {nav.title}
                 </Link>
@@ -72,7 +72,7 @@ const BlogNavbar: React.FC = () => {
                 onClick={() =>
                   setCustomizationMenuDesktop(!customizationMenuDesktop)
                 }
-                className="text-secondary hover:text-white text-[18px] font-medium cursor-pointer transition-colors duration-200"
+                className="text-white hover:text-white text-[18px] font-medium cursor-pointer transition-colors duration-200"
               >
                 Customizations
               </button>
@@ -88,7 +88,7 @@ const BlogNavbar: React.FC = () => {
         <div className="sm:hidden flex flex-1 justify-end items-center gap-4">
           <button
             aria-label="Toggle menu"
-            className="w-10 h-10 flex items-center justify-center rounded-md text-secondary hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-white z-[100]"
+            className="w-10 h-10 flex items-center justify-center rounded-md text-white hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-white z-[100]"
             onClick={() => setToggle(!toggle)}
           >
             {toggle ? (
@@ -137,7 +137,7 @@ const BlogNavbar: React.FC = () => {
                 <li key={nav.id}>
                   <Link
                     href={nav.href}
-                    className="font-poppins font-medium cursor-pointer text-[16px] text-secondary hover:text-white transition-colors duration-200"
+                    className="font-poppins font-medium cursor-pointer text-[16px] text-white hover:text-white transition-colors duration-200"
                     onClick={() => setToggle(false)}
                   >
                     {nav.title}
@@ -148,7 +148,7 @@ const BlogNavbar: React.FC = () => {
               {/* Customizations */}
               <li className="pt-2 relative">
                 <button
-                  className="text-secondary text-[16px] font-medium cursor-pointer hover:text-white transition-colors duration-200"
+                  className="text-white text-[16px] font-medium cursor-pointer hover:text-white transition-colors duration-200"
                   onClick={() =>
                     setCustomizationMenuMobile(!customizationMenuMobile)
                   }

@@ -38,7 +38,7 @@ export function TagList({ tags, title = "Popular Tags", className = "" }: TagLis
           >
             <Link
               href={`/blog/tag/${tag.slug}`}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-black-100 text-secondary hover:text-[var(--text-color-variable)] hover:bg-tertiary transition-all duration-200 text-sm border border-transparent hover:border-[var(--text-color-variable)]/20"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-black-100 text-white hover:text-white hover:bg-tertiary transition-all duration-200 text-sm border border-transparent hover:border-[var(--text-color-variable)]/20"
             >
               <span>{tag.name}</span>
               <span className="text-xs bg-tertiary px-2 py-0.5 rounded-full">

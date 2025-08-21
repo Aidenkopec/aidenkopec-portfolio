@@ -12,13 +12,13 @@ interface BlogCategoriesProps {
   className?: string;
 }
 
-export function BlogCategories({ 
-  categories, 
-  selectedCategory, 
-  onCategorySelect, 
+export function BlogCategories({
+  categories,
+  selectedCategory,
+  onCategorySelect,
   resultCount,
   totalCount,
-  className = "" 
+  className = '',
 }: BlogCategoriesProps) {
   return (
     <motion.section
@@ -35,9 +35,9 @@ export function BlogCategories({
           </div>
           <h3 className="text-xl font-bold text-white">Browse Categories</h3>
         </div>
-        
+
         {/* Results Counter */}
-        <div className="text-sm text-secondary">
+        <div className="text-sm text-white">
           {selectedCategory ? (
             <span>
               {resultCount} of {totalCount} articles
@@ -55,9 +55,10 @@ export function BlogCategories({
           onClick={() => onCategorySelect(null)}
           className={`
             inline-flex h-10 items-center rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200
-            ${selectedCategory === null
-              ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-white shadow-lg shadow-[var(--text-color-variable)]/25'
-              : 'border-black-100 bg-tertiary text-secondary hover:text-[var(--text-color-variable)] hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5'
+            ${
+              selectedCategory === null
+                ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-white shadow-lg shadow-[var(--text-color-variable)]/25'
+                : 'border-black-100 bg-tertiary text-white hover:text-white hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5'
             }
           `}
           whileHover={{ scale: 1.05 }}
@@ -76,16 +77,17 @@ export function BlogCategories({
             transition={{ delay: index * 0.05 }}
             className={`
               inline-flex h-10 items-center rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 relative
-              ${selectedCategory === category
-                ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-white shadow-lg shadow-[var(--text-color-variable)]/25'
-                : 'border-black-100 bg-tertiary text-secondary hover:text-[var(--text-color-variable)] hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5'
+              ${
+                selectedCategory === category
+                  ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-white shadow-lg shadow-[var(--text-color-variable)]/25'
+                  : 'border-black-100 bg-tertiary text-white hover:text-white hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5'
               }
             `}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             {category}
-            
+
             {/* Selected indicator */}
             {selectedCategory === category && (
               <motion.span

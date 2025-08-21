@@ -152,11 +152,6 @@ function BlogContent() {
             <h2 className="section-head-text">
               {isFiltered ? 'Filtered Results' : 'All Articles'}
             </h2>
-            <span className="text-secondary text-sm">
-              {isFiltered
-                ? `${resultCount} results`
-                : `${totalCount} total articles`}
-            </span>
           </div>
 
           {paginatedPosts.length > 0 ? (
@@ -192,7 +187,7 @@ function BlogContent() {
                 <h3 className="text-xl font-semibold text-white mb-2">
                   {isFiltered ? 'No articles found' : 'No blog posts yet'}
                 </h3>
-                <p className="text-secondary mb-6">
+                <p className="text-white mb-6">
                   {isFiltered
                     ? 'Try adjusting your search or filter criteria'
                     : 'Stay tuned for upcoming posts about software development, AI tools, and more!'}

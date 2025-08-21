@@ -68,7 +68,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     }, 300);
   };
 
-
   if (!isOpen || !mounted) return null;
 
   return (
@@ -202,7 +201,9 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 <button
                   onClick={toggleFloatingBar}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    isFloatingBarVisible ? 'bg-[var(--text-color-variable)]' : 'bg-gray-600'
+                    isFloatingBarVisible
+                      ? 'bg-[var(--text-color-variable)]'
+                      : 'bg-gray-600'
                   }`}
                 >
                   <span

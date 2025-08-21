@@ -107,7 +107,7 @@
 
 html.cosmicVoyage {
   --primary-color: #0a0514;
-  --secondary-color: #aaa6c3;
+  --secondary-color: #ffffff;
   --tertiary-color: #1a0f2e;
   --black-100: #140a23;
   --black-200: #05020a;
@@ -120,7 +120,7 @@ html.cosmicVoyage {
 
 html.midnightBlue {
   --primary-color: #0c1621;
-  --secondary-color: #8892b0;
+  --secondary-color: #ffffff;
   --tertiary-color: #1e293b;
   --black-100: #0f172a;
   --black-200: #020617;
@@ -133,7 +133,7 @@ html.midnightBlue {
 
 html.deepForest {
   --primary-color: #0a1a0a;
-  --secondary-color: #64ffda;
+  --secondary-color: #ffffff;
   --tertiary-color: #14532d;
   --black-100: #052e16;
   --black-200: #022c22;
@@ -146,7 +146,7 @@ html.deepForest {
 
 html.crimsonFire {
   --primary-color: #1a1a0a;
-  --secondary-color: #ffcdd2;
+  --secondary-color: #ffffff;
   --tertiary-color: #7f1d1d;
   --black-100: #450a0a;
   --black-200: #0c0404;
@@ -271,7 +271,7 @@ html.crimsonFire {
 
 .section-sub-text {
   font-size: var(--text-section-sub-base);
-  color: var(--color-secondary);
+  color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

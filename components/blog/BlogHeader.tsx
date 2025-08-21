@@ -22,7 +22,7 @@ export function BlogHeader({ post }: BlogHeaderProps) {
       >
         <Link
           href="/blog"
-          className="inline-flex items-center gap-2 text-secondary hover:text-[var(--text-color-variable)] transition-colors text-sm"
+          className="inline-flex items-center gap-2 text-white hover:text-white transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to blog
@@ -49,7 +49,7 @@ export function BlogHeader({ post }: BlogHeaderProps) {
               Featured
             </span>
           )}
-          <time className="text-sm text-secondary" dateTime={post.date}>
+          <time className="text-sm text-white" dateTime={post.date}>
             {new Date(post.date).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -62,12 +62,12 @@ export function BlogHeader({ post }: BlogHeaderProps) {
           {post.title}
         </h1>
 
-        <p className="text-lg text-secondary max-w-3xl mb-8">
+        <p className="text-lg text-white max-w-3xl mb-8">
           {post.description}
         </p>
 
         {/* Meta Information */}
-        <div className="flex flex-wrap items-center gap-6 mb-6 text-secondary">
+        <div className="flex flex-wrap items-center gap-6 mb-6 text-white">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
             <span className="text-sm">{post.readingTime} min read</span>
@@ -88,7 +88,7 @@ export function BlogHeader({ post }: BlogHeaderProps) {
               <Link
                 key={tag}
                 href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-black-100 text-secondary hover:text-[var(--text-color-variable)] hover:bg-black-200 transition-all duration-200"
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-black-100 text-white hover:text-white hover:bg-black-200 transition-all duration-200"
               >
                 <Tag className="w-3 h-3" />
                 {tag}

@@ -75,14 +75,14 @@ export function BlogCard({
                   {post.title}
                 </motion.h2>
 
-                <p className="text-secondary leading-relaxed mb-6 line-clamp-5 text-lg">
+                <p className="text-white leading-relaxed mb-6 line-clamp-5 text-lg">
                   {post.description}
                 </p>
               </div>
 
               {/* Footer */}
               <div className="mt-auto">
-                <div className="flex items-center justify-between text-sm text-secondary mb-4">
+                <div className="flex items-center justify-between text-sm text-white mb-4">
                   <div className="flex items-center gap-4">
                     <motion.div
                       className="flex items-center gap-1"
@@ -186,7 +186,7 @@ export function BlogCard({
               </motion.h2>
 
               {/* Description */}
-              <p className="text-secondary leading-relaxed mb-4 line-clamp-3">
+              <p className="text-white leading-relaxed mb-4 line-clamp-3">
                 {post.description}
               </p>
             </div>
@@ -194,7 +194,7 @@ export function BlogCard({
             {/* Footer */}
             <div className="mt-auto">
               {/* Meta Information */}
-              <div className="flex items-center justify-between text-sm text-secondary">
+              <div className="flex items-center justify-between text-sm text-white">
                 <div className="flex items-center gap-3">
                   <motion.div
                     className="flex items-center gap-1"

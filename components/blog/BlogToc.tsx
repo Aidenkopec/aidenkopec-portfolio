@@ -82,7 +82,7 @@ export function BlogToc({
                   'block transition-colors duration-200 inline-flex',
                   activeId === heading.id
                     ? 'text-[var(--text-color-variable)] font-medium'
-                    : 'text-secondary hover:text-[var(--text-color-variable)]',
+                    : 'text-white hover:text-[var(--text-color-variable)]',
                   // Mobile gets more spacing, desktop stays compact
                   isMobile ? 'py-3 px-3 min-h-[44px] items-center' : 'py-1'
                 )}
