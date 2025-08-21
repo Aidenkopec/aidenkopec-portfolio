@@ -138,39 +138,9 @@ html.auroraJade {
 
 /* Custom Utilities */
 
-/* Wavy Lines Animations */
-@keyframes wave-flow-normal {
-  0%, 100% { 
-    transform: translateX(-2%) scale(1.02);
-    opacity: 0.8;
-  }
-  50% { 
-    transform: translateX(2%) scale(0.98);
-    opacity: 1;
-  }
-}
-
-@keyframes wave-flow-reverse {
-  0%, 100% { 
-    transform: translateX(2%) scale(0.98) rotate(0.5deg);
-    opacity: 1;
-  }
-  50% { 
-    transform: translateX(-2%) scale(1.02) rotate(-0.5deg);
-    opacity: 0.8;
-  }
-}
-
+/* Minimal wave styling - no animations */
 .wave-path {
   filter: blur(0.5px);
-}
-
-.wave-flow-normal {
-  animation-name: wave-flow-normal;
-}
-
-.wave-flow-reverse {
-  animation-name: wave-flow-reverse;
 }
 
 .dynamic-gradient {
