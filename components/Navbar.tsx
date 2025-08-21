@@ -65,7 +65,11 @@ const Navbar: React.FC = () => {
                 } hover:text-white text-[18px] font-medium cursor-pointer`}
                 onClick={() => setActive(nav.title)}
               >
-                <a href={`#${nav.id}`}>{nav.title}</a>
+                {nav.id === 'blog' ? (
+                  <Link href="/blog">{nav.title}</Link>
+                ) : (
+                  <a href={`#${nav.id}`}>{nav.title}</a>
+                )}
               </li>
             ))}
             <li className="flex items-center gap-4 relative">
@@ -145,7 +149,11 @@ const Navbar: React.FC = () => {
                     setActive(nav.title);
                   }}
                 >
-                  <a href={`#${nav.id}`}>{nav.title}</a>
+                  {nav.id === 'blog' ? (
+                    <Link href="/blog">{nav.title}</Link>
+                  ) : (
+                    <a href={`#${nav.id}`}>{nav.title}</a>
+                  )}
                 </li>
               ))}
 
