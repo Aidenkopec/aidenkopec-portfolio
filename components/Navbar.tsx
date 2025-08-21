@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { styles } from '../styles';
 import { navLinks } from '../constants';
 // Direct paths for public folder assets - this is the correct Next.js approach
-const logo = '/assets/logo.svg';
 import CustomizationMenu from './CustomizationMenu';
 
 const Navbar: React.FC = () => {
