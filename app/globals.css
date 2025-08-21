@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   /* Dynamic Color Palette - References our CSS variables */
@@ -51,6 +54,39 @@
   /* Font Families */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* shadcn/ui variables - mapped to your theme system but preserving your main colors */
+  --color-background: var(--primary-color);
+  --color-foreground: var(--white-100);
+  --color-card: var(--tertiary-color);
+  --color-card-foreground: var(--white-100);
+  --color-popover: var(--tertiary-color);
+  --color-popover-foreground: var(--white-100);
+  --color-primary: var(--text-color-variable);
+  --color-primary-foreground: var(--white-100);
+  --color-secondary: var(--secondary-color);
+  --color-secondary-foreground: var(--primary-color);
+  --color-muted: var(--black-100);
+  --color-muted-foreground: var(--secondary-color);
+  --color-accent: var(--black-100);
+  --color-accent-foreground: var(--white-100);
+  --color-destructive: #ef4444;
+  --color-border: var(--black-100);
+  --color-input: var(--black-100);
+  --color-ring: var(--text-color-variable);
+  --color-chart-1: var(--text-color-variable);
+  --color-chart-2: var(--gradient-start);
+  --color-chart-3: var(--secondary-color);
+  --color-chart-4: var(--tertiary-color);
+  --color-chart-5: var(--black-100);
+  --color-sidebar: var(--tertiary-color);
+  --color-sidebar-foreground: var(--white-100);
+  --color-sidebar-primary: var(--text-color-variable);
+  --color-sidebar-primary-foreground: var(--white-100);
+  --color-sidebar-accent: var(--black-100);
+  --color-sidebar-accent-foreground: var(--white-100);
+  --color-sidebar-border: var(--black-100);
+  --color-sidebar-ring: var(--text-color-variable);
 }
 
 /* Dynamic Theme Variables */
@@ -66,6 +102,7 @@
   --text-color-variable: #ff6b6b;
   --gradient-start: #ff6b6b;
   --gradient-end: rgba(255, 107, 107, 0);
+  --radius: 0.625rem;
 }
 
 html.cosmicVoyage {
@@ -351,10 +388,24 @@ body {
   background-color: var(--black-100);
 }
 
+.bg-primary-color {
+  background-color: var(--primary-color);
+}
+
 .text-secondary {
   color: var(--secondary-color);
 }
 
 .text-white {
   color: var(--white-100);
+}
+
+/* shadcn/ui base layer - using your theme variables */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

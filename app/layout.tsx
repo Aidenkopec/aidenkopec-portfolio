@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: 'Aiden Kopec Portfolio',
     images: [
       {
-        url: '/og-image.jpg', // Add an OG image in your public folder and reference it here
+        url: '/logo.png',
         width: 1200,
         height: 630,
         alt: 'Aiden Kopec Portfolio Preview',
@@ -58,12 +58,12 @@ export const metadata: Metadata = {
     title: 'Aiden Kopec - Full Stack Software Developer Portfolio',
     description:
       'Aiden Kopec: Full Stack Developer creating scalable web apps, AI tools, and automations. Expertise in Next.js, Vue.js, TypeScript, Node.js, EdgeDB.',
-    images: ['/twitter-image.jpg'], // Add a Twitter image in your public folder
+    images: ['/assets/logo.png'],
   },
   icons: {
-    icon: '/favicon.ico', // Add favicon in public folder
-    shortcut: '/icon.png',
-    apple: '/apple-icon.png',
+    icon: '/favicon.ico',
+    shortcut: '/assets/logo.png',
+    apple: '/assets/apple-icon.png',
   },
 };
 

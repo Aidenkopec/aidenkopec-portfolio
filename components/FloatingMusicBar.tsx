@@ -59,30 +59,30 @@ const FloatingMusicBar: React.FC = () => {
     previousTrack,
   } = useMusicPlayer();
 
-  const [touchStart, setTouchStart] = useState<number | null>(null);
   const [shouldScrollTitle, setShouldScrollTitle] = useState<boolean>(false);
   const [shouldScrollArtist, setShouldScrollArtist] = useState<boolean>(false);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const artistRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLSpanElement>(null);
+  const artistRef = useRef<HTMLSpanElement>(null);
 
   // Get track info, but use defaults if not hydrated yet
-  const trackInfo: TrackInfo = isHydrated 
-    ? getTrackInfo() 
+  const trackInfo: TrackInfo = isHydrated
+    ? getTrackInfo()
     : { title: 'Deep Space', artist: 'Ambient Artist' };
 
   // Check if text overflows and needs scrolling
   useEffect(() => {
     if (!isHydrated) return; // Don't run until hydrated
-    
+
     const checkOverflow = (): void => {
       if (titleRef.current) {
-        const isOverflowing =
-          titleRef.current.scrollWidth > titleRef.current.clientWidth;
+        const containerWidth = titleRef.current.parentElement?.clientWidth || 0;
+        const isOverflowing = titleRef.current.scrollWidth > containerWidth;
         setShouldScrollTitle(isOverflowing);
       }
       if (artistRef.current) {
-        const isOverflowing =
-          artistRef.current.scrollWidth > artistRef.current.clientWidth;
+        const containerWidth =
+          artistRef.current.parentElement?.clientWidth || 0;
+        const isOverflowing = artistRef.current.scrollWidth > containerWidth;
         setShouldScrollArtist(isOverflowing);
       }
     };
@@ -94,27 +94,6 @@ const FloatingMusicBar: React.FC = () => {
     window.addEventListener('resize', checkOverflow);
     return () => window.removeEventListener('resize', checkOverflow);
   }, [trackInfo.title, trackInfo.artist, isHydrated]);
-
-  // Handle swipe gestures on mobile
-  const handleTouchStart = (e: React.TouchEvent): void => {
-    setTouchStart(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent): void => {
-    if (!touchStart) return;
-
-    const touchEnd = e.changedTouches[0].clientX;
-    const diff = touchStart - touchEnd;
-
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        nextTrack(); // Swipe left - next track
-      } else {
-        previousTrack(); // Swipe right - previous track
-      }
-    }
-    setTouchStart(null);
-  };
 
   const closeDock = (): void => setFloatingBarMode('hidden');
 
@@ -163,8 +142,6 @@ const FloatingMusicBar: React.FC = () => {
 
               <button
                 onClick={togglePlay}
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
                 className="p-1.5 hover:bg-white/10 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 hover:shadow-md"
                 style={{ minWidth: '36px', minHeight: '36px' }}
               >
@@ -196,31 +173,44 @@ const FloatingMusicBar: React.FC = () => {
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="pointer-events-auto relative w-auto"
           >
-            <div
-              className="flex items-center gap-1.5 sm:gap-2 bg-black/80 backdrop-blur-md border border-gray-800/50 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-1.5 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ease-out"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-black/80 backdrop-blur-md border border-gray-800/50 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-1.5 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ease-out">
               <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex-shrink-0 flex items-center justify-center hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 ease-out cursor-pointer">
                 <Icons.music className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
               </div>
 
-              <div className="flex flex-col min-w-0 w-20 sm:w-24 cursor-pointer group overflow-hidden">
-                <div
-                  ref={titleRef}
-                  className={`text-xs font-medium text-white group-hover:text-purple-400 transition-colors duration-200 whitespace-nowrap ${
-                    shouldScrollTitle ? 'animate-scroll' : ''
-                  }`}
-                >
-                  {trackInfo.title}
+              <div className="flex flex-col min-w-0 w-20 sm:w-24 cursor-pointer group">
+                <div className="relative overflow-hidden h-4 flex items-center">
+                  <span
+                    ref={titleRef}
+                    className="absolute invisible whitespace-nowrap text-xs font-medium"
+                  >
+                    {trackInfo.title}
+                  </span>
+                  <div
+                    className={`text-xs font-medium text-white group-hover:text-purple-400 transition-colors duration-200 whitespace-nowrap leading-none ${shouldScrollTitle ? 'animate-scroll inline-block' : 'block'}`}
+                  >
+                    {trackInfo.title}
+                    {shouldScrollTitle && (
+                      <span aria-hidden="true">&nbsp;{trackInfo.title}</span>
+                    )}
+                  </div>
                 </div>
-                <div
-                  ref={artistRef}
-                  className={`text-xs text-gray-400 group-hover:text-purple-300 transition-colors duration-200 whitespace-nowrap ${
-                    shouldScrollArtist ? 'animate-scroll-slow' : ''
-                  }`}
-                >
-                  {trackInfo.artist}
+
+                <div className="relative overflow-hidden h-4 flex items-center mt-0.5">
+                  <span
+                    ref={artistRef}
+                    className="absolute invisible whitespace-nowrap text-xs"
+                  >
+                    {trackInfo.artist}
+                  </span>
+                  <div
+                    className={`text-xs text-gray-400 group-hover:text-purple-300 transition-colors duration-200 whitespace-nowrap leading-none ${shouldScrollArtist ? 'animate-scroll-slow inline-block' : 'block'}`}
+                  >
+                    {trackInfo.artist}
+                    {shouldScrollArtist && (
+                      <span aria-hidden="true">&nbsp;{trackInfo.artist}</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -266,13 +256,6 @@ const FloatingMusicBar: React.FC = () => {
                 <Icons.close className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </button>
             </div>
-
-            {/* Mobile gesture hint */}
-            <div className="sm:hidden mt-2 text-center">
-              <p className="text-gray-500 text-xs opacity-75">
-                Swipe left/right to change tracks
-              </p>
-            </div>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -283,11 +266,8 @@ const FloatingMusicBar: React.FC = () => {
           0% {
             transform: translateX(0);
           }
-          95% {
-            transform: translateX(-100%);
-          }
           100% {
-            transform: translateX(0);
+            transform: translateX(-50%);
           }
         }
 
@@ -295,11 +275,8 @@ const FloatingMusicBar: React.FC = () => {
           0% {
             transform: translateX(0);
           }
-          95% {
-            transform: translateX(-80%);
-          }
           100% {
-            transform: translateX(0);
+            transform: translateX(-50%);
           }
         }
 
