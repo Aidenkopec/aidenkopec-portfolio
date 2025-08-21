@@ -99,10 +99,10 @@ export function BlogShare({ slug, title, className }: BlogShareProps) {
 
   return (
     <div className={cn('w-full', className)}>
-      <h3 className="text-lg font-semibold text-white mb-4">
+      <h3 className="text-lg font-semibold text-white mb-4 text-center lg:text-left">
         Share this article
       </h3>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
         {shareLinks.map((link) => (
           <a
             key={link.name}
@@ -110,8 +110,9 @@ export function BlogShare({ slug, title, className }: BlogShareProps) {
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
-              'flex items-center justify-center h-10 w-10 rounded-full border border-black-200 transition-colors',
-              'hover:bg-black-100 hover:border-[var(--text-color-variable)]',
+              'flex items-center justify-center h-12 w-12 rounded-full border border-black-200 transition-all duration-200',
+              'hover:bg-black-100 hover:border-[var(--text-color-variable)] hover:scale-105',
+              'active:scale-95',
               link.color
             )}
             aria-label={`Share on ${link.name}`}
@@ -123,8 +124,9 @@ export function BlogShare({ slug, title, className }: BlogShareProps) {
         <button
           onClick={handleCopyLink}
           className={cn(
-            'flex items-center gap-2 px-3 h-10 rounded-full border border-black-200 transition-colors',
-            'hover:bg-black-100 hover:border-[var(--text-color-variable)]',
+            'flex items-center gap-2 px-4 h-12 rounded-full border border-black-200 transition-all duration-200',
+            'hover:bg-black-100 hover:border-[var(--text-color-variable)] hover:scale-105',
+            'active:scale-95',
             'text-secondary hover:text-[var(--text-color-variable)]'
           )}
         >

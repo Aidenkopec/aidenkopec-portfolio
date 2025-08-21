@@ -12,9 +12,14 @@ export interface BlogHeading {
 interface BlogTocProps {
   headings: BlogHeading[];
   className?: string;
+  isMobile?: boolean;
 }
 
-export function BlogToc({ headings, className }: BlogTocProps) {
+export function BlogToc({
+  headings,
+  className,
+  isMobile = false,
+}: BlogTocProps) {
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
@@ -57,7 +62,7 @@ export function BlogToc({ headings, className }: BlogTocProps) {
       </h3>
 
       <nav>
-        <ol className="space-y-3 text-sm">
+        <ol className={cn('text-sm', isMobile ? 'space-y-3' : 'space-y-1')}>
           {headings.map((heading) => (
             <li
               key={heading.id}
@@ -77,7 +82,9 @@ export function BlogToc({ headings, className }: BlogTocProps) {
                   'block transition-colors duration-200 inline-flex',
                   activeId === heading.id
                     ? 'text-[var(--text-color-variable)] font-medium'
-                    : 'text-secondary hover:text-[var(--text-color-variable)]'
+                    : 'text-secondary hover:text-[var(--text-color-variable)]',
+                  // Mobile gets more spacing, desktop stays compact
+                  isMobile ? 'py-3 px-3 min-h-[44px] items-center' : 'py-1'
                 )}
                 onClick={(e) => {
                   // Let the native anchor behavior handle the navigation

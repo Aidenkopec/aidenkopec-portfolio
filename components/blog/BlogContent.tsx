@@ -23,7 +23,9 @@ export function BlogContent({
       {/* Mobile Table of Contents - Displayed above content on mobile */}
       {headings.length > 0 && (
         <div className="lg:hidden mb-8">
-          <BlogToc headings={headings} />
+          <div className="bg-tertiary p-6 rounded-lg border border-black-200">
+            <BlogToc headings={headings} isMobile={true} />
+          </div>
         </div>
       )}
 
@@ -60,6 +62,20 @@ export function BlogContent({
           <div className="blog-content">{children}</div>
         </motion.article>
       </div>
+
+      {/* Mobile Share Component - Displayed at the bottom for mobile only */}
+      {slug && title && (
+        <div className="lg:hidden mt-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-tertiary p-6 rounded-lg border border-black-200"
+          >
+            <BlogShare slug={slug} title={title} />
+          </motion.div>
+        </div>
+      )}
 
       <style jsx global>{`
         .blog-content {
