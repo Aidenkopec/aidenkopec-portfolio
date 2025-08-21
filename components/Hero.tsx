@@ -3,6 +3,7 @@ import React from 'react';
 
 import { styles } from '../styles';
 import { ComputersCanvas } from './canvas';
+import ScrollIndicator from './ScrollIndicator';
 
 const Hero: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const Hero: React.FC = () => {
       </div>
 
       <ComputersCanvas />
+      <ScrollIndicator />
     </section>
   );
 };

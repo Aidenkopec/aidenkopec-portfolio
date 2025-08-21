@@ -18,6 +18,7 @@ import ThemeSelector from './ThemeSelector';
 import CustomizationMenu from './CustomizationMenu';
 import FloatingMusicBar from './FloatingMusicBar';
 import BlogNavbar from './blog/BlogNavbar';
+import ScrollIndicator from './ScrollIndicator';
 
 export {
   Hero,
@@ -38,4 +39,5 @@ export {
   CustomizationMenu,
   FloatingMusicBar,
   BlogNavbar,
+  ScrollIndicator,
 };
