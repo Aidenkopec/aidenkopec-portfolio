@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { BlogCardSolvex } from '@/components/blog/BlogCardSolvex';
 import { BlogHeroSolvex } from '@/components/blog/BlogHeroSolvex';
 import { BlogCategories } from '@/components/blog/BlogCategories';
+import { BlogPagination } from '@/components/blog/BlogPagination';
 import { useBlogSearch } from '@/hooks/useBlogSearch';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
@@ -12,7 +13,8 @@ import { BlogPost } from '@/lib/types';
 // Move metadata to a separate file or handle differently since this is now a client component
 const blogMetadata = {
   title: 'Blog - Aiden Kopec',
-  description: 'Insights and experiences from a full-stack software developer. Learn about scalable web applications, AI tools, and modern development practices.',
+  description:
+    'Insights and experiences from a full-stack software developer. Learn about scalable web applications, AI tools, and modern development practices.',
 };
 
 function BlogSkeleton() {
@@ -41,6 +43,9 @@ function BlogContent() {
   const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
   const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const POSTS_PER_PAGE = 6;
 
   const {
     filteredPosts,
@@ -51,8 +56,19 @@ function BlogContent() {
     setSearchTerm,
     resultCount,
     totalCount,
-    isFiltered
+    isFiltered,
   } = useBlogSearch(allPosts);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const endIndex = startIndex + POSTS_PER_PAGE;
+  const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
 
   useEffect(() => {
     async function fetchPosts() {
@@ -61,7 +77,8 @@ function BlogContent() {
         if (!response.ok) {
           throw new Error('Failed to fetch blog data');
         }
-        const { allPosts: posts, featuredPosts: featured } = await response.json();
+        const { allPosts: posts, featuredPosts: featured } =
+          await response.json();
         setAllPosts(posts);
         setFeaturedPosts(featured);
       } catch (error) {
@@ -98,18 +115,10 @@ function BlogContent() {
             className="mb-16"
             id="featured"
           >
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="section-head-text">Featured Post</h2>
-              <span className="text-secondary text-sm">
-                1 featured post
-              </span>
-            </div>
-            
             {/* Single Large Featured Post */}
-            <BlogCardSolvex 
-              key={featuredPosts[0].slug} 
-              post={featuredPosts[0]} 
-              featured={true}
+            <BlogCardSolvex
+              key={featuredPosts[0].slug}
+              post={featuredPosts[0]}
               singleFeatured={true}
               index={0}
             />
@@ -144,20 +153,32 @@ function BlogContent() {
               {isFiltered ? 'Filtered Results' : 'All Articles'}
             </h2>
             <span className="text-secondary text-sm">
-              {isFiltered ? `${resultCount} results` : `${totalCount} total articles`}
+              {isFiltered
+                ? `${resultCount} results`
+                : `${totalCount} total articles`}
             </span>
           </div>
-          
-          {filteredPosts.length > 0 ? (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {filteredPosts.map((post, index) => (
-                <BlogCardSolvex 
-                  key={post.slug} 
-                  post={post} 
-                  index={index}
-                />
-              ))}
-            </div>
+
+          {paginatedPosts.length > 0 ? (
+            <>
+              <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+                {paginatedPosts.map((post, index) => (
+                  <BlogCardSolvex
+                    key={post.slug}
+                    post={post}
+                    index={index}
+                    className="h-full"
+                  />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              <BlogPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </>
           ) : (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -172,10 +193,9 @@ function BlogContent() {
                   {isFiltered ? 'No articles found' : 'No blog posts yet'}
                 </h3>
                 <p className="text-secondary mb-6">
-                  {isFiltered 
+                  {isFiltered
                     ? 'Try adjusting your search or filter criteria'
-                    : 'Stay tuned for upcoming posts about software development, AI tools, and more!'
-                  }
+                    : 'Stay tuned for upcoming posts about software development, AI tools, and more!'}
                 </p>
                 {isFiltered && (
                   <button

@@ -13,11 +13,11 @@ interface BlogHeroProps {
   onCategoryFilter?: (category: string) => void;
 }
 
-export function BlogHeroSolvex({ 
-  postsCount, 
-  recentPosts, 
+export function BlogHeroSolvex({
+  postsCount,
+  recentPosts,
   onSearch,
-  onCategoryFilter 
+  onCategoryFilter,
 }: BlogHeroProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
@@ -40,7 +40,7 @@ export function BlogHeroSolvex({
     );
 
     setFilteredPosts(filtered);
-    
+
     // Call parent search handler
     if (onSearch) {
       onSearch(searchTerm);
@@ -99,7 +99,7 @@ export function BlogHeroSolvex({
               className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 pb-2"
             >
               <span className="bg-gradient-to-r from-[var(--text-color-variable)] to-[var(--gradient-start)] bg-clip-text text-transparent">
-                Our Blog
+                My Blog
               </span>
             </motion.h1>
 
@@ -110,7 +110,8 @@ export function BlogHeroSolvex({
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-xl text-secondary mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0"
             >
-              Latest insights, trends, and tips from a full-stack developer to help you build amazing applications and grow your skills.
+              Latest insights, trends, and tips from a full-stack developer to
+              help you build amazing applications and grow your skills.
             </motion.p>
 
             {/* Action Buttons */}
