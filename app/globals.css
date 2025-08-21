@@ -118,43 +118,30 @@ html.cosmicVoyage {
   --gradient-end: rgba(168, 85, 247, 0);
 }
 
-html.midnightBlue {
-  --primary-color: #0c1621;
+html.glacierSapphire {
+  --primary-color: #07121a;
   --secondary-color: #ffffff;
-  --tertiary-color: #1e293b;
-  --black-100: #0f172a;
-  --black-200: #020617;
-  --white-100: #f1f5f9;
+  --tertiary-color: #0b2740;
+  --black-100: #0b1b2b;
+  --black-200: #030a12;
+  --white-100: #ffffff;
   --hero-pattern: url('/backgrounds/hero-bg-midnight-blue.png');
-  --text-color-variable: #06b6d4;
-  --gradient-start: #06b6d4;
-  --gradient-end: rgba(6, 182, 212, 0);
+  --text-color-variable: #60a5fa;
+  --gradient-start: #60a5fa;
+  --gradient-end: rgba(96, 165, 250, 0);
 }
 
-html.deepForest {
-  --primary-color: #0a1a0a;
+html.auroraJade {
+  --primary-color: #05110d;
   --secondary-color: #ffffff;
-  --tertiary-color: #14532d;
-  --black-100: #052e16;
-  --black-200: #022c22;
-  --white-100: #f0fdf4;
+  --tertiary-color: #0f2c24;
+  --black-100: #0b1f19;
+  --black-200: #030806;
+  --white-100: #ffffff;
   --hero-pattern: url('/backgrounds/hero-bg-green.png');
-  --text-color-variable: #10b981;
-  --gradient-start: #10b981;
-  --gradient-end: rgba(16, 185, 129, 0);
-}
-
-html.crimsonFire {
-  --primary-color: #1a1a0a;
-  --secondary-color: #ffffff;
-  --tertiary-color: #7f1d1d;
-  --black-100: #450a0a;
-  --black-200: #0c0404;
-  --white-100: #fef2f2;
-  --hero-pattern: url('/backgrounds/hero-bg-adjusted.png');
-  --text-color-variable: #ef4444;
-  --gradient-start: #ef4444;
-  --gradient-end: rgba(239, 68, 68, 0);
+  --text-color-variable: #2dd4bf;
+  --gradient-start: #2dd4bf;
+  --gradient-end: rgba(45, 212, 191, 0);
 }
 
 /* Custom Utilities */
@@ -394,10 +381,6 @@ body {
 
 .text-secondary {
   color: var(--secondary-color);
-}
-
-.text-white {
-  color: var(--white-100);
 }
 
 /* shadcn/ui base layer - using your theme variables */

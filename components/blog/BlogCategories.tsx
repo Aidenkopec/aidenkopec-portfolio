@@ -33,11 +33,13 @@ export function BlogCategories({
           <div className="p-2 rounded-full bg-[var(--text-color-variable)]/10">
             <Filter className="w-5 h-5 text-[var(--text-color-variable)]" />
           </div>
-          <h3 className="text-xl font-bold text-white">Browse Categories</h3>
+          <h3 className="text-xl font-bold text-secondary ">
+            Browse Categories
+          </h3>
         </div>
 
         {/* Results Counter */}
-        <div className="text-sm text-white">
+        <div className="text-sm text-secondary ">
           {selectedCategory ? (
             <span>
               {resultCount} of {totalCount} articles
@@ -57,8 +59,8 @@ export function BlogCategories({
             inline-flex h-10 items-center rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200
             ${
               selectedCategory === null
-                ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-white shadow-lg shadow-[var(--text-color-variable)]/25'
-                : 'border-black-100 bg-tertiary text-white hover:text-white hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5'
+                ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-secondary  shadow-lg shadow-[var(--text-color-variable)]/25'
+                : 'border-black-100 bg-tertiary text-secondary  hover:text-secondary  hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5'
             }
           `}
           whileHover={{ scale: 1.05 }}
@@ -79,8 +81,8 @@ export function BlogCategories({
               inline-flex h-10 items-center rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 relative
               ${
                 selectedCategory === category
-                  ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-white shadow-lg shadow-[var(--text-color-variable)]/25'
-                  : 'border-black-100 bg-tertiary text-white hover:text-white hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5'
+                  ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-secondary  shadow-lg shadow-[var(--text-color-variable)]/25'
+                  : 'border-black-100 bg-tertiary text-secondary  hover:text-secondary  hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5'
               }
             `}
             whileHover={{ scale: 1.05 }}

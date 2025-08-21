@@ -184,10 +184,10 @@ function BlogContent() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--text-color-variable)]/10 flex items-center justify-center">
                   <Search className="w-8 h-8 text-[var(--text-color-variable)]" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="text-xl font-semibold text-secondary mb-2">
                   {isFiltered ? 'No articles found' : 'No blog posts yet'}
                 </h3>
-                <p className="text-white mb-6">
+                <p className="text-secondary mb-6">
                   {isFiltered
                     ? 'Try adjusting your search or filter criteria'
                     : 'Stay tuned for upcoming posts about software development, AI tools, and more!'}
@@ -198,7 +198,7 @@ function BlogContent() {
                       setSearchTerm('');
                       setSelectedCategory(null);
                     }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--text-color-variable)] text-white hover:bg-[var(--text-color-variable)]/90 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--text-color-variable)] text-secondary  hover:bg-[var(--text-color-variable)]/90 transition-colors"
                   >
                     Clear filters
                   </button>

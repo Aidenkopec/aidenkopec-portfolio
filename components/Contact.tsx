@@ -122,18 +122,20 @@ const Contact: React.FC = () => {
                 className="mt-12 flex flex-col gap-8"
               >
                 <label className="flex flex-col">
-                  <span className="text-white font-medium mb-4">Your Name</span>
+                  <span className="text-secondary  font-medium mb-4">
+                    Your Name
+                  </span>
                   <input
                     type="text"
                     name="name"
                     value={form.name}
                     onChange={handleChange}
                     placeholder="What's your name?"
-                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-secondary  rounded-lg outline-none border-none font-medium"
                   />
                 </label>
                 <label className="flex flex-col">
-                  <span className="text-white font-medium mb-4">
+                  <span className="text-secondary  font-medium mb-4">
                     Your email
                   </span>
                   <input
@@ -142,11 +144,11 @@ const Contact: React.FC = () => {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="What's your email address?"
-                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-secondary  rounded-lg outline-none border-none font-medium"
                   />
                 </label>
                 <label className="flex flex-col">
-                  <span className="text-white font-medium mb-4">
+                  <span className="text-secondary  font-medium mb-4">
                     Your Message
                   </span>
                   <textarea
@@ -155,13 +157,13 @@ const Contact: React.FC = () => {
                     value={form.message}
                     onChange={handleChange}
                     placeholder="Please type your message"
-                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-secondary  rounded-lg outline-none border-none font-medium"
                   />
                 </label>
 
                 <button
                   type="submit"
-                  className="bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary hover:bg-tertiary/90 transition-colors disabled:opacity-50"
+                  className="bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-secondary  font-bold shadow-md shadow-primary hover:bg-tertiary/90 transition-colors disabled:opacity-50"
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send'}
@@ -179,7 +181,7 @@ const Contact: React.FC = () => {
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-red-400 rounded-full flex items-center justify-center">
                           <svg
-                            className="w-5 h-5 text-white"
+                            className="w-5 h-5 text-secondary "
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -214,7 +216,7 @@ const Contact: React.FC = () => {
             >
               <div className="w-20 h-20 bg-green-400 rounded-full flex items-center justify-center mb-8 mx-auto">
                 <svg
-                  className="w-10 h-10 text-white"
+                  className="w-10 h-10 text-secondary "
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -233,7 +235,10 @@ const Contact: React.FC = () => {
               </h2>
               <p className="text-xl text-secondary mb-2">
                 Thank you,{' '}
-                <span className="text-white font-semibold">{form.name}</span>!
+                <span className="text-secondary  font-semibold">
+                  {form.name}
+                </span>
+                !
               </p>
               <p className="text-lg text-secondary mb-8 max-w-md">
                 I've received your message and will get back to you as soon as
@@ -242,7 +247,7 @@ const Contact: React.FC = () => {
 
               <button
                 onClick={resetForm}
-                className="bg-tertiary py-3 px-8 rounded-xl outline-none text-white font-bold shadow-md shadow-primary hover:bg-tertiary/90 transition-colors mb-4"
+                className="bg-tertiary py-3 px-8 rounded-xl outline-none text-secondary  font-bold shadow-md shadow-primary hover:bg-tertiary/90 transition-colors mb-4"
               >
                 Send Another Message
               </button>

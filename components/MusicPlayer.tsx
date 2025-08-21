@@ -19,7 +19,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   onExternalOpenChange = null,
 }) => {
   const [showControls, setShowControls] = useState<boolean>(false);
-  
+
   const {
     isPlaying,
     volume,
@@ -47,7 +47,9 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     }
   }, [showControls, onExternalOpenChange]);
 
-  const handleVolumeInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleVolumeInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     handleVolumeChange(parseFloat(e.target.value));
   };
 
@@ -60,7 +62,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       {/* Music toggle button */}
       <button
         onClick={() => setShowControls(!showControls)}
-        className={`text-secondary hover:text-white ${
+        className={`text-secondary hover:text-secondary  ${
           mobile ? 'text-[16px]' : 'text-[18px]'
         } font-medium cursor-pointer transition-colors`}
         title="Music"
@@ -88,7 +90,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
               </div>
             ) : (
               <>
-                <h4 className="text-white font-medium text-sm truncate">
+                <h4 className="text-secondary  font-medium text-sm truncate">
                   {playlist[currentTrack]?.title || 'No Track'}
                 </h4>
                 <p className="text-gray-400 text-xs">
@@ -102,7 +104,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           <div className="flex justify-center items-center space-x-4 mb-3">
             <button
               onClick={previousTrack}
-              className="text-white hover:text-purple-400 transition-colors"
+              className="text-secondary  hover:text-purple-400 transition-colors"
               title="Previous Track"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -116,7 +118,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
             <button
               onClick={togglePlay}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full p-2 transition-all duration-300"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-secondary  rounded-full p-2 transition-all duration-300"
               title={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? (
@@ -148,7 +150,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
             <button
               onClick={nextTrack}
-              className="text-white hover:text-purple-400 transition-colors"
+              className="text-secondary  hover:text-purple-400 transition-colors"
               title="Next Track"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -200,7 +202,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
                   onClick={() => handleTrackSelect(index)}
                   className={`w-full text-left px-2 py-1 rounded text-xs transition-colors ${
                     currentTrack === index
-                      ? 'bg-purple-600 text-white'
+                      ? 'bg-purple-600 text-secondary '
                       : 'text-gray-300 hover:bg-gray-700'
                   }`}
                 >

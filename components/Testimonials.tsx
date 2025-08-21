@@ -29,16 +29,16 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
     variants={fadeIn('up', 'spring', index * 0.25, 0.6) as unknown as Variants}
     className="h-full rounded-3xl bg-black-200 p-8 md:p-10"
   >
-    <p className="leading-none text-4xl font-black text-white">"</p>
+    <p className="leading-none text-4xl font-black text-secondary ">"</p>
 
     <div className="mt-3">
-      <p className="leading-7 text-base tracking-wider text-white md:text-lg">
+      <p className="leading-7 text-base tracking-wider text-secondary  md:text-lg">
         {testimonial}
       </p>
 
       <div className="mt-6 flex items-center justify-between gap-3">
         <div className="flex-1">
-          <p className="text-sm font-medium text-white md:text-base">
+          <p className="text-sm font-medium text-secondary  md:text-base">
             <span className="blue-text-gradient">@</span> {name}
           </p>
           <p className="mt-1 text-xs text-secondary md:text-sm">
@@ -46,7 +46,7 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
           </p>
         </div>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-sm font-bold text-white">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-sm font-bold text-secondary ">
           <span>{name.charAt(0).toUpperCase()}</span>
         </div>
       </div>

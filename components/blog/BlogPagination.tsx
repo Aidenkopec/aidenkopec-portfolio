@@ -69,8 +69,8 @@ export function BlogPagination({
           flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
           ${
             currentPage === 1
-              ? 'bg-black-100/50 text-white/50 cursor-not-allowed'
-              : 'bg-tertiary text-white hover:bg-[var(--text-color-variable)] hover:text-white border border-black-100 hover:border-[var(--text-color-variable)]'
+              ? 'bg-black-100/50 text-secondary /50 cursor-not-allowed'
+              : 'bg-tertiary text-secondary  hover:bg-[var(--text-color-variable)] hover:text-secondary  border border-black-100 hover:border-[var(--text-color-variable)]'
           }
         `}
         whileHover={currentPage !== 1 ? { scale: 1.05 } : {}}
@@ -85,7 +85,10 @@ export function BlogPagination({
         {visiblePages.map((page, index) => {
           if (page === '...') {
             return (
-              <span key={`ellipsis-${index}`} className="px-3 py-2 text-white">
+              <span
+                key={`ellipsis-${index}`}
+                className="px-3 py-2 text-secondary "
+              >
                 ...
               </span>
             );
@@ -102,8 +105,8 @@ export function BlogPagination({
                 w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200
                 ${
                   isActive
-                    ? 'bg-[var(--text-color-variable)] text-white shadow-lg shadow-[var(--text-color-variable)]/25'
-                    : 'bg-tertiary text-white hover:text-white hover:bg-[var(--text-color-variable)]/5 border border-black-100 hover:border-[var(--text-color-variable)]/30'
+                    ? 'bg-[var(--text-color-variable)] text-secondary  shadow-lg shadow-[var(--text-color-variable)]/25'
+                    : 'bg-tertiary text-secondary  hover:text-secondary  hover:bg-[var(--text-color-variable)]/5 border border-black-100 hover:border-[var(--text-color-variable)]/30'
                 }
               `}
               whileHover={{ scale: isActive ? 1 : 1.05 }}
@@ -126,8 +129,8 @@ export function BlogPagination({
           flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
           ${
             currentPage === totalPages
-              ? 'bg-black-100/50 text-white/50 cursor-not-allowed'
-              : 'bg-tertiary text-white hover:bg-[var(--text-color-variable)] hover:text-white border border-black-100 hover:border-[var(--text-color-variable)]'
+              ? 'bg-black-100/50 text-secondary /50 cursor-not-allowed'
+              : 'bg-tertiary text-secondary  hover:bg-[var(--text-color-variable)] hover:text-secondary  border border-black-100 hover:border-[var(--text-color-variable)]'
           }
         `}
         whileHover={currentPage !== totalPages ? { scale: 1.05 } : {}}

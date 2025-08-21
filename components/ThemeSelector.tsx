@@ -59,10 +59,10 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       } bg-black-100 border border-tertiary rounded-xl p-4 shadow-2xl z-[9999]`}
     >
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-white text-lg font-semibold">Choose Theme</h3>
+        <h3 className="text-secondary  text-lg font-semibold">Choose Theme</h3>
         <button
           onClick={onClose}
-          className="text-secondary hover:text-white transition-colors text-xl"
+          className="text-secondary hover:text-secondary  transition-colors text-xl"
         >
           ×
         </button>
@@ -92,7 +92,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <h4 className="text-white font-medium text-sm mb-2">
+                  <h4 className="text-secondary  font-medium text-sm mb-2">
                     {themeData.name}
                   </h4>
                   <div className="flex items-center gap-2">

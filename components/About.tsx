@@ -36,7 +36,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
           className="object-contain"
         />
 
-        <h3 className="text-white text-[18px] sm:text-[20px] font-bold text-center leading-tight">
+        <h3 className="text-secondary  text-[18px] sm:text-[20px] font-bold text-center leading-tight">
           {title.split(' ').length > 3 ? (
             <>
               {title
@@ -68,7 +68,7 @@ const About: React.FC = () => {
 
       <motion.p
         variants={fadeIn('up', 'spring', 0.1, 1) as any}
-        className="mt-4 text-secondary text-[17px] max-w-3xl leading-[30px]"
+        className="mt-4 text-secondary  text-[17px] max-w-3xl leading-[30px]"
       >
         I'm a Full Stack Software Developer with a proven track record of
         delivering scalable, production-grade systems that drive efficiency,

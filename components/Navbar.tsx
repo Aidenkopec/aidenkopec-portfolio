@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
             window.scrollTo(0, 0);
           }}
         >
-          <p className="text-white text-[18px] font-bold cursor-pointer flex ">
+          <p className="text-secondary  text-[18px] font-bold cursor-pointer flex ">
             Aiden Kopec &nbsp;
             <span className="sm:block hidden"> | Full Stack Developer</span>
           </p>
@@ -61,8 +61,8 @@ const Navbar: React.FC = () => {
               <li
                 key={nav.id}
                 className={`${
-                  active === nav.title ? 'text-white' : 'text-secondary'
-                } hover:text-white text-[18px] font-medium cursor-pointer`}
+                  active === nav.title ? 'text-secondary ' : 'text-secondary'
+                } hover:text-secondary  text-[18px] font-medium cursor-pointer`}
                 onClick={() => setActive(nav.title)}
               >
                 {nav.id === 'blog' ? (
@@ -77,7 +77,7 @@ const Navbar: React.FC = () => {
                 onClick={() =>
                   setCustomizationMenuDesktop(!customizationMenuDesktop)
                 }
-                className="text-secondary hover:text-white text-[18px] font-medium cursor-pointer transition-colors"
+                className="text-secondary hover:text-secondary  text-[18px] font-medium cursor-pointer transition-colors"
               >
                 Customizations
               </button>
@@ -93,7 +93,7 @@ const Navbar: React.FC = () => {
           {/* Hamburger Menu Button - inline SVG to ensure visibility */}
           <button
             aria-label="Toggle menu"
-            className="w-10 h-10 flex items-center justify-center rounded-md text-secondary hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-white z-[100]"
+            className="w-10 h-10 flex items-center justify-center rounded-md text-secondary hover:text-secondary  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-white z-[100]"
             onClick={() => setToggle(!toggle)}
           >
             {toggle ? (
@@ -142,7 +142,7 @@ const Navbar: React.FC = () => {
                 <li
                   key={nav.id}
                   className={`font-poppins font-medium cursor-pointer text-[16px] ${
-                    active === nav.title ? 'text-white' : 'text-secondary'
+                    active === nav.title ? 'text-secondary ' : 'text-secondary'
                   }`}
                   onClick={() => {
                     setToggle(!toggle);
@@ -160,7 +160,7 @@ const Navbar: React.FC = () => {
               {/* Customizations */}
               <li className="pt-2 relative">
                 <button
-                  className="text-secondary text-[16px] font-medium cursor-pointer hover:text-white transition-colors"
+                  className="text-secondary text-[16px] font-medium cursor-pointer hover:text-secondary  transition-colors"
                   onClick={() =>
                     setCustomizationMenuMobile(!customizationMenuMobile)
                   }

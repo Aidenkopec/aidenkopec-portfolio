@@ -57,7 +57,7 @@ export function BlogToc({
 
   return (
     <div className={cn('w-full', className)}>
-      <h3 className="text-lg font-semibold text-white mb-4">
+      <h3 className="text-lg font-semibold text-secondary  mb-4">
         Table of Contents
       </h3>
 
@@ -82,7 +82,7 @@ export function BlogToc({
                   'block transition-colors duration-200 inline-flex',
                   activeId === heading.id
                     ? 'text-[var(--text-color-variable)] font-medium'
-                    : 'text-white hover:text-[var(--text-color-variable)]',
+                    : 'text-secondary  hover:text-[var(--text-color-variable)]',
                   // Mobile gets more spacing, desktop stays compact
                   isMobile ? 'py-3 px-3 min-h-[44px] items-center' : 'py-1'
                 )}

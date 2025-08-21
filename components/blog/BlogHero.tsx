@@ -126,7 +126,7 @@ export function BlogHero({
                 href="#featured"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center justify-center px-6 py-3 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-[var(--text-color-variable)] to-[var(--gradient-start)] hover:from-[var(--text-color-variable)]/90 hover:to-[var(--gradient-start)]/90 text-white font-medium text-sm sm:text-base transition-all shadow-lg hover:shadow-[var(--text-color-variable)]/25 border border-[var(--text-color-variable)]/20 relative overflow-hidden group"
+                className="inline-flex items-center justify-center px-6 py-3 md:px-8 md:py-4 rounded-full bg-gradient-to-r from-[var(--text-color-variable)] to-[var(--gradient-start)] hover:from-[var(--text-color-variable)]/90 hover:to-[var(--gradient-start)]/90 text-secondary  font-medium text-sm sm:text-base transition-all shadow-lg hover:shadow-[var(--text-color-variable)]/25 border border-[var(--text-color-variable)]/20 relative overflow-hidden group"
               >
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="relative z-10 flex items-center">
@@ -178,7 +178,7 @@ export function BlogHero({
                     <div className="h-8 w-8 rounded-full bg-[var(--text-color-variable)]/10 flex items-center justify-center">
                       <BookOpen className="h-4 w-4 text-[var(--text-color-variable)]" />
                     </div>
-                    <h3 className="font-semibold text-white">
+                    <h3 className="font-semibold text-secondary ">
                       Latest Articles
                     </h3>
                   </div>
@@ -200,7 +200,7 @@ export function BlogHero({
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full py-2.5 pl-10 pr-4 bg-black-100 border border-black-100 rounded-lg text-sm text-white placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[var(--text-color-variable)] focus:border-transparent transition-all"
+                    className="w-full py-2.5 pl-10 pr-4 bg-black-100 border border-black-100 rounded-lg text-sm text-secondary  placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[var(--text-color-variable)] focus:border-transparent transition-all"
                     placeholder="Search articles..."
                   />
                 </div>
@@ -230,7 +230,7 @@ export function BlogHero({
                         }}
                       >
                         <div className="flex justify-between items-center">
-                          <h4 className="text-sm font-medium text-white group-hover:text-[var(--text-color-variable)] transition-colors line-clamp-1">
+                          <h4 className="text-sm font-medium text-secondary  group-hover:text-[var(--text-color-variable)] transition-colors line-clamp-1">
                             {post.title}
                           </h4>
 

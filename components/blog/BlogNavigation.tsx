@@ -10,7 +10,10 @@ interface BlogNavigationProps {
   nextPost?: BlogPost | null;
 }
 
-export function BlogNavigation({ previousPost, nextPost }: BlogNavigationProps) {
+export function BlogNavigation({
+  previousPost,
+  nextPost,
+}: BlogNavigationProps) {
   if (!previousPost && !nextPost) {
     return null;
   }
@@ -33,7 +36,7 @@ export function BlogNavigation({ previousPost, nextPost }: BlogNavigationProps) 
               <ArrowLeft className="w-4 h-4" />
               <span>Previous Post</span>
             </div>
-            <h3 className="text-lg font-semibold text-white group-hover:text-[var(--text-color-variable)] transition-colors duration-200 line-clamp-2">
+            <h3 className="text-lg font-semibold text-secondary  group-hover:text-[var(--text-color-variable)] transition-colors duration-200 line-clamp-2">
               {previousPost.title}
             </h3>
             <p className="text-secondary mt-2 text-sm line-clamp-2">
@@ -62,7 +65,7 @@ export function BlogNavigation({ previousPost, nextPost }: BlogNavigationProps) 
               <span>Next Post</span>
               <ArrowRight className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-semibold text-white group-hover:text-[var(--text-color-variable)] transition-colors duration-200 line-clamp-2">
+            <h3 className="text-lg font-semibold text-secondary  group-hover:text-[var(--text-color-variable)] transition-colors duration-200 line-clamp-2">
               {nextPost.title}
             </h3>
             <p className="text-secondary mt-2 text-sm line-clamp-2">
@@ -94,7 +97,7 @@ export function BackToBlog() {
     >
       <Link
         href="/blog"
-        className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--text-color-variable)] text-white rounded-lg hover:bg-[var(--text-color-variable)]/80 transition-all duration-200 font-medium"
+        className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--text-color-variable)] text-secondary  rounded-lg hover:bg-[var(--text-color-variable)]/80 transition-all duration-200 font-medium"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to All Posts

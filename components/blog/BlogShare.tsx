@@ -99,7 +99,7 @@ export function BlogShare({ slug, title, className }: BlogShareProps) {
 
   return (
     <div className={cn('w-full', className)}>
-      <h3 className="text-lg font-semibold text-white mb-4 text-center lg:text-left">
+      <h3 className="text-lg font-semibold text-secondary  mb-4 text-center lg:text-left">
         Share this article
       </h3>
       <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
