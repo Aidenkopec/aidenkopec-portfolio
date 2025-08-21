@@ -1,9 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { BlogHeading } from '@/lib/types';
+
+export interface BlogHeading {
+  id: string;
+  text: string;
+  level: number;
+}
 
 interface BlogTocProps {
   headings: BlogHeading[];
@@ -25,7 +29,7 @@ export function BlogToc({ headings, className }: BlogTocProps) {
         });
       },
       {
-        rootMargin: '0px 0px -80% 0px',
+        rootMargin: '-20% 0px -70% 0px',
         threshold: 0.1,
       }
     );
@@ -47,12 +51,7 @@ export function BlogToc({ headings, className }: BlogTocProps) {
   if (!headings.length) return null;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className={cn('w-full bg-tertiary p-6 rounded-lg border border-black-200', className)}
-    >
+    <div className={cn('w-full', className)}>
       <h3 className="text-lg font-semibold text-white mb-4">
         Table of Contents
       </h3>
@@ -66,31 +65,33 @@ export function BlogToc({ headings, className }: BlogTocProps) {
                 heading.level === 1
                   ? 'ml-0'
                   : heading.level === 2
-                  ? 'ml-3'
-                  : heading.level === 3
-                  ? 'ml-6'
-                  : 'ml-9'
+                    ? 'ml-3'
+                    : heading.level === 3
+                      ? 'ml-6'
+                      : 'ml-9'
               )}
             >
               <a
                 href={`#${heading.id}`}
                 className={cn(
-                  'block transition-colors inline-flex hover:text-[var(--text-color-variable)] duration-200',
+                  'block transition-colors duration-200 inline-flex',
                   activeId === heading.id
                     ? 'text-[var(--text-color-variable)] font-medium'
-                    : 'text-secondary'
+                    : 'text-secondary hover:text-[var(--text-color-variable)]'
                 )}
                 onClick={(e) => {
-                  e.preventDefault();
-                  const element = document.getElementById(heading.id);
-                  if (element) {
-                    const topOffset =
-                      element.getBoundingClientRect().top +
-                      window.scrollY -
-                      100;
-                    window.scrollTo({ top: topOffset, behavior: 'smooth' });
-                    setActiveId(heading.id);
-                  }
+                  // Let the native anchor behavior handle the navigation
+                  // Just update the active ID for styling
+                  setActiveId(heading.id);
+
+                  // Add a small delay to ensure the scroll happens before updating active state
+                  setTimeout(() => {
+                    const element = document.getElementById(heading.id);
+                    if (element) {
+                      // Verify the element exists and update active state
+                      setActiveId(heading.id);
+                    }
+                  }, 100);
                 }}
               >
                 {heading.text}
@@ -99,6 +100,6 @@ export function BlogToc({ headings, className }: BlogTocProps) {
           ))}
         </ol>
       </nav>
-    </motion.div>
+    </div>
   );
 }

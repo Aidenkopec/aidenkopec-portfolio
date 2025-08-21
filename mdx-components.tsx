@@ -6,34 +6,92 @@ import { Button } from '@/components/ui/button';
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     // Override default HTML elements with custom components
-    h1: ({ children }) => (
-      <h1 className="section-head-text mb-6 mt-8 first:mt-0">
-        {children}
-      </h1>
-    ),
-    h2: ({ children }) => (
-      <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 mt-8">
-        {children}
-      </h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3 mt-6">
-        {children}
-      </h3>
-    ),
-    h4: ({ children }) => (
-      <h4 className="text-lg sm:text-xl font-semibold text-white mb-2 mt-4">
-        {children}
-      </h4>
-    ),
+    h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+      const id =
+        typeof children === 'string'
+          ? children
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .replace(/^-|-$/g, '')
+          : 'heading-1';
+      return (
+        <h1
+          id={id}
+          className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6 mt-8 first:mt-0 leading-tight"
+          {...props}
+        >
+          {children}
+        </h1>
+      );
+    },
+    h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+      const id =
+        typeof children === 'string'
+          ? children
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .replace(/^-|-$/g, '')
+          : 'heading-2';
+      return (
+        <h2
+          id={id}
+          className="text-2xl sm:text-3xl font-bold text-white mb-4 mt-8"
+          {...props}
+        >
+          {children}
+        </h2>
+      );
+    },
+    h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+      const id =
+        typeof children === 'string'
+          ? children
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .replace(/^-|-$/g, '')
+          : 'heading-3';
+      return (
+        <h3
+          id={id}
+          className="text-xl sm:text-2xl font-semibold text-white mb-3 mt-6"
+          {...props}
+        >
+          {children}
+        </h3>
+      );
+    },
+    h4: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+      const id =
+        typeof children === 'string'
+          ? children
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .replace(/^-|-$/g, '')
+          : 'heading-4';
+      return (
+        <h4
+          id={id}
+          className="text-lg sm:text-xl font-semibold text-white mb-2 mt-4"
+          {...props}
+        >
+          {children}
+        </h4>
+      );
+    },
     p: ({ children }) => (
-      <p className="text-secondary mb-4 leading-relaxed">
-        {children}
-      </p>
+      <p className="text-secondary mb-4 leading-relaxed">{children}</p>
     ),
     a: ({ href, children }) => (
-      <Link 
-        href={href || '#'} 
+      <Link
+        href={href || '#'}
         className="text-[var(--text-color-variable)] hover:underline transition-all duration-200"
       >
         {children}
@@ -65,9 +123,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </ol>
     ),
     li: ({ children }) => (
-      <li className="text-secondary leading-relaxed">
-        {children}
-      </li>
+      <li className="text-secondary leading-relaxed">{children}</li>
     ),
     img: ({ src, alt, width, height, ...props }) => {
       const { ref, ...restProps } = props;
@@ -82,9 +138,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         />
       );
     },
-    hr: () => (
-      <hr className="border-tertiary my-8" />
-    ),
+    hr: () => <hr className="border-tertiary my-8" />,
     table: ({ children }) => (
       <div className="overflow-x-auto my-6">
         <table className="w-full border-collapse border border-tertiary rounded-lg">

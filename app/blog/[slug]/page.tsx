@@ -1,10 +1,12 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
 import { BlogHeader } from '@/components/blog/BlogHeader';
 import { BlogContent } from '@/components/blog/BlogContent';
 import { BlogNavigation, BackToBlog } from '@/components/blog/BlogNavigation';
+import { useMDXComponents } from '@/mdx-components';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -19,7 +21,9 @@ export async function generateStaticParams() {
 }
 
 // Generate metadata for each blog post
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
 
@@ -43,14 +47,16 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       authors: [post.author?.name || 'Aiden Kopec'],
       tags: post.tags,
       url: `https://aidenkopec.com/blog/${post.slug}`,
-      images: post.coverImage ? [
-        {
-          url: post.coverImage,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        }
-      ] : [],
+      images: post.coverImage
+        ? [
+            {
+              url: post.coverImage,
+              width: 1200,
+              height: 630,
+              alt: post.title,
+            },
+          ]
+        : [],
     },
     twitter: {
       card: 'summary_large_image',
@@ -79,7 +85,7 @@ function BlogPostSkeleton() {
           <div className="h-6 bg-black-100 rounded-full w-18"></div>
         </div>
       </div>
-      
+
       {/* Content Skeleton */}
       <div className="space-y-4">
         {[...Array(8)].map((_, i) => (
@@ -101,26 +107,27 @@ async function BlogPostContent({ slug }: { slug: string }) {
   }
 
   // Find previous and next posts
-  const currentIndex = allPosts.findIndex(p => p.slug === slug);
-  const previousPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+  const previousPost =
+    currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
   const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
-
-  // Dynamically import the MDX content
-  const MDXContent = await import(`@/content/blog/${slug}.mdx`).then(mod => mod.default);
 
   // Use headings from parsed blog post
   const headings = post.headings || [];
 
+  // Get MDX components for styling
+  const mdxComponents = useMDXComponents({});
+
   return (
     <div className="max-w-7xl mx-auto">
       <BlogHeader post={post} />
-      
+
       <BlogContent headings={headings} title={post.title} slug={post.slug}>
-        <MDXContent />
+        <MDXRemote source={post.content || ''} components={mdxComponents} />
       </BlogContent>
-      
+
       <BlogNavigation previousPost={previousPost} nextPost={nextPost} />
-      
+
       <BackToBlog />
     </div>
   );

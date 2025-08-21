@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { BlogToc } from './BlogToc';
+import { BlogShare } from './BlogShare';
 import { BlogHeading } from '@/lib/types';
 
 interface BlogContentProps {
@@ -11,7 +12,12 @@ interface BlogContentProps {
   slug?: string;
 }
 
-export function BlogContent({ children, headings = [], title, slug }: BlogContentProps) {
+export function BlogContent({
+  children,
+  headings = [],
+  title,
+  slug,
+}: BlogContentProps) {
   return (
     <>
       {/* Mobile Table of Contents - Displayed above content on mobile */}
@@ -27,7 +33,7 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
           <div className="hidden lg:block lg:col-span-3 relative">
             <div className="sticky top-32">
               <BlogToc headings={headings} className="mb-6" />
-              {/* Share Component Placeholder - can be added later */}
+              {/* Share Component */}
               {slug && title && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -35,10 +41,7 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
                   transition={{ duration: 0.6, delay: 0.3 }}
                   className="bg-tertiary p-6 rounded-lg border border-black-200"
                 >
-                  <h3 className="text-lg font-semibold text-white mb-4">Share this article</h3>
-                  <div className="text-sm text-secondary">
-                    Social sharing coming soon
-                  </div>
+                  <BlogShare slug={slug} title={title} />
                 </motion.div>
               )}
             </div>
@@ -54,17 +57,15 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
             headings.length > 0 ? 'lg:col-span-8' : 'lg:col-span-12'
           }`}
         >
-          <div className="blog-content">
-            {children}
-          </div>
+          <div className="blog-content">{children}</div>
         </motion.article>
       </div>
-      
+
       <style jsx global>{`
         .blog-content {
           /* Override prose styles to match your theme */
         }
-        
+
         .blog-content h1,
         .blog-content h2,
         .blog-content h3,
@@ -74,24 +75,24 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
           color: var(--white-100);
           font-weight: 700;
         }
-        
+
         .blog-content p {
           color: var(--secondary-color);
           line-height: 1.8;
           margin-bottom: 1.5rem;
         }
-        
+
         .blog-content a {
           color: var(--text-color-variable);
           text-decoration: none;
           transition: all 0.2s ease;
         }
-        
+
         .blog-content a:hover {
           text-decoration: underline;
           color: var(--text-color-variable);
         }
-        
+
         .blog-content code {
           background-color: var(--black-100);
           color: var(--text-color-variable);
@@ -100,7 +101,7 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
           font-size: 0.875rem;
           font-family: var(--font-mono);
         }
-        
+
         .blog-content pre {
           background-color: var(--black-100);
           border: 1px solid var(--tertiary-color);
@@ -109,13 +110,13 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
           overflow-x: auto;
           margin: 2rem 0;
         }
-        
+
         .blog-content pre code {
           background: none;
           padding: 0;
           color: var(--white-100);
         }
-        
+
         .blog-content blockquote {
           border-left: 4px solid var(--text-color-variable);
           background-color: var(--black-100);
@@ -124,24 +125,24 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
           border-radius: 0 0.5rem 0.5rem 0;
           font-style: italic;
         }
-        
+
         .blog-content blockquote p {
           color: var(--secondary-color);
           margin-bottom: 0;
         }
-        
+
         .blog-content ul,
         .blog-content ol {
           color: var(--secondary-color);
           margin-bottom: 1.5rem;
           padding-left: 1.5rem;
         }
-        
+
         .blog-content li {
           margin-bottom: 0.5rem;
           line-height: 1.6;
         }
-        
+
         .blog-content table {
           width: 100%;
           border-collapse: collapse;
@@ -150,7 +151,7 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
           border-radius: 0.5rem;
           overflow: hidden;
         }
-        
+
         .blog-content th {
           background-color: var(--black-100);
           color: var(--white-100);
@@ -159,20 +160,20 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
           text-align: left;
           border-bottom: 1px solid var(--tertiary-color);
         }
-        
+
         .blog-content td {
           padding: 0.75rem 1rem;
           border-bottom: 1px solid var(--tertiary-color);
           color: var(--secondary-color);
         }
-        
+
         .blog-content img {
           border-radius: 0.5rem;
           margin: 2rem 0;
           width: 100%;
           height: auto;
         }
-        
+
         .blog-content hr {
           border: none;
           height: 1px;
@@ -184,7 +185,7 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
           );
           margin: 3rem 0;
         }
-        
+
         /* Syntax highlighting adjustments */
         .blog-content .token.comment,
         .blog-content .token.prolog,
@@ -192,11 +193,11 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
         .blog-content .token.cdata {
           color: #6272a4;
         }
-        
+
         .blog-content .token.punctuation {
           color: #f8f8f2;
         }
-        
+
         .blog-content .token.property,
         .blog-content .token.tag,
         .blog-content .token.constant,
@@ -204,12 +205,12 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
         .blog-content .token.deleted {
           color: #ff79c6;
         }
-        
+
         .blog-content .token.boolean,
         .blog-content .token.number {
           color: #bd93f9;
         }
-        
+
         .blog-content .token.selector,
         .blog-content .token.attr-name,
         .blog-content .token.string,
@@ -218,7 +219,7 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
         .blog-content .token.inserted {
           color: #50fa7b;
         }
-        
+
         .blog-content .token.operator,
         .blog-content .token.entity,
         .blog-content .token.url,
@@ -227,18 +228,18 @@ export function BlogContent({ children, headings = [], title, slug }: BlogConten
         .blog-content .token.variable {
           color: #f8f8f2;
         }
-        
+
         .blog-content .token.atrule,
         .blog-content .token.attr-value,
         .blog-content .token.function,
         .blog-content .token.class-name {
           color: #f1fa8c;
         }
-        
+
         .blog-content .token.keyword {
           color: #8be9fd;
         }
-        
+
         .blog-content .token.regex,
         .blog-content .token.important {
           color: #ffb86c;

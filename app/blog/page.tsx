@@ -1,8 +1,8 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { BlogCardSolvex } from '@/components/blog/BlogCardSolvex';
-import { BlogHeroSolvex } from '@/components/blog/BlogHeroSolvex';
+import { BlogCard } from '@/components/blog/BlogCard';
+import { BlogHero } from '@/components/blog/BlogHero';
 import { BlogCategories } from '@/components/blog/BlogCategories';
 import { BlogPagination } from '@/components/blog/BlogPagination';
 import { useBlogSearch } from '@/hooks/useBlogSearch';
@@ -97,7 +97,7 @@ function BlogContent() {
   return (
     <>
       {/* Hero Section */}
-      <BlogHeroSolvex
+      <BlogHero
         postsCount={allPosts.length}
         recentPosts={allPosts}
         onSearch={setSearchTerm}
@@ -116,7 +116,7 @@ function BlogContent() {
             id="featured"
           >
             {/* Single Large Featured Post */}
-            <BlogCardSolvex
+            <BlogCard
               key={featuredPosts[0].slug}
               post={featuredPosts[0]}
               singleFeatured={true}
@@ -163,7 +163,7 @@ function BlogContent() {
             <>
               <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
                 {paginatedPosts.map((post, index) => (
-                  <BlogCardSolvex
+                  <BlogCard
                     key={post.slug}
                     post={post}
                     index={index}

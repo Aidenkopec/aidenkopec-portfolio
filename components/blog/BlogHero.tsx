@@ -13,7 +13,7 @@ interface BlogHeroProps {
   onCategoryFilter?: (category: string) => void;
 }
 
-export function BlogHeroSolvex({
+export function BlogHero({
   postsCount,
   recentPosts,
   onSearch,

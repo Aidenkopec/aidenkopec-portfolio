@@ -20,7 +20,7 @@ export function BlogHeader({ post }: BlogHeaderProps) {
         transition={{ duration: 0.6 }}
         className="mb-8"
       >
-        <Link 
+        <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-secondary hover:text-[var(--text-color-variable)] transition-colors text-sm"
         >
@@ -72,10 +72,11 @@ export function BlogHeader({ post }: BlogHeaderProps) {
             <Clock className="w-4 h-4" />
             <span className="text-sm">{post.readingTime} min read</span>
           </div>
-          
+
           {post.author && (
             <div className="text-sm">
-              by <span className="text-white font-medium">{post.author.name}</span>
+              by{' '}
+              <span className="text-white font-medium">{post.author.name}</span>
             </div>
           )}
         </div>
