@@ -1,29 +1,18 @@
-import { Suspense } from 'react';
-import { Metadata } from 'next';
-import { getAllBlogPosts, getAllBlogTags, getFeaturedBlogPosts } from '@/lib/blog';
-import { BlogCard } from '@/components/blog/BlogCard';
-import { TagList } from '@/components/blog/TagList';
-import { motion } from 'framer-motion';
+'use client';
 
-export const metadata: Metadata = {
+import { Suspense, useState, useEffect } from 'react';
+import { BlogCardSolvex } from '@/components/blog/BlogCardSolvex';
+import { BlogHeroSolvex } from '@/components/blog/BlogHeroSolvex';
+import { BlogCategories } from '@/components/blog/BlogCategories';
+import { useBlogSearch } from '@/hooks/useBlogSearch';
+import { motion } from 'framer-motion';
+import { Search } from 'lucide-react';
+import { BlogPost } from '@/lib/types';
+
+// Move metadata to a separate file or handle differently since this is now a client component
+const blogMetadata = {
   title: 'Blog - Aiden Kopec',
   description: 'Insights and experiences from a full-stack software developer. Learn about scalable web applications, AI tools, and modern development practices.',
-  keywords: [
-    'blog',
-    'software development',
-    'web development',
-    'next.js',
-    'typescript',
-    'ai tools',
-    'full stack development',
-    'programming',
-  ],
-  openGraph: {
-    title: 'Blog - Aiden Kopec',
-    description: 'Insights and experiences from a full-stack software developer. Learn about scalable web applications, AI tools, and modern development practices.',
-    type: 'website',
-    url: 'https://aidenkopec.com/blog',
-  },
 };
 
 function BlogSkeleton() {
@@ -48,85 +37,161 @@ function BlogSkeleton() {
   );
 }
 
-async function BlogContent() {
-  const [allPosts, featuredPosts, tags] = await Promise.all([
-    getAllBlogPosts(),
-    getFeaturedBlogPosts(),
-    getAllBlogTags(),
-  ]);
+function BlogContent() {
+  const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
+  const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const {
+    filteredPosts,
+    categories,
+    selectedCategory,
+    setSelectedCategory,
+    searchTerm,
+    setSearchTerm,
+    resultCount,
+    totalCount,
+    isFiltered
+  } = useBlogSearch(allPosts);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const response = await fetch('/api/blog');
+        if (!response.ok) {
+          throw new Error('Failed to fetch blog data');
+        }
+        const { allPosts: posts, featuredPosts: featured } = await response.json();
+        setAllPosts(posts);
+        setFeaturedPosts(featured);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return <BlogSkeleton />;
+  }
 
   return (
     <>
-      {/* Featured Posts Section */}
-      {featuredPosts.length > 0 && (
-        <section className="mb-16">
-          <h2 className="section-head-text mb-8">Featured Posts</h2>
-          <div className="grid gap-8 md:gap-12">
-            {featuredPosts.map((post, index) => (
-              <BlogCard key={post.slug} post={post} index={index} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Hero Section */}
+      <BlogHeroSolvex
+        postsCount={allPosts.length}
+        recentPosts={allPosts}
+        onSearch={setSearchTerm}
+        onCategoryFilter={setSelectedCategory}
+      />
 
-      <div className="grid lg:grid-cols-4 gap-12">
-        {/* Main Content */}
-        <div className="lg:col-span-3">
-          <h2 className="section-head-text mb-8">
-            {featuredPosts.length > 0 ? 'All Posts' : 'Latest Posts'}
-          </h2>
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-16 max-w-7xl">
+        {/* Featured Post Section */}
+        {!isFiltered && featuredPosts.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-16"
+            id="featured"
+          >
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="section-head-text">Featured Post</h2>
+              <span className="text-secondary text-sm">
+                1 featured post
+              </span>
+            </div>
+            
+            {/* Single Large Featured Post */}
+            <BlogCardSolvex 
+              key={featuredPosts[0].slug} 
+              post={featuredPosts[0]} 
+              featured={true}
+              singleFeatured={true}
+              index={0}
+            />
+          </motion.section>
+        )}
+
+        {/* Categories Filter */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-12"
+          id="blog-content"
+        >
+          <BlogCategories
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategorySelect={setSelectedCategory}
+            resultCount={resultCount}
+            totalCount={totalCount}
+          />
+        </motion.div>
+
+        {/* All Posts Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="section-head-text">
+              {isFiltered ? 'Filtered Results' : 'All Articles'}
+            </h2>
+            <span className="text-secondary text-sm">
+              {isFiltered ? `${resultCount} results` : `${totalCount} total articles`}
+            </span>
+          </div>
           
-          {allPosts.length > 0 ? (
-            <div className="grid gap-8 md:gap-12">
-              {allPosts.map((post, index) => (
-                <BlogCard 
+          {filteredPosts.length > 0 ? (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {filteredPosts.map((post, index) => (
+                <BlogCardSolvex 
                   key={post.slug} 
                   post={post} 
-                  index={featuredPosts.length > 0 ? index : index} 
+                  index={index}
                 />
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <h3 className="text-xl font-semibold text-white mb-4">
-                No blog posts yet
-              </h3>
-              <p className="text-secondary">
-                Stay tuned for upcoming posts about software development, AI tools, and more!
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <aside className="lg:col-span-1">
-          <div className="sticky top-8 space-y-8">
-            {/* Tags */}
-            {tags.length > 0 && (
-              <TagList tags={tags} />
-            )}
-            
-            {/* About Section */}
-            <div className="bg-tertiary p-6 rounded-lg border border-black-100">
-              <h3 className="text-lg font-bold text-white mb-4">About This Blog</h3>
-              <p className="text-secondary text-sm leading-relaxed mb-4">
-                Welcome to my blog where I share insights about full-stack development, 
-                AI integration, and building scalable applications. Learn from real-world 
-                projects that have generated $2M+ in business impact.
-              </p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-secondary">Total Posts:</span>
-                  <span className="text-white font-medium">{allPosts.length}</span>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-16"
+            >
+              <div className="max-w-md mx-auto">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--text-color-variable)]/10 flex items-center justify-center">
+                  <Search className="w-8 h-8 text-[var(--text-color-variable)]" />
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-secondary">Topics:</span>
-                  <span className="text-white font-medium">{tags.length}</span>
-                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  {isFiltered ? 'No articles found' : 'No blog posts yet'}
+                </h3>
+                <p className="text-secondary mb-6">
+                  {isFiltered 
+                    ? 'Try adjusting your search or filter criteria'
+                    : 'Stay tuned for upcoming posts about software development, AI tools, and more!'
+                  }
+                </p>
+                {isFiltered && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setSelectedCategory(null);
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--text-color-variable)] text-white hover:bg-[var(--text-color-variable)]/90 transition-colors"
+                  >
+                    Clear filters
+                  </button>
+                )}
               </div>
-            </div>
-          </div>
-        </aside>
+            </motion.div>
+          )}
+        </motion.section>
       </div>
     </>
   );
@@ -137,18 +202,7 @@ export default function BlogPage() {
     <main className="relative min-h-screen bg-primary-color">
       <div className="padding">
         <div className="max-w-7xl mx-auto">
-          {/* Hero Section */}
-          <section className="text-center mb-16 pt-24">
-            <h1 className="hero-head-text mb-6">
-              <span className="text-[var(--text-color-variable)]">Blog</span>
-            </h1>
-            <p className="hero-sub-text max-w-3xl mx-auto">
-              Insights and experiences from building scalable web applications, 
-              integrating AI tools, and delivering high-impact software solutions.
-            </p>
-          </section>
-
-          {/* Blog Content */}
+          {/* Blog Content - BlogHero becomes the main hero */}
           <Suspense fallback={<BlogSkeleton />}>
             <BlogContent />
           </Suspense>
