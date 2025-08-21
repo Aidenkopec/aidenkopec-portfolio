@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { BlogPost, BlogMetadata, BlogTag } from './types';
+import { BlogPost, BlogMetadata, BlogTag, BlogHeading } from './types';
 
 const BLOG_DIRECTORY = path.join(process.cwd(), 'content/blog');
 
@@ -9,6 +9,32 @@ function calculateReadingTime(content: string): number {
   const wordsPerMinute = 200;
   const words = content.trim().split(/\s+/).length;
   return Math.ceil(words / wordsPerMinute);
+}
+
+// Helper to extract headings from MDX content for table of contents
+function extractHeadings(content: string): BlogHeading[] {
+  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+  const headings: BlogHeading[] = [];
+  let match;
+
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length;
+    const text = match[2].trim();
+    const id = text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    headings.push({
+      id,
+      text,
+      level,
+    });
+  }
+
+  return headings;
 }
 
 // Helper to extract frontmatter and content from MDX file
@@ -59,7 +85,8 @@ function parseMDXFile(filePath: string) {
   return {
     metadata: metadata as BlogMetadata,
     content,
-    readingTime: calculateReadingTime(content)
+    readingTime: calculateReadingTime(content),
+    headings: extractHeadings(content)
   };
 }
 
@@ -79,7 +106,7 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
     const filePath = path.join(BLOG_DIRECTORY, file);
     
     try {
-      const { metadata, readingTime } = parseMDXFile(filePath);
+      const { metadata, readingTime, headings } = parseMDXFile(filePath);
       
       return {
         slug,
@@ -93,6 +120,8 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
         author: metadata.author || { name: 'Aiden Kopec' },
         excerpt: metadata.excerpt || metadata.description || '',
         coverImage: metadata.coverImage,
+        headings: headings || [],
+        category: metadata.category,
       };
     } catch (error) {
       console.error(`Error parsing blog post ${file}:`, error);
@@ -115,7 +144,7 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
   }
   
   try {
-    const { metadata, content, readingTime } = parseMDXFile(filePath);
+    const { metadata, content, readingTime, headings } = parseMDXFile(filePath);
     
     return {
       slug,
@@ -130,6 +159,8 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
       excerpt: metadata.excerpt || metadata.description || '',
       coverImage: metadata.coverImage,
       content, // Include raw content for MDX rendering
+      headings: headings || [],
+      category: metadata.category,
     };
   } catch (error) {
     console.error(`Error parsing blog post ${slug}:`, error);

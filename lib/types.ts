@@ -1,3 +1,9 @@
+export interface BlogHeading {
+  id: string;
+  text: string;
+  level: number;
+}
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -14,6 +20,8 @@ export interface BlogPost {
   excerpt?: string;
   coverImage?: string;
   content?: any; // MDX content
+  headings?: BlogHeading[];
+  category?: string;
 }
 
 export interface BlogMetadata {
@@ -29,6 +37,7 @@ export interface BlogMetadata {
   };
   excerpt?: string;
   coverImage?: string;
+  category?: string;
 }
 
 export interface BlogPostsResponse {

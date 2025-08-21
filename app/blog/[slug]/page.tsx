@@ -108,18 +108,21 @@ async function BlogPostContent({ slug }: { slug: string }) {
   // Dynamically import the MDX content
   const MDXContent = await import(`@/content/blog/${slug}.mdx`).then(mod => mod.default);
 
+  // Use headings from parsed blog post
+  const headings = post.headings || [];
+
   return (
-    <article className="max-w-4xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <BlogHeader post={post} />
       
-      <BlogContent>
+      <BlogContent headings={headings} title={post.title} slug={post.slug}>
         <MDXContent />
       </BlogContent>
       
       <BlogNavigation previousPost={previousPost} nextPost={nextPost} />
       
       <BackToBlog />
-    </article>
+    </div>
   );
 }
 
@@ -127,13 +130,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
   return (
-    <main className="relative min-h-screen bg-primary-color">
-      <div className="padding">
-        <div className="pt-24">
-          <Suspense fallback={<BlogPostSkeleton />}>
-            <BlogPostContent slug={slug} />
-          </Suspense>
-        </div>
+    <main className="min-h-screen w-full bg-primary-color pt-28 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Suspense fallback={<BlogPostSkeleton />}>
+          <BlogPostContent slug={slug} />
+        </Suspense>
       </div>
     </main>
   );

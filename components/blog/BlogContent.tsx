@@ -1,22 +1,64 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { BlogToc } from './BlogToc';
+import { BlogHeading } from '@/lib/types';
 
 interface BlogContentProps {
   children: React.ReactNode;
+  headings?: BlogHeading[];
+  title?: string;
+  slug?: string;
 }
 
-export function BlogContent({ children }: BlogContentProps) {
+export function BlogContent({ children, headings = [], title, slug }: BlogContentProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, delay: 0.2 }}
-      className="prose prose-lg prose-invert max-w-none"
-    >
-      <article className="blog-content">
-        {children}
-      </article>
+    <>
+      {/* Mobile Table of Contents - Displayed above content on mobile */}
+      {headings.length > 0 && (
+        <div className="lg:hidden mb-8">
+          <BlogToc headings={headings} />
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Table of Contents - Desktop */}
+        {headings.length > 0 && (
+          <div className="hidden lg:block lg:col-span-3 relative">
+            <div className="sticky top-32">
+              <BlogToc headings={headings} className="mb-6" />
+              {/* Share Component Placeholder - can be added later */}
+              {slug && title && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="bg-tertiary p-6 rounded-lg border border-black-200"
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">Share this article</h3>
+                  <div className="text-sm text-secondary">
+                    Social sharing coming soon
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <motion.article
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className={`prose prose-lg prose-invert max-w-none bg-tertiary p-8 rounded-xl border border-black-200 ${
+            headings.length > 0 ? 'lg:col-span-8' : 'lg:col-span-12'
+          }`}
+        >
+          <div className="blog-content">
+            {children}
+          </div>
+        </motion.article>
+      </div>
       
       <style jsx global>{`
         .blog-content {
@@ -202,6 +244,6 @@ export function BlogContent({ children }: BlogContentProps) {
           color: #ffb86c;
         }
       `}</style>
-    </motion.div>
+    </>
   );
 }
