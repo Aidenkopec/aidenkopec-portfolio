@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Tag } from 'lucide-react';
 import { getAllBlogTags, getBlogPostsByTag } from '@/lib/blog';
 import { BlogCard } from '@/components/blog/BlogCard';
+import BlogNavbar from '@/components/blog/BlogNavbar';
 
 interface TagPageProps {
   params: Promise<{ tag: string }>;
@@ -19,7 +20,9 @@ export async function generateStaticParams() {
 }
 
 // Generate metadata for each tag page
-export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: TagPageProps): Promise<Metadata> {
   const { tag } = await params;
   const posts = await getBlogPostsByTag(tag);
 
@@ -31,9 +34,9 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
   }
 
   // Find the actual tag name from the posts
-  const tagName = posts[0]?.tags.find(t => 
-    t.toLowerCase().replace(/\s+/g, '-') === tag
-  ) || tag;
+  const tagName =
+    posts[0]?.tags.find((t) => t.toLowerCase().replace(/\s+/g, '-') === tag) ||
+    tag;
 
   return {
     title: `Posts tagged "${tagName}" - Aiden Kopec`,
@@ -57,7 +60,7 @@ function TagPageSkeleton() {
         <div className="h-8 bg-black-100 rounded w-64 mb-4"></div>
         <div className="h-4 bg-black-100 rounded w-96"></div>
       </div>
-      
+
       {/* Posts Skeleton */}
       <div className="grid gap-8 md:gap-12">
         {[...Array(3)].map((_, i) => (
@@ -88,31 +91,34 @@ async function TagPageContent({ tag }: { tag: string }) {
   }
 
   // Find the actual tag name from the posts
-  const tagName = posts[0]?.tags.find(t => 
-    t.toLowerCase().replace(/\s+/g, '-') === tag
-  ) || tag.replace(/-/g, ' ');
+  const tagName =
+    posts[0]?.tags.find((t) => t.toLowerCase().replace(/\s+/g, '-') === tag) ||
+    tag.replace(/-/g, ' ');
 
   return (
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <header className="mb-12">
         {/* Back to Blog */}
-        <Link 
+        <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-secondary hover:text-[var(--text-color-variable)] transition-colors mb-6 text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Blog
         </Link>
-        
+
         {/* Tag Title */}
         <div className="flex items-center gap-3 mb-4">
           <Tag className="w-8 h-8 text-[var(--text-color-variable)]" />
           <h1 className="section-head-text">
-            Posts tagged <span className="text-[var(--text-color-variable)]">"{tagName}"</span>
+            Posts tagged{' '}
+            <span className="text-[var(--text-color-variable)]">
+              "{tagName}"
+            </span>
           </h1>
         </div>
-        
+
         <p className="text-secondary text-lg">
           {posts.length} post{posts.length !== 1 ? 's' : ''} found
         </p>
@@ -146,12 +152,11 @@ export default async function TagPage({ params }: TagPageProps) {
 
   return (
     <main className="relative min-h-screen bg-primary-color">
-      <div className="padding">
-        <div className="pt-24">
-          <Suspense fallback={<TagPageSkeleton />}>
-            <TagPageContent tag={tag} />
-          </Suspense>
-        </div>
+      <BlogNavbar />
+      <div className="padding pt-24">
+        <Suspense fallback={<TagPageSkeleton />}>
+          <TagPageContent tag={tag} />
+        </Suspense>
       </div>
     </main>
   );

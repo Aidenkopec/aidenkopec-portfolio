@@ -217,10 +217,13 @@ function BlogContent() {
   );
 }
 
+import BlogNavbar from '@/components/blog/BlogNavbar';
+
 export default function BlogPage() {
   return (
     <main className="relative min-h-screen bg-primary-color">
-      <div className="padding">
+      <BlogNavbar />
+      <div className="padding pt-24">
         <div className="max-w-7xl mx-auto">
           {/* Blog Content - BlogHero becomes the main hero */}
           <Suspense fallback={<BlogSkeleton />}>

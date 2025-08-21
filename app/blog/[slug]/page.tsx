@@ -7,6 +7,7 @@ import { BlogHeader } from '@/components/blog/BlogHeader';
 import { BlogContent } from '@/components/blog/BlogContent';
 import { BlogNavigation, BackToBlog } from '@/components/blog/BlogNavigation';
 import { useMDXComponents } from '@/mdx-components';
+import BlogNavbar from '@/components/blog/BlogNavbar';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -137,11 +138,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
   return (
-    <main className="min-h-screen w-full bg-primary-color pt-28 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Suspense fallback={<BlogPostSkeleton />}>
-          <BlogPostContent slug={slug} />
-        </Suspense>
+    <main className="min-h-screen w-full bg-primary-color">
+      <BlogNavbar />
+      <div className="pt-28 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Suspense fallback={<BlogPostSkeleton />}>
+            <BlogPostContent slug={slug} />
+          </Suspense>
+        </div>
       </div>
     </main>
   );
