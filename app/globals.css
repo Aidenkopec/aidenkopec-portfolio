@@ -17,11 +17,7 @@
   --color-gradient-start: var(--gradient-start);
   --color-gradient-end: var(--gradient-end);
 
-  /* Background Patterns - Dynamic */
-  --bg-hero-pattern: var(--hero-pattern);
-  --bg-hero-pattern-adjusted: url('/backgrounds/hero-bg-adjusted.png');
-  --bg-hero-pattern-midnight: url('/backgrounds/hero-bg-midnight-blue.png');
-  --bg-hero-pattern-green: url('/backgrounds/hero-bg-green.png');
+  /* Background Patterns - Dynamic (now using WavyLines component) */
 
   /* Custom Spacing */
   --spacing-padding-x: 1.5rem; /* px-6 */
@@ -98,7 +94,6 @@
   --black-100: #141414;
   --black-200: #000000;
   --white-100: #ffffff;
-  --hero-pattern: url('/backgrounds/hero-bg-adjusted.png');
   --text-color-variable: #ff6b6b;
   --gradient-start: #ff6b6b;
   --gradient-end: rgba(255, 107, 107, 0);
@@ -112,7 +107,6 @@ html.cosmicVoyage {
   --black-100: #140a23;
   --black-200: #05020a;
   --white-100: #f8f5ff;
-  --hero-pattern: url('/backgrounds/hero-bg.png');
   --text-color-variable: #a855f7;
   --gradient-start: #a855f7;
   --gradient-end: rgba(168, 85, 247, 0);
@@ -125,7 +119,6 @@ html.glacierSapphire {
   --black-100: #0b1b2b;
   --black-200: #030a12;
   --white-100: #ffffff;
-  --hero-pattern: url('/backgrounds/hero-bg-midnight-blue.png');
   --text-color-variable: #60a5fa;
   --gradient-start: #60a5fa;
   --gradient-end: rgba(96, 165, 250, 0);
@@ -138,15 +131,46 @@ html.auroraJade {
   --black-100: #0b1f19;
   --black-200: #030806;
   --white-100: #ffffff;
-  --hero-pattern: url('/backgrounds/hero-bg-green.png');
   --text-color-variable: #2dd4bf;
   --gradient-start: #2dd4bf;
   --gradient-end: rgba(45, 212, 191, 0);
 }
 
 /* Custom Utilities */
-.bg-hero-pattern {
-  background-image: var(--hero-pattern);
+
+/* Wavy Lines Animations */
+@keyframes wave-flow-normal {
+  0%, 100% { 
+    transform: translateX(-2%) scale(1.02);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: translateX(2%) scale(0.98);
+    opacity: 1;
+  }
+}
+
+@keyframes wave-flow-reverse {
+  0%, 100% { 
+    transform: translateX(2%) scale(0.98) rotate(0.5deg);
+    opacity: 1;
+  }
+  50% { 
+    transform: translateX(-2%) scale(1.02) rotate(-0.5deg);
+    opacity: 0.8;
+  }
+}
+
+.wave-path {
+  filter: blur(0.5px);
+}
+
+.wave-flow-normal {
+  animation-name: wave-flow-normal;
+}
+
+.wave-flow-reverse {
+  animation-name: wave-flow-reverse;
 }
 
 .dynamic-gradient {

@@ -19,7 +19,6 @@ interface Theme {
     '--black-100': string;
     '--black-200': string;
     '--white-100': string;
-    '--hero-pattern': string;
     '--text-color-variable': string;
     '--gradient-start': string;
     '--gradient-end': string;
@@ -40,7 +39,6 @@ export const themes: Themes = {
       '--black-100': '#141414',
       '--black-200': '#000000',
       '--white-100': '#ffffff',
-      '--hero-pattern': 'url(/backgrounds/hero-bg-adjusted.png)',
       '--text-color-variable': '#ff6b6b',
       '--gradient-start': '#ff6b6b',
       '--gradient-end': 'rgba(255, 107, 107, 0)',
@@ -55,7 +53,6 @@ export const themes: Themes = {
       '--black-100': '#140a23',
       '--black-200': '#05020a',
       '--white-100': '#f8f5ff',
-      '--hero-pattern': 'url(/backgrounds/hero-bg.png)',
       '--text-color-variable': '#a855f7',
       '--gradient-start': '#a855f7',
       '--gradient-end': 'rgba(168, 85, 247, 0)',
@@ -70,7 +67,6 @@ export const themes: Themes = {
       '--black-100': '#0b1b2b',
       '--black-200': '#030a12',
       '--white-100': '#ffffff',
-      '--hero-pattern': 'url(/backgrounds/hero-bg-midnight-blue.png)',
       '--text-color-variable': '#60a5fa',
       '--gradient-start': '#60a5fa',
       '--gradient-end': 'rgba(96, 165, 250, 0)',
@@ -85,7 +81,6 @@ export const themes: Themes = {
       '--black-100': '#0b1f19',
       '--black-200': '#030806',
       '--white-100': '#ffffff',
-      '--hero-pattern': 'url(/backgrounds/hero-bg-green.png)',
       '--text-color-variable': '#2dd4bf',
       '--gradient-start': '#2dd4bf',
       '--gradient-end': 'rgba(45, 212, 191, 0)',
