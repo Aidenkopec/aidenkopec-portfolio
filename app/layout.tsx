@@ -79,13 +79,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          themes={[
-            'obsidian',
-            'cosmicVoyage',
-            'midnightBlue',
-            'deepForest',
-            'crimsonFire',
-          ]}
+          themes={['obsidian', 'cosmicVoyage', 'glacierSapphire', 'auroraJade']}
           defaultTheme="obsidian"
           enableSystem={false}
         >

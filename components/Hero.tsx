@@ -19,11 +19,11 @@ const Hero: React.FC = () => {
         </div>
 
         <div>
-          <h1 className={`${styles.heroHeadText} text-secondary`}>
+          <h1 className={`${styles.heroHeadText} text-secondary `}>
             Hi, I'm
             <span style={{ color: 'var(--text-color-variable)' }}> Aiden</span>
           </h1>
-          <p className={`${styles.heroSubText} mt-2 text-secondary`}>
+          <p className={`${styles.heroSubText} mt-2 text-secondary `}>
             {/*className='sm:block hidden'*/}
             Dream. Design. Deliver. <br />
             turning ideas into reality

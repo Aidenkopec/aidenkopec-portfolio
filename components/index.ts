@@ -17,6 +17,7 @@ import MusicPlayer from './MusicPlayer';
 import ThemeSelector from './ThemeSelector';
 import CustomizationMenu from './CustomizationMenu';
 import FloatingMusicBar from './FloatingMusicBar';
+import BlogNavbar from './blog/BlogNavbar';
 
 export {
   Hero,
@@ -36,4 +37,5 @@ export {
   ThemeSelector,
   CustomizationMenu,
   FloatingMusicBar,
+  BlogNavbar,
 };

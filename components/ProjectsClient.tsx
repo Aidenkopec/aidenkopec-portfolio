@@ -109,7 +109,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
         <div className="mt-5 flex-1 flex flex-col justify-between">
           <div>
-            <h3 className="text-white font-bold text-[20px] mb-2">{name}</h3>
+            <h3 className="text-secondary  font-bold text-[20px] mb-2">
+              {name}
+            </h3>
             <p className="text-secondary text-[14px] leading-[22px]">
               {description}
             </p>
@@ -151,7 +153,7 @@ const StatCard: React.FC<StatCardProps> = ({
       className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
     >
       <div className="flex items-center justify-between mb-2">
-        <div className="text-white text-xl font-bold">
+        <div className="text-secondary  text-xl font-bold">
           {loading ? (
             <div className="w-6 h-6 bg-gray-600 animate-pulse rounded"></div>
           ) : (
@@ -219,7 +221,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   if (loading) {
     return (
       <div className="bg-tertiary p-4 rounded-xl border border-tertiary">
-        <h4 className="text-white font-semibold text-[16px] mb-4">
+        <h4 className="text-secondary  font-semibold text-[16px] mb-4">
           Contribution Activity
         </h4>
         <div className="flex items-center justify-center p-4">
@@ -483,8 +485,8 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
             transform: 'translate(-50%, -100%)',
           }}
         >
-          <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-2xl border border-gray-600 whitespace-nowrap">
-            <div className="font-medium text-white">{tooltip.content}</div>
+          <div className="bg-gray-900 text-secondary  text-xs rounded-lg px-3 py-2 shadow-2xl border border-gray-600 whitespace-nowrap">
+            <div className="font-medium text-secondary ">{tooltip.content}</div>
             <div className="text-gray-300 text-[11px]">{tooltip.date}</div>
             {/* Arrow */}
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
@@ -613,7 +615,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
           transitionSpeed={450}
           className="bg-tertiary p-4 rounded-xl border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
         >
-          <h4 className="text-white font-semibold text-[16px] mb-4">
+          <h4 className="text-secondary  font-semibold text-[16px] mb-4">
             Recent Commits
           </h4>
 
@@ -626,7 +628,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
                   className="p-3 bg-black-100 rounded-lg border border-tertiary hover:border-[var(--text-color-variable)] transition-colors duration-300"
                 >
                   <div className="flex items-center gap-3 mb-1">
-                    <span className="text-white text-sm font-medium truncate">
+                    <span className="text-secondary  text-sm font-medium truncate">
                       {formatCommitMessage(commit.message, 50)}
                     </span>
                     <span className="text-[var(--text-color-variable)] text-xs font-mono bg-tertiary px-2 py-1 rounded">
@@ -688,7 +690,7 @@ export const ProjectsSectionHeader: React.FC<{
 }> = ({ title, className = '' }) => {
   return (
     <motion.div variants={textVariant() as any} className={className}>
-      <h3 className="text-white font-bold text-[24px] mb-8">{title}</h3>
+      <h3 className="text-secondary  font-bold text-[24px] mb-8">{title}</h3>
     </motion.div>
   );
 };

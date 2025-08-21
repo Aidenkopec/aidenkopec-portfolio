@@ -121,12 +121,18 @@ const ComputersCanvas: React.FC = () => {
         toneMappingExposure: 0.6,
         outputColorSpace: THREE.SRGBColorSpace,
       }}
+      style={{ touchAction: 'pan-y' }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
+          enablePan={false}
+          touches={{
+            ONE: THREE.TOUCH.ROTATE,
+            TWO: THREE.TOUCH.DOLLY_PAN
+          }}
         />
         <Computers isMobile={isMobile} />
         <Preload all />

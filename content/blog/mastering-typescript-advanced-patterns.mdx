@@ -1,0 +1,222 @@
+---
+title: "Mastering Advanced TypeScript Patterns for Enterprise Applications"
+description: "Deep dive into advanced TypeScript patterns that make your code more maintainable, type-safe, and scalable."
+date: "2025-01-25"
+tags: ["Development"]
+featured: false
+published: true
+author:
+  name: "Aiden Kopec"
+excerpt: "Learn how to leverage TypeScript's advanced type system to build robust, maintainable enterprise applications."
+coverImage: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=400&fit=crop&crop=center&auto=format&q=80"
+---
+
+# Mastering Advanced TypeScript Patterns for Enterprise Applications
+
+TypeScript has evolved far beyond simple type annotations. In enterprise applications, leveraging advanced patterns can mean the difference between a maintainable codebase and a maintenance nightmare. Let me share the patterns that have transformed how I approach large-scale TypeScript projects.
+
+## Conditional Types and Type Inference
+
+### The Power of Conditional Types
+
+Conditional types allow you to create types that change based on input types. This is incredibly powerful for building flexible APIs:
+
+```typescript
+type NonNullable<T> = T extends null | undefined ? never : T;
+
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+type User = {
+  id: number;
+  profile: {
+    name: string;
+    email: string;
+  };
+  settings: {
+    theme: 'light' | 'dark';
+    notifications: boolean;
+  };
+};
+
+// Now we can make any part of User optional
+type PartialUser = DeepPartial<User>;
+```
+
+### Advanced Mapped Types
+
+Mapped types with conditional logic enable sophisticated type transformations:
+
+```typescript
+type EventMap = {
+  click: { x: number; y: number };
+  keypress: { key: string; code: number };
+  scroll: { deltaX: number; deltaY: number };
+};
+
+type EventHandler<T extends keyof EventMap> = (event: EventMap[T]) => void;
+
+type EventHandlers = {
+  [K in keyof EventMap]: EventHandler<K>;
+};
+
+// Result:
+// {
+//   click: (event: { x: number; y: number }) => void;
+//   keypress: (event: { key: string; code: number }) => void;
+//   scroll: (event: { deltaX: number; deltaY: number }) => void;
+// }
+```
+
+## Template Literal Types
+
+Template literal types open up possibilities for string manipulation at the type level:
+
+```typescript
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+type ApiEndpoint<T extends string> = `/api/${T}`;
+
+type UserEndpoints = ApiEndpoint<'users' | 'users/:id' | 'users/:id/profile'>;
+// Result: "/api/users" | "/api/users/:id" | "/api/users/:id/profile"
+
+type RouteParams<T extends string> = T extends `${string}:${infer Param}/${infer Rest}`
+  ? Param | RouteParams<Rest>
+  : T extends `${string}:${infer Param}`
+  ? Param
+  : never;
+
+type UserParams = RouteParams<'users/:id/profile/:section'>;
+// Result: "id" | "section"
+```
+
+## Utility Types for API Responses
+
+Building robust API clients requires careful typing of responses:
+
+```typescript
+type ApiResponse<T> = {
+  data: T;
+  status: number;
+  message: string;
+  timestamp: string;
+};
+
+type PaginatedResponse<T> = ApiResponse<T[]> & {
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+type ErrorResponse = {
+  error: {
+    code: string;
+    message: string;
+    details?: Record<string, any>;
+  };
+  status: number;
+  timestamp: string;
+};
+
+// Union type for all possible responses
+type ApiResult<T> = ApiResponse<T> | PaginatedResponse<T> | ErrorResponse;
+```
+
+## Advanced Generic Constraints
+
+Generic constraints with conditional types enable sophisticated type narrowing:
+
+```typescript
+type IsArray<T> = T extends any[] ? true : false;
+
+type ArrayElement<T> = T extends (infer U)[] ? U : never;
+
+type ExtractReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
+
+// Practical example: Type-safe event emitter
+type EventCallback<T> = (data: T) => void;
+
+class TypedEventEmitter<Events extends Record<string, any>> {
+  private listeners: Map<keyof Events, EventCallback<Events[keyof Events]>[]> = new Map();
+
+  on<Event extends keyof Events>(event: Event, callback: EventCallback<Events[Event]>): void {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, []);
+    }
+    this.listeners.get(event)!.push(callback as EventCallback<Events[keyof Events]>);
+  }
+
+  emit<Event extends keyof Events>(event: Event, data: Events[Event]): void {
+    const callbacks = this.listeners.get(event);
+    if (callbacks) {
+      callbacks.forEach(callback => callback(data));
+    }
+  }
+}
+
+// Usage
+type UserEvents = {
+  'user:created': { id: number; email: string };
+  'user:updated': { id: number; changes: Partial<User> };
+  'user:deleted': { id: number };
+};
+
+const userEmitter = new TypedEventEmitter<UserEvents>();
+
+// TypeScript will enforce correct event names and data types
+userEmitter.on('user:created', (data) => {
+  console.log(`User created: ${data.email}`); // data is typed as { id: number; email: string }
+});
+```
+
+## Branded Types for Runtime Safety
+
+Branded types provide compile-time safety for values that need runtime validation:
+
+```typescript
+type Brand<K, T> = K & { __brand: T };
+
+type UserId = Brand<number, 'UserId'>;
+type Email = Brand<string, 'Email'>;
+type ValidatedPassword = Brand<string, 'ValidatedPassword'>;
+
+// Factory functions with validation
+function createUserId(id: number): UserId {
+  if (id <= 0) throw new Error('Invalid user ID');
+  return id as UserId;
+}
+
+function createEmail(email: string): Email {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) throw new Error('Invalid email format');
+  return email as Email;
+}
+
+function createValidatedPassword(password: string): ValidatedPassword {
+  if (password.length < 8) throw new Error('Password too short');
+  if (!/[A-Z]/.test(password)) throw new Error('Password must contain uppercase letter');
+  if (!/[a-z]/.test(password)) throw new Error('Password must contain lowercase letter');
+  if (!/\d/.test(password)) throw new Error('Password must contain number');
+  return password as ValidatedPassword;
+}
+
+// Now these types cannot be mixed up
+function updateUser(id: UserId, email: Email, password: ValidatedPassword) {
+  // Implementation
+}
+
+// This would cause a compile error:
+// updateUser(123, "invalid-email", "weak");
+```
+
+## Conclusion
+
+Advanced TypeScript patterns aren't just about showing off type system knowledge—they're practical tools for building robust, maintainable applications. The key is to start simple and gradually introduce these patterns where they provide real value.
+
+Remember: TypeScript's type system is there to serve your application, not the other way around. Use these patterns to solve real problems, not to create overly complex type hierarchies.
+
+The patterns I've shared here have helped me build more reliable APIs, catch bugs at compile time, and create self-documenting code that's easier to maintain and extend. Start with one or two patterns that solve immediate problems in your codebase, and gradually expand your TypeScript toolkit.

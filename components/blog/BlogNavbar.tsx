@@ -1,21 +1,16 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import CustomizationMenu from '../CustomizationMenu';
+import { styles } from '../../styles';
 
-import { styles } from '../styles';
-import { navLinks } from '../constants';
-// Direct paths for public folder assets - this is the correct Next.js approach
-import CustomizationMenu from './CustomizationMenu';
-
-const Navbar: React.FC = () => {
-  const [active, setActive] = useState<string>('');
-  const [toggle, setToggle] = useState<boolean>(false);
+const BlogNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [customizationMenuDesktop, setCustomizationMenuDesktop] =
     useState<boolean>(false);
   const [customizationMenuMobile, setCustomizationMenuMobile] =
     useState<boolean>(false);
+  const [toggle, setToggle] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,56 +23,56 @@ const Navbar: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const blogNavLinks = [
+    { id: 'home', title: 'Home', href: '/' },
+    { id: 'blog', title: 'Blog', href: '/blog' },
+    { id: 'projects', title: 'Projects', href: '/#projects' },
+    { id: 'contact', title: 'Contact', href: '/#contact' },
+  ];
+
   return (
     <nav
-      className={`${
-        styles.paddingX
-      } w-full flex items-center py-5 fixed top-0 z-50 ${
-        scrolled ? 'bg-primary-color' : 'bg-transparent'
+      className={`w-full flex items-center py-5 fixed top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-primary-color/95 backdrop-blur-sm shadow-lg'
+          : 'bg-transparent'
       }`}
     >
-      <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
-        <Link
-          href="/"
-          className="flex items-center gap-2"
-          onClick={() => {
-            setActive('');
-            window.scrollTo(0, 0);
-          }}
-        >
-          <p className="text-secondary  text-[18px] font-bold cursor-pointer flex ">
+      <div
+        className={`w-full flex justify-between items-center max-w-7xl mx-auto ${styles.paddingX}`}
+      >
+        {/* Logo/Home Link */}
+        <Link href="/" className="flex items-center gap-2 group">
+          <p className="text-secondary  text-[18px] font-bold cursor-pointer flex transition-colors group-hover:text-[var(--text-color-variable)]">
             Aiden Kopec &nbsp;
             <span className="sm:block hidden"> | Full Stack Developer</span>
           </p>
         </Link>
 
+        {/* Desktop Navigation */}
         <div className="hidden sm:flex items-center gap-10">
           <ul className="list-none flex flex-row gap-10 items-center">
-            {navLinks.map((nav) => (
-              <li
-                key={nav.id}
-                className={`${
-                  active === nav.title ? 'text-secondary ' : 'text-secondary'
-                } hover:text-secondary  text-[18px] font-medium cursor-pointer`}
-                onClick={() => setActive(nav.title)}
-              >
-                {nav.id === 'blog' ? (
-                  <Link href="/blog">{nav.title}</Link>
-                ) : (
-                  <a href={`#${nav.id}`}>{nav.title}</a>
-                )}
+            {blogNavLinks.map((nav) => (
+              <li key={nav.id}>
+                <Link
+                  href={nav.href}
+                  className="text-secondary  hover:text-secondary  text-[18px] font-medium cursor-pointer transition-colors duration-200"
+                >
+                  {nav.title}
+                </Link>
               </li>
             ))}
+
+            {/* Customizations */}
             <li className="flex items-center gap-4 relative">
               <button
                 onClick={() =>
                   setCustomizationMenuDesktop(!customizationMenuDesktop)
                 }
-                className="text-secondary hover:text-secondary  text-[18px] font-medium cursor-pointer transition-colors"
+                className="text-secondary  hover:text-secondary  text-[18px] font-medium cursor-pointer transition-colors duration-200"
               >
                 Customizations
               </button>
@@ -89,11 +84,11 @@ const Navbar: React.FC = () => {
           </ul>
         </div>
 
+        {/* Mobile Menu Button */}
         <div className="sm:hidden flex flex-1 justify-end items-center gap-4">
-          {/* Hamburger Menu Button - inline SVG to ensure visibility */}
           <button
             aria-label="Toggle menu"
-            className="w-10 h-10 flex items-center justify-center rounded-md text-secondary hover:text-secondary  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-white z-[100]"
+            className="w-10 h-10 flex items-center justify-center rounded-md text-secondary  hover:text-secondary  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-white z-[100]"
             onClick={() => setToggle(!toggle)}
           >
             {toggle ? (
@@ -130,7 +125,7 @@ const Navbar: React.FC = () => {
             )}
           </button>
 
-          {/* Mobile Dropdown Menu - contains both nav links and music player */}
+          {/* Mobile Dropdown Menu */}
           <div
             className={`${
               !toggle ? 'hidden' : 'flex'
@@ -138,29 +133,22 @@ const Navbar: React.FC = () => {
           >
             <ul className="list-none flex justify-end items-start flex-1 flex-col gap-4">
               {/* Navigation Links */}
-              {navLinks.map((nav) => (
-                <li
-                  key={nav.id}
-                  className={`font-poppins font-medium cursor-pointer text-[16px] ${
-                    active === nav.title ? 'text-secondary ' : 'text-secondary'
-                  }`}
-                  onClick={() => {
-                    setToggle(!toggle);
-                    setActive(nav.title);
-                  }}
-                >
-                  {nav.id === 'blog' ? (
-                    <Link href="/blog">{nav.title}</Link>
-                  ) : (
-                    <a href={`#${nav.id}`}>{nav.title}</a>
-                  )}
+              {blogNavLinks.map((nav) => (
+                <li key={nav.id}>
+                  <Link
+                    href={nav.href}
+                    className="font-poppins font-medium cursor-pointer text-[16px] text-secondary  hover:text-secondary  transition-colors duration-200"
+                    onClick={() => setToggle(false)}
+                  >
+                    {nav.title}
+                  </Link>
                 </li>
               ))}
 
               {/* Customizations */}
               <li className="pt-2 relative">
                 <button
-                  className="text-secondary text-[16px] font-medium cursor-pointer hover:text-secondary  transition-colors"
+                  className="text-secondary  text-[16px] font-medium cursor-pointer hover:text-secondary  transition-colors duration-200"
                   onClick={() =>
                     setCustomizationMenuMobile(!customizationMenuMobile)
                   }
@@ -181,4 +169,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar;
+export default BlogNavbar;
