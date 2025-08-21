@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 
 type WavyLinesProps = {
   className?: string;
-  opacity?: number;
   waveCount?: number;
-  animationDuration?: number;
 };
 
 type ScreenSize = 'mobile' | 'tablet' | 'desktop';
@@ -18,6 +16,31 @@ function getScreenSize(): ScreenSize {
   if (width < 640) return 'mobile';
   if (width < 1024) return 'tablet';
   return 'desktop';
+}
+
+// Helper function to get theme colors from CSS custom properties
+function getThemeColors() {
+  if (typeof window === 'undefined') {
+    // Default fallback colors
+    return {
+      primary: '#60a5fa',
+      accent: '#a78bfa',
+      secondary: '#ffffff',
+      glow: '#60a5fa',
+      glowSecondary: '#a78bfa',
+    };
+  }
+
+  const style = getComputedStyle(document.documentElement);
+  return {
+    primary:
+      style.getPropertyValue('--text-color-variable').trim() || '#60a5fa',
+    accent: style.getPropertyValue('--gradient-start').trim() || '#a78bfa',
+    secondary: style.getPropertyValue('--white-100').trim() || '#ffffff',
+    glow: style.getPropertyValue('--text-color-variable').trim() || '#60a5fa',
+    glowSecondary:
+      style.getPropertyValue('--gradient-start').trim() || '#a78bfa',
+  };
 }
 
 function generateWavePath(
@@ -46,14 +69,10 @@ function generateWavePath(
   return points.join(' ');
 }
 
-function WavyLines({
-  className = '',
-  opacity = 0.3,
-  waveCount,
-  animationDuration = 20,
-}: WavyLinesProps) {
+function WavyLines({ className = '', waveCount }: WavyLinesProps) {
   const [mounted, setMounted] = useState(false);
   const [screenSize, setScreenSize] = useState<ScreenSize>('desktop');
+  const [themeColors, setThemeColors] = useState(getThemeColors());
 
   useEffect(() => {
     setMounted(true);
@@ -62,9 +81,26 @@ function WavyLines({
       setScreenSize(getScreenSize());
     };
 
+    const updateThemeColors = () => {
+      setThemeColors(getThemeColors());
+    };
+
     handleResize();
+    updateThemeColors();
+
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    // Listen for theme changes by observing CSS custom property changes
+    const observer = new MutationObserver(updateThemeColors);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
+    };
   }, []);
 
   if (!mounted) {
@@ -85,40 +121,104 @@ function WavyLines({
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            {/* Premium radial gradients for orbs */}
+            {/* Radial gradients for orbs */}
             <radialGradient id="orbGradient1" cx="30%" cy="30%">
-              <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.6" />
-              <stop offset="30%" stopColor="#4a9eff" stopOpacity="0.3" />
-              <stop offset="60%" stopColor="#3b82f6" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#2563eb" stopOpacity="0" />
+              <stop
+                offset="0%"
+                stopColor={themeColors.primary}
+                stopOpacity="0.6"
+              />
+              <stop
+                offset="30%"
+                stopColor={themeColors.primary}
+                stopOpacity="0.3"
+              />
+              <stop
+                offset="60%"
+                stopColor={themeColors.primary}
+                stopOpacity="0.15"
+              />
+              <stop
+                offset="100%"
+                stopColor={themeColors.primary}
+                stopOpacity="0"
+              />
             </radialGradient>
 
             <radialGradient id="orbGradient2" cx="40%" cy="40%">
-              <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.5" />
-              <stop offset="35%" stopColor="#8b5cf6" stopOpacity="0.25" />
-              <stop offset="70%" stopColor="#7c3aed" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="#6d28d9" stopOpacity="0" />
+              <stop
+                offset="0%"
+                stopColor={themeColors.accent}
+                stopOpacity="0.5"
+              />
+              <stop
+                offset="35%"
+                stopColor={themeColors.accent}
+                stopOpacity="0.25"
+              />
+              <stop
+                offset="70%"
+                stopColor={themeColors.accent}
+                stopOpacity="0.1"
+              />
+              <stop
+                offset="100%"
+                stopColor={themeColors.accent}
+                stopOpacity="0"
+              />
             </radialGradient>
 
             <radialGradient id="orbGradient3" cx="50%" cy="30%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
-              <stop offset="40%" stopColor="#e0e7ff" stopOpacity="0.15" />
-              <stop offset="70%" stopColor="#c7d2fe" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="#a5b4fc" stopOpacity="0" />
+              <stop
+                offset="0%"
+                stopColor={themeColors.secondary}
+                stopOpacity="0.25"
+              />
+              <stop
+                offset="40%"
+                stopColor={themeColors.secondary}
+                stopOpacity="0.15"
+              />
+              <stop
+                offset="70%"
+                stopColor={themeColors.secondary}
+                stopOpacity="0.08"
+              />
+              <stop
+                offset="100%"
+                stopColor={themeColors.secondary}
+                stopOpacity="0"
+              />
             </radialGradient>
 
             {/* Mesh gradient effect for premium look */}
             <radialGradient id="orbGlow1" cx="50%" cy="50%">
-              <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
+              <stop
+                offset="0%"
+                stopColor={themeColors.glow}
+                stopOpacity="0.4"
+              />
+              <stop
+                offset="100%"
+                stopColor={themeColors.glow}
+                stopOpacity="0"
+              />
             </radialGradient>
 
             <radialGradient id="orbGlow2" cx="50%" cy="50%">
-              <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#a78bfa" stopOpacity="0" />
+              <stop
+                offset="0%"
+                stopColor={themeColors.glowSecondary}
+                stopOpacity="0.3"
+              />
+              <stop
+                offset="100%"
+                stopColor={themeColors.glowSecondary}
+                stopOpacity="0"
+              />
             </radialGradient>
 
-            {/* Premium blur effects */}
+            {/* Blur effects */}
             <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
               <feColorMatrix type="saturate" values="1.2" />
@@ -223,7 +323,7 @@ function WavyLines({
           {/* Subtle light rays */}
           <path
             d="M 350 100 L 380 50 M 350 100 L 400 90 M 350 100 L 360 140"
-            stroke="#60a5fa"
+            stroke={themeColors.primary}
             strokeWidth="0.5"
             strokeOpacity="0.2"
             strokeLinecap="round"
@@ -231,7 +331,7 @@ function WavyLines({
 
           <path
             d="M 50 200 L 20 180 M 50 200 L 30 230 M 50 200 L 80 210"
-            stroke="#a78bfa"
+            stroke={themeColors.accent}
             strokeWidth="0.5"
             strokeOpacity="0.15"
             strokeLinecap="round"
@@ -257,11 +357,41 @@ function WavyLines({
           />
 
           {/* Subtle ambient particles */}
-          <circle cx="120" cy="150" r="2" fill="#60a5fa" opacity="0.3" />
-          <circle cx="250" cy="280" r="1.5" fill="#a78bfa" opacity="0.25" />
-          <circle cx="180" cy="100" r="1" fill="#ffffff" opacity="0.2" />
-          <circle cx="320" cy="230" r="1.5" fill="#60a5fa" opacity="0.2" />
-          <circle cx="80" cy="320" r="1" fill="#ffffff" opacity="0.15" />
+          <circle
+            cx="120"
+            cy="150"
+            r="2"
+            fill={themeColors.primary}
+            opacity="0.3"
+          />
+          <circle
+            cx="250"
+            cy="280"
+            r="1.5"
+            fill={themeColors.accent}
+            opacity="0.25"
+          />
+          <circle
+            cx="180"
+            cy="100"
+            r="1"
+            fill={themeColors.secondary}
+            opacity="0.2"
+          />
+          <circle
+            cx="320"
+            cy="230"
+            r="1.5"
+            fill={themeColors.primary}
+            opacity="0.2"
+          />
+          <circle
+            cx="80"
+            cy="320"
+            r="1"
+            fill={themeColors.secondary}
+            opacity="0.15"
+          />
         </svg>
       </div>
     );
@@ -335,7 +465,7 @@ function WavyLines({
         <defs>
           {/* Premium mesh gradient - primary aurora */}
           <linearGradient id="waveGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0">
+            <stop offset="0%" stopColor={themeColors.primary} stopOpacity="0">
               <animate
                 attributeName="stopOpacity"
                 values="0;0.2;0"
@@ -343,37 +473,93 @@ function WavyLines({
                 repeatCount="indefinite"
               />
             </stop>
-            <stop offset="20%" stopColor="#60a5fa" stopOpacity="0.3" />
-            <stop offset="40%" stopColor="#93c5fd" stopOpacity="0.5" />
-            <stop offset="60%" stopColor="#60a5fa" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+            <stop
+              offset="20%"
+              stopColor={themeColors.primary}
+              stopOpacity="0.3"
+            />
+            <stop
+              offset="40%"
+              stopColor={themeColors.primary}
+              stopOpacity="0.5"
+            />
+            <stop
+              offset="60%"
+              stopColor={themeColors.primary}
+              stopOpacity="0.3"
+            />
+            <stop
+              offset="100%"
+              stopColor={themeColors.primary}
+              stopOpacity="0"
+            />
           </linearGradient>
 
           {/* Glass morphism gradient */}
           <linearGradient id="waveGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
-            <stop offset="25%" stopColor="#ffffff" stopOpacity="0.08" />
-            <stop offset="50%" stopColor="#fef3c7" stopOpacity="0.12" />
-            <stop offset="75%" stopColor="#ffffff" stopOpacity="0.08" />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+            <stop
+              offset="0%"
+              stopColor={themeColors.secondary}
+              stopOpacity="0"
+            />
+            <stop
+              offset="25%"
+              stopColor={themeColors.secondary}
+              stopOpacity="0.08"
+            />
+            <stop
+              offset="50%"
+              stopColor={themeColors.secondary}
+              stopOpacity="0.12"
+            />
+            <stop
+              offset="75%"
+              stopColor={themeColors.secondary}
+              stopOpacity="0.08"
+            />
+            <stop
+              offset="100%"
+              stopColor={themeColors.secondary}
+              stopOpacity="0"
+            />
           </linearGradient>
 
-          {/* Deep accent - purple/indigo */}
+          {/* Deep accent */}
           <linearGradient id="waveGradient3" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0" />
-            <stop offset="30%" stopColor="#a78bfa" stopOpacity="0.25" />
-            <stop offset="50%" stopColor="#c4b5fd" stopOpacity="0.4" />
-            <stop offset="70%" stopColor="#a78bfa" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
+            <stop offset="0%" stopColor={themeColors.accent} stopOpacity="0" />
+            <stop
+              offset="30%"
+              stopColor={themeColors.accent}
+              stopOpacity="0.25"
+            />
+            <stop
+              offset="50%"
+              stopColor={themeColors.accent}
+              stopOpacity="0.4"
+            />
+            <stop
+              offset="70%"
+              stopColor={themeColors.accent}
+              stopOpacity="0.25"
+            />
+            <stop
+              offset="100%"
+              stopColor={themeColors.accent}
+              stopOpacity="0"
+            />
           </linearGradient>
 
           {/* Cyan accent for variety */}
           <linearGradient id="waveGradient4" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#06b6d4" stopOpacity="0" />
-            <stop offset="35%" stopColor="#22d3ee" stopOpacity="0.2" />
-            <stop offset="50%" stopColor="#67e8f9" stopOpacity="0.35" />
-            <stop offset="65%" stopColor="#22d3ee" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+            <stop offset="0%" stopColor={themeColors.glow} stopOpacity="0" />
+            <stop offset="35%" stopColor={themeColors.glow} stopOpacity="0.2" />
+            <stop
+              offset="50%"
+              stopColor={themeColors.glow}
+              stopOpacity="0.35"
+            />
+            <stop offset="65%" stopColor={themeColors.glow} stopOpacity="0.2" />
+            <stop offset="100%" stopColor={themeColors.glow} stopOpacity="0" />
           </linearGradient>
 
           {/* Premium glow effects */}
@@ -423,10 +609,10 @@ function WavyLines({
           filter="url(#ultraSoftBlur)"
         />
 
-        {/* Render premium waves */}
+        {/* Render waves */}
         {waves.map((wave, index) => (
           <g key={wave.id}>
-            {/* Glow layer for premium depth */}
+            {/* Glow layer for depth */}
             {index < 2 && (
               <path
                 d={generateWavePath(
