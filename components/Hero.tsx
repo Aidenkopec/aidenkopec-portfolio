@@ -3,7 +3,7 @@ import React from 'react';
 
 import { styles } from '../styles';
 import { ComputersCanvas } from './canvas';
-import ScrollIndicator from './ScrollIndicator';
+import { motion } from 'framer-motion';
 
 const Hero: React.FC = () => {
   return (
@@ -33,7 +33,25 @@ const Hero: React.FC = () => {
       </div>
 
       <ComputersCanvas />
-      <ScrollIndicator />
+      <div className="absolute xs:bottom-10 bottom-8 w-full flex justify-center items-center sm:hidden">
+        <a href="#about">
+          <div className="relative w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2">
+            <motion.div
+              animate={{
+                y: [0, 24, 0],
+                opacity: [1, 0.5, 1],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: 'loop',
+                ease: 'easeInOut',
+              }}
+              className="w-3 h-3 chevron z-10"
+            />
+          </div>
+        </a>
+      </div>
     </section>
   );
 };
