@@ -20,11 +20,11 @@ const Hero: React.FC = () => {
         </div>
 
         <div>
-          <h1 className={`${styles.heroHeadText} text-secondary `}>
+          <h1 className={`${styles.heroHeadText}`}>
             Hi, I'm
             <span style={{ color: 'var(--text-color-variable)' }}> Aiden</span>
           </h1>
-          <p className={`${styles.heroSubText} mt-2 text-secondary `}>
+          <p className={`${styles.heroSubText}`}>
             {/*className='sm:block hidden'*/}
             Dream. Design. Deliver. <br />
             turning ideas into reality
@@ -33,7 +33,7 @@ const Hero: React.FC = () => {
       </div>
 
       <ComputersCanvas />
-      <div className="absolute xs:bottom-10 bottom-8 w-full flex justify-center items-center sm:hidden">
+      <div className="absolute sm:bottom-10 bottom-32 w-full flex justify-center items-center md:hidden">
         <a href="#about">
           <div className="relative w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2">
             <motion.div
@@ -47,7 +47,7 @@ const Hero: React.FC = () => {
                 repeatType: 'loop',
                 ease: 'easeInOut',
               }}
-              className="w-3 h-3 chevron z-10"
+              className="w-3 h-3 chevron"
             />
           </div>
         </a>
