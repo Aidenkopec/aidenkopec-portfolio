@@ -79,8 +79,8 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          themes={['obsidian', 'cosmicVoyage', 'glacierSapphire', 'auroraJade']}
-          defaultTheme="obsidian"
+          themes={['glacierSapphire', 'obsidian', 'cosmicVoyage', 'auroraJade']}
+          defaultTheme="glacierSapphire"
           enableSystem={false}
         >
           <MusicProvider>{children}</MusicProvider>

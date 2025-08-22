@@ -30,6 +30,20 @@ interface Themes {
 }
 
 export const themes: Themes = {
+  glacierSapphire: {
+    name: 'Glacier Sapphire',
+    cssVars: {
+      '--primary-color': '#07121a',
+      '--secondary-color': '#ffffff',
+      '--tertiary-color': '#0b2740',
+      '--black-100': '#0b1b2b',
+      '--black-200': '#030a12',
+      '--white-100': '#ffffff',
+      '--text-color-variable': '#60a5fa',
+      '--gradient-start': '#60a5fa',
+      '--gradient-end': 'rgba(96, 165, 250, 0)',
+    },
+  },
   obsidian: {
     name: 'Obsidian Black',
     cssVars: {
@@ -56,20 +70,6 @@ export const themes: Themes = {
       '--text-color-variable': '#a855f7',
       '--gradient-start': '#a855f7',
       '--gradient-end': 'rgba(168, 85, 247, 0)',
-    },
-  },
-  glacierSapphire: {
-    name: 'Glacier Sapphire',
-    cssVars: {
-      '--primary-color': '#07121a',
-      '--secondary-color': '#ffffff',
-      '--tertiary-color': '#0b2740',
-      '--black-100': '#0b1b2b',
-      '--black-200': '#030a12',
-      '--white-100': '#ffffff',
-      '--text-color-variable': '#60a5fa',
-      '--gradient-start': '#60a5fa',
-      '--gradient-end': 'rgba(96, 165, 250, 0)',
     },
   },
   auroraJade: {
