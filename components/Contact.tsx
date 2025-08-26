@@ -242,8 +242,8 @@ const Contact: React.FC = () => {
                 !
               </p>
               <p className='text-secondary mb-8 max-w-md text-lg'>
-                I&apos;ve received your message and will get back to you as soon as
-                possible.
+                I&apos;ve received your message and will get back to you as soon
+                as possible.
               </p>
 
               <button

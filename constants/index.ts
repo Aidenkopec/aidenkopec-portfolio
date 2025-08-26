@@ -1,33 +1,33 @@
 // Technology icons - Static imports for Next.js optimization
-import typescript from '../public/technologies/typescript.png';
-import react from '../public/technologies/reactjs.png';
-import nodejs from '../public/technologies/nodejs.png';
-import vue from '../public/technologies/vue-three.png';
-import edgedb from '../public/technologies/edgedb.jpg';
-import docker from '../public/technologies/docker.png';
 import aws from '../public/technologies/aws.png';
+import docker from '../public/technologies/docker.png';
+import edgedb from '../public/technologies/edgedb.jpg';
+import nodejs from '../public/technologies/nodejs.png';
 import postgres from '../public/technologies/postgresql.png';
+import react from '../public/technologies/reactjs.png';
 import tailwind from '../public/technologies/tailwind.png';
+import typescript from '../public/technologies/typescript.png';
+import vue from '../public/technologies/vue-three.png';
 
-import nextjs from '../public/technologies/nextjs.png';
 import bullmq from '../public/technologies/bullmq.png';
+import nextjs from '../public/technologies/nextjs.png';
 import redis from '../public/technologies/redis.png';
 
 // Company logos - Static imports
-import opit from '../public/companies/opit.png';
-import launchcode from '../public/companies/launchcode.png';
 import evans from '../public/companies/evans-consoles-logo.jpeg';
+import launchcode from '../public/companies/launchcode.png';
+import opit from '../public/companies/opit.png';
 
 // Project images - Static imports
-import teevision from '../public/projects/tee-vision.png';
-import solvexdigital from '../public/projects/solvex-digital.svg';
 import freqtrade from '../public/projects/freqtrade-logo.png';
+import solvexdigital from '../public/projects/solvex-digital.svg';
+import teevision from '../public/projects/tee-vision.png';
 
 // Service icons (engineering focus) - Static imports
-import fullStackDeveloper from '../public/engineering-focus/fullStackDeveloper.png';
-import frontendDeveloper from '../public/engineering-focus/frontendDeveloper.png';
 import backendAutomationErp from '../public/engineering-focus/backendAutomationErp.png';
 import devopsInfrastructure from '../public/engineering-focus/devopsInfrastructure.png';
+import frontendDeveloper from '../public/engineering-focus/frontendDeveloper.png';
+import fullStackDeveloper from '../public/engineering-focus/fullStackDeveloper.png';
 
 // Type definitions
 interface NavLink {
@@ -84,12 +84,12 @@ export const navLinks: NavLink[] = [
     title: 'Work',
   },
   {
-    id: 'blog',
-    title: 'Blog',
-  },
-  {
     id: 'contact',
     title: 'Contact',
+  },
+  {
+    id: 'blog',
+    title: 'Blog',
   },
 ];
 
@@ -277,4 +277,4 @@ const projects: Project[] = [
   },
 ];
 
-export { services, technologies, experiences, testimonials, projects };
+export { experiences, projects, services, technologies, testimonials };

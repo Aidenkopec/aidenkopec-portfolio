@@ -57,8 +57,8 @@ export default function Error({
           transition={{ duration: 0.6, delay: 0.2 }}
           className='mb-8 text-lg leading-relaxed text-neutral-300 md:text-xl'
         >
-          An unexpected error occurred while loading this page. Don&apos;t worry,
-          this happens sometimes and we&apos;re working to fix it.
+          An unexpected error occurred while loading this page. Don&apos;t
+          worry, this happens sometimes and we&apos;re working to fix it.
         </motion.p>
 
         {/* Action buttons */}

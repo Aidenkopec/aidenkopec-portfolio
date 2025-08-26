@@ -99,14 +99,14 @@ function BlogPostSkeleton() {
 }
 
 // Client component that handles MDX rendering
-function BlogPostRenderer({ 
-  post, 
-  previousPost, 
-  nextPost 
-}: { 
-  post: any; 
-  previousPost: any; 
-  nextPost: any; 
+function BlogPostRenderer({
+  post,
+  previousPost,
+  nextPost,
+}: {
+  post: any;
+  previousPost: any;
+  nextPost: any;
 }) {
   // Use headings from parsed blog post
   const headings = post.headings || [];
@@ -146,10 +146,10 @@ async function BlogPostContent({ slug }: { slug: string }) {
   const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 
   return (
-    <BlogPostRenderer 
-      post={post} 
-      previousPost={previousPost} 
-      nextPost={nextPost} 
+    <BlogPostRenderer
+      post={post}
+      previousPost={previousPost}
+      nextPost={nextPost}
     />
   );
 }

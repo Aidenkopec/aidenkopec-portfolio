@@ -216,7 +216,14 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
         }
       });
     }
-  }, [computer.scene, currentTheme, colors.deskColor, colors.frameColor, colors.hardwareAccent, colors.screenEmissive]); // Re-run on theme change
+  }, [
+    computer.scene,
+    currentTheme,
+    colors.deskColor,
+    colors.frameColor,
+    colors.hardwareAccent,
+    colors.screenEmissive,
+  ]); // Re-run on theme change
 
   return (
     <mesh>

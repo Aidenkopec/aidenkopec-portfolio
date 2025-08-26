@@ -67,8 +67,19 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      // Add a small delay before attaching click outside handler
+      // This prevents immediate closing when the modal is first opened
+      const timer = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 100);
+
       document.addEventListener('keydown', handleEscape);
+
+      return () => {
+        clearTimeout(timer);
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleEscape);
+      };
     }
 
     return () => {

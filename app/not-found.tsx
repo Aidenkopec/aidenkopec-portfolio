@@ -43,8 +43,9 @@ export default function NotFound() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className='mb-8 text-lg leading-relaxed text-neutral-300 md:text-xl'
         >
-          Oops! It looks like you&apos;ve ventured into uncharted territory. The page
-          you&apos;re looking for doesn&apos;t exist in this digital universe.
+          Oops! It looks like you&apos;ve ventured into uncharted territory. The
+          page you&apos;re looking for doesn&apos;t exist in this digital
+          universe.
         </motion.p>
 
         {/* Action buttons */}

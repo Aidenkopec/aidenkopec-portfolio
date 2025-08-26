@@ -95,8 +95,8 @@ const About: React.FC = () => {
         <br />
         <br />
         Beyond client work, I founded Solvex Digital, delivering full-stack web
-        applications and GPT-powered AI integrations to 8+ clients. I&apos;ve also
-        developed sophisticated systems like containerized cryptocurrency
+        applications and GPT-powered AI integrations to 8+ clients. I&apos;ve
+        also developed sophisticated systems like containerized cryptocurrency
         trading bots with advanced algorithmic strategies, demonstrating my
         ability to tackle complex technical challenges across diverse domains.
         <br />

@@ -25,9 +25,9 @@ export const UserAcknowledgmentEmail = ({
           <Heading style={h1}>Thank you for reaching out!</Heading>
           <Text style={text}>Hi {userName},</Text>
           <Text style={text}>
-            I received your message and I&apos;ll get back in touch with you as soon
-            as possible. I appreciate you taking the time to reach out and look
-            forward to connecting with you.
+            I received your message and I&apos;ll get back in touch with you as
+            soon as possible. I appreciate you taking the time to reach out and
+            look forward to connecting with you.
           </Text>
           <Text style={text}>
             Best regards,
