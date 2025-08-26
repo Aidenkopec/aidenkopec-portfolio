@@ -11,8 +11,8 @@ export function useBlogSearch(posts: BlogPost[]) {
   // Get unique categories from posts
   const categories = useMemo(() => {
     const categorySet = new Set<string>();
-    posts.forEach(post => {
-      post.tags.forEach(tag => categorySet.add(tag));
+    posts.forEach((post) => {
+      post.tags.forEach((tag) => categorySet.add(tag));
     });
     return Array.from(categorySet).sort();
   }, [posts]);
@@ -23,21 +23,22 @@ export function useBlogSearch(posts: BlogPost[]) {
 
     // Filter by search term
     if (searchTerm.trim()) {
-      filtered = filtered.filter(post =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.tags.some(tag => 
-          tag.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+      filtered = filtered.filter(
+        (post) =>
+          post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.tags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm.toLowerCase()),
+          ),
       );
     }
 
     // Filter by category
     if (selectedCategory) {
-      filtered = filtered.filter(post =>
-        post.tags.some(tag => 
-          tag.toLowerCase() === selectedCategory.toLowerCase()
-        )
+      filtered = filtered.filter((post) =>
+        post.tags.some(
+          (tag) => tag.toLowerCase() === selectedCategory.toLowerCase(),
+        ),
       );
     }
 

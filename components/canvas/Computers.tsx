@@ -1,19 +1,16 @@
 'use client';
 
-import React, { Suspense, useEffect, useState } from 'react';
-
-import { Canvas } from '@react-three/fiber';
-
 import {
+  ContactShadows,
+  Environment,
   OrbitControls,
   Preload,
   useGLTF,
-  Environment,
-  ContactShadows,
 } from '@react-three/drei';
-
-import * as THREE from 'three';
+import { Canvas } from '@react-three/fiber';
 import { useTheme } from 'next-themes';
+import React, { Suspense, useEffect, useState } from 'react';
+import * as THREE from 'three';
 
 import CanvasLoader from '../Loader';
 
@@ -176,7 +173,7 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
               } else if (isScreen) {
                 // Keep screen bright for readability
                 child.material.emissive = new THREE.Color(
-                  colors.screenEmissive
+                  colors.screenEmissive,
                 );
                 child.material.emissiveIntensity = 0.8;
               } else {
@@ -203,7 +200,7 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
                   // Add subtle emissive glow for accent parts
                   if (child.material.emissive) {
                     child.material.emissive = new THREE.Color(
-                      colors.hardwareAccent
+                      colors.hardwareAccent,
                     );
                     child.material.emissiveIntensity = 0.05;
                   }
@@ -219,7 +216,7 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
         }
       });
     }
-  }, [computer.scene, currentTheme]); // Re-run on theme change
+  }, [computer.scene, currentTheme, colors.deskColor, colors.frameColor, colors.hardwareAccent, colors.screenEmissive]); // Re-run on theme change
 
   return (
     <mesh>
@@ -266,7 +263,7 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
         penumbra={0.8}
         distance={8}
         decay={3}
-        color="#ffffff"
+        color='#ffffff'
       />
       {/* Consolidated side accents into one hemispheric light for perf */}
       <hemisphereLight
@@ -333,7 +330,7 @@ const ComputersCanvas: React.FC = () => {
 
   return (
     <Canvas
-      frameloop="demand" // Changed to demand for better perf; renders only when needed
+      frameloop='demand' // Changed to demand for better perf; renders only when needed
       shadows={{ enabled: true, type: THREE.PCFSoftShadowMap }}
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
@@ -372,7 +369,7 @@ const ComputersCanvas: React.FC = () => {
           scale={10}
           blur={2.0}
           far={4}
-          color="#000000"
+          color='#000000'
         />
 
         <Preload all />

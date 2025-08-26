@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+
 import { BlogPost, BlogMetadata, BlogTag, BlogHeading } from './types';
 
 const BLOG_DIRECTORY = path.join(process.cwd(), 'content/blog');
@@ -43,7 +44,7 @@ function parseMDXFile(filePath: string) {
 
   // Extract frontmatter between --- markers
   const frontmatterMatch = fileContent.match(
-    /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/
+    /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/,
   );
 
   if (!frontmatterMatch) {
@@ -145,7 +146,7 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
 
 // Get a single blog post by slug
 export async function getBlogPostBySlug(
-  slug: string
+  slug: string,
 ): Promise<BlogPost | null> {
   const filePath = path.join(BLOG_DIRECTORY, `${slug}.mdx`);
 
@@ -182,7 +183,7 @@ export async function getBlogPostBySlug(
 export async function getBlogPostsByTag(tag: string): Promise<BlogPost[]> {
   const allPosts = await getAllBlogPosts();
   return allPosts.filter((post) =>
-    post.tags.some((postTag) => postTag.toLowerCase() === tag.toLowerCase())
+    post.tags.some((postTag) => postTag.toLowerCase() === tag.toLowerCase()),
   );
 }
 
@@ -214,7 +215,7 @@ export async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
 
 // Get recent blog posts (limit to n posts)
 export async function getRecentBlogPosts(
-  limit: number = 3
+  limit: number = 3,
 ): Promise<BlogPost[]> {
   const allPosts = await getAllBlogPosts();
   return allPosts.slice(0, limit);
@@ -229,6 +230,6 @@ export async function searchBlogPosts(query: string): Promise<BlogPost[]> {
     (post) =>
       post.title.toLowerCase().includes(searchTerm) ||
       post.description.toLowerCase().includes(searchTerm) ||
-      post.tags.some((tag) => tag.toLowerCase().includes(searchTerm))
+      post.tags.some((tag) => tag.toLowerCase().includes(searchTerm)),
   );
 }

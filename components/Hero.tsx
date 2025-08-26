@@ -1,27 +1,28 @@
 'use client';
+import { motion } from 'framer-motion';
 import React from 'react';
 
 import { styles } from '../styles';
+
 import { ComputersCanvas } from './canvas';
-import { motion } from 'framer-motion';
 
 const Hero: React.FC = () => {
   return (
-    <section className={`relative w-full h-screen mx-auto`}>
+    <section className={`relative mx-auto h-screen w-full`}>
       <div
-        className={`absolute inset-0 top-[120px]  max-w-7xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5`}
+        className={`absolute inset-0 top-[120px] mx-auto max-w-7xl ${styles.paddingX} flex flex-row items-start gap-5`}
       >
-        <div className="flex flex-col justify-center items-center mt-5">
+        <div className='mt-5 flex flex-col items-center justify-center'>
           <div
-            className="w-5 h-5 rounded-full"
+            className='h-5 w-5 rounded-full'
             style={{ backgroundColor: 'var(--text-color-variable)' }}
           />
-          <div className="w-1 sm:h-80 h-40 dynamic-gradient" />
+          <div className='dynamic-gradient h-40 w-1 sm:h-80' />
         </div>
 
         <div>
           <h1 className={`${styles.heroHeadText}`}>
-            Hi, I'm
+            Hi, I&apos;m
             <span style={{ color: 'var(--text-color-variable)' }}> Aiden</span>
           </h1>
           <p className={`${styles.heroSubText}`}>
@@ -33,9 +34,9 @@ const Hero: React.FC = () => {
       </div>
 
       <ComputersCanvas />
-      <div className="absolute sm:bottom-10 bottom-32 w-full flex justify-center items-center md:hidden">
-        <a href="#about">
-          <div className="relative w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2">
+      <div className='absolute bottom-32 flex w-full items-center justify-center sm:bottom-10 md:hidden'>
+        <a href='#about'>
+          <div className='border-secondary relative flex h-[64px] w-[35px] items-start justify-center rounded-3xl border-4 p-2'>
             <motion.div
               animate={{
                 y: [0, 24, 0],
@@ -47,7 +48,7 @@ const Hero: React.FC = () => {
                 repeatType: 'loop',
                 ease: 'easeInOut',
               }}
-              className="w-3 h-3 chevron"
+              className='chevron h-3 w-3'
             />
           </div>
         </a>

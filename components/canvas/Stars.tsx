@@ -37,7 +37,7 @@ const generateSpherePositions = memoize(
     }
     return positions;
   },
-  (count: number, radius: number) => `${count}|${radius}`
+  (count: number, radius: number) => `${count}|${radius}`,
 );
 
 function Stars({
@@ -51,7 +51,7 @@ function Stars({
   const ref = useRef<THREE.Points>(null);
   const positions = useMemo(
     () => generateSpherePositions(count, radius),
-    [count, radius]
+    [count, radius],
   );
 
   useFrame((_, delta) => {
@@ -83,7 +83,7 @@ function Stars({
 
 export default function StarsCanvas() {
   return (
-    <div className="absolute inset-0 -z-10 h-auto w-full">
+    <div className='absolute inset-0 -z-10 h-auto w-full'>
       <Canvas camera={{ position: [0, 0, 1] }} dpr={[1, 1.5]}>
         <Suspense fallback={null}>
           <Stars rotationSpeed={{ x: 0.035, y: 0.02 }} />

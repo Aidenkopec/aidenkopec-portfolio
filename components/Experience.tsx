@@ -38,34 +38,34 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
       date={experience.date}
       iconStyle={{ background: experience.iconBg }}
       icon={
-        <div className="flex justify-center items-center w-full h-full">
+        <div className='flex h-full w-full items-center justify-center'>
           <Image
             src={experience.icon}
             alt={`${experience.company_name} logo`}
             width={40}
             height={40}
-            className="object-contain"
+            className='object-contain'
           />
         </div>
       }
     >
       <div>
-        <h3 className="text-secondary  text-[24px] font-bold">
+        <h3 className='text-secondary text-[24px] font-bold'>
           {experience.title}
         </h3>
         <p
-          className="text-secondary  text-[16px] font-semibold"
+          className='text-secondary text-[16px] font-semibold'
           style={{ margin: 0 }}
         >
           {experience.company_name}
         </p>
       </div>
 
-      <ul className="mt-5 list-disc ml-5 space-y-2">
+      <ul className='mt-5 ml-5 list-disc space-y-2'>
         {experience.points.map((point: string, index: number) => (
           <li
             key={`experience-point-${index}`}
-            className="text-secondary -100 text-[14px] pl-1 tracking-wider"
+            className='text-secondary -100 pl-1 text-[14px] tracking-wider'
           >
             {point}
           </li>
@@ -77,7 +77,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
 
 const Experience: React.FC = () => {
   return (
-    <SectionWrapper idName="work">
+    <SectionWrapper idName='work'>
       <motion.div variants={textVariant() as any}>
         <p className={`${styles.sectionSubText} text-center`}>
           What I have done so far
@@ -87,7 +87,7 @@ const Experience: React.FC = () => {
         </h2>
       </motion.div>
 
-      <div className="mt-20 flex flex-col">
+      <div className='mt-20 flex flex-col'>
         <VerticalTimeline>
           {experiences.map((experience: Experience, index: number) => (
             <ExperienceCard

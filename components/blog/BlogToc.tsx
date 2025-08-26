@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { cn } from '@/lib/utils';
 
 export interface BlogHeading {
@@ -36,7 +37,7 @@ export function BlogToc({
       {
         rootMargin: '-20% 0px -70% 0px',
         threshold: 0.1,
-      }
+      },
     );
 
     // Observe all section headings
@@ -57,7 +58,7 @@ export function BlogToc({
 
   return (
     <div className={cn('w-full', className)}>
-      <h3 className="text-lg font-semibold text-secondary  mb-4">
+      <h3 className='text-secondary mb-4 text-lg font-semibold'>
         Table of Contents
       </h3>
 
@@ -73,20 +74,20 @@ export function BlogToc({
                     ? 'ml-3'
                     : heading.level === 3
                       ? 'ml-6'
-                      : 'ml-9'
+                      : 'ml-9',
               )}
             >
               <a
                 href={`#${heading.id}`}
                 className={cn(
-                  'block transition-colors duration-200 inline-flex',
+                  'block inline-flex transition-colors duration-200',
                   activeId === heading.id
-                    ? 'text-[var(--text-color-variable)] font-medium'
-                    : 'text-secondary  hover:text-[var(--text-color-variable)]',
+                    ? 'font-medium text-[var(--text-color-variable)]'
+                    : 'text-secondary hover:text-[var(--text-color-variable)]',
                   // Mobile gets more spacing, desktop stays compact
-                  isMobile ? 'py-3 px-3 min-h-[44px] items-center' : 'py-1'
+                  isMobile ? 'min-h-[44px] items-center px-3 py-3' : 'py-1',
                 )}
-                onClick={(e) => {
+                onClick={(_e) => {
                   // Let the native anchor behavior handle the navigation
                   // Just update the active ID for styling
                   setActiveId(heading.id);

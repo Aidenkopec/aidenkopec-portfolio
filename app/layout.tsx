@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
-import { MusicProvider } from '@/context/MusicContext';
 import { ThemeProvider } from 'next-themes';
+import { Geist, Geist_Mono } from 'next/font/google';
+
+import { MusicProvider } from '@/context/MusicContext';
+import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -78,14 +79,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
-          attribute="class"
+          attribute='class'
           themes={['glacierSapphire', 'obsidian', 'cosmicVoyage', 'auroraJade']}
-          defaultTheme="glacierSapphire"
+          defaultTheme='glacierSapphire'
           enableSystem={false}
         >
           <MusicProvider>{children}</MusicProvider>

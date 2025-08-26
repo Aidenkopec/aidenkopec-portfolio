@@ -1,16 +1,14 @@
 import { cache } from 'react';
+
 import 'server-only';
 import {
-  GitHubUser,
-  GitHubRepository,
   Commit,
-  ContributionCalendar,
-  GitHubStats,
-  GitHubData,
-  ContributionDay,
-  ContributionWeek,
   CommitDay,
   CommitWeek,
+  ContributionCalendar,
+  GitHubData,
+  GitHubRepository,
+  GitHubUser,
 } from './github-utils';
 
 // GitHub API configuration
@@ -37,7 +35,7 @@ const githubFetch = cache(async (url: string, options?: RequestInit) => {
 
   if (!response.ok) {
     console.error(
-      `GitHub API error: ${response.status} ${response.statusText}`
+      `GitHub API error: ${response.status} ${response.statusText}`,
     );
     const errorText = await response.text();
     console.error('Error response body:', errorText);
@@ -61,7 +59,7 @@ const fetchUserData = cache(async (): Promise<GitHubUser | null> => {
 });
 
 const fetchRepositories = cache(async (): Promise<GitHubRepository[]> => {
-  let url = GITHUB_TOKEN
+  const url = GITHUB_TOKEN
     ? `${GITHUB_API_BASE}/user/repos?visibility=all&affiliation=owner&sort=updated&per_page=100`
     : `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
 
@@ -74,7 +72,7 @@ const fetchRepositories = cache(async (): Promise<GitHubRepository[]> => {
   if (GITHUB_TOKEN) {
     const target = GITHUB_USERNAME.toLowerCase();
     return data.filter(
-      (repo: GitHubRepository) => repo?.owner?.login?.toLowerCase() === target
+      (repo: GitHubRepository) => repo?.owner?.login?.toLowerCase() === target,
     );
   }
   return data;
@@ -161,12 +159,12 @@ const fetchContributionCalendar = cache(
       const commits = await fetchRecentCommits();
       return generateCommitGraph(commits, year);
     }
-  }
+  },
 );
 
 function generateCommitGraph(
   commits: Commit[],
-  year?: string
+  year?: string,
 ): ContributionCalendar {
   const weeks: CommitWeek[] = [];
   let startDate: Date;
@@ -183,7 +181,7 @@ function generateCommitGraph(
   }
 
   const totalDays = Math.ceil(
-    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
   );
   const totalWeeks = Math.ceil(totalDays / 7);
 
@@ -242,17 +240,17 @@ export const getGitHubData = cache(
 
       if (!userData || repositories.length === 0) {
         throw new Error(
-          'Failed to fetch essential GitHub data (user or repos)'
+          'Failed to fetch essential GitHub data (user or repos)',
         );
       }
 
       const totalStars = repositories.reduce(
         (sum, repo) => sum + repo.stargazers_count,
-        0
+        0,
       );
       const totalForks = repositories.reduce(
         (sum, repo) => sum + repo.forks_count,
-        0
+        0,
       );
       const createdAt = new Date(userData.created_at || '2022-01-10');
       const contributionYears =
@@ -284,7 +282,7 @@ export const getGitHubData = cache(
         },
       };
     }
-  }
+  },
 );
 
 // Preload function for early data fetching

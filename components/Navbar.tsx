@@ -1,10 +1,10 @@
 'use client';
-import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
 
-import { styles } from '../styles';
 import { navLinks } from '../constants';
+import { styles } from '../styles';
+
 // Direct paths for public folder assets - this is the correct Next.js approach
 import CustomizationMenu from './CustomizationMenu';
 
@@ -36,48 +36,48 @@ const Navbar: React.FC = () => {
     <nav
       className={`${
         styles.paddingX
-      } w-full flex items-center py-5 fixed top-0 z-50 ${
+      } fixed top-0 z-50 flex w-full items-center py-5 ${
         scrolled ? 'bg-primary-color' : 'bg-transparent'
       }`}
     >
-      <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
+      <div className='mx-auto flex w-full max-w-7xl items-center justify-between'>
         <Link
-          href="/"
-          className="flex items-center gap-2"
+          href='/'
+          className='flex items-center gap-2'
           onClick={() => {
             setActive('');
             window.scrollTo(0, 0);
           }}
         >
-          <p className="text-secondary  text-[18px] font-bold cursor-pointer flex ">
+          <p className='text-secondary flex cursor-pointer text-[18px] font-bold'>
             Aiden Kopec &nbsp;
-            <span className="sm:block hidden"> | Full Stack Developer</span>
+            <span className='hidden sm:block'> | Full Stack Developer</span>
           </p>
         </Link>
 
-        <div className="hidden sm:flex items-center gap-10">
-          <ul className="list-none flex flex-row gap-10 items-center">
+        <div className='hidden items-center gap-10 sm:flex'>
+          <ul className='flex list-none flex-row items-center gap-10'>
             {navLinks.map((nav) => (
               <li
                 key={nav.id}
                 className={`${
-                  active === nav.title ? 'text-secondary ' : 'text-secondary'
-                } hover:text-secondary  text-[18px] font-medium cursor-pointer`}
+                  active === nav.title ? 'text-secondary' : 'text-secondary'
+                } hover:text-secondary cursor-pointer text-[18px] font-medium`}
                 onClick={() => setActive(nav.title)}
               >
                 {nav.id === 'blog' ? (
-                  <Link href="/blog">{nav.title}</Link>
+                  <Link href='/blog'>{nav.title}</Link>
                 ) : (
                   <a href={`#${nav.id}`}>{nav.title}</a>
                 )}
               </li>
             ))}
-            <li className="flex items-center gap-4 relative">
+            <li className='relative flex items-center gap-4'>
               <button
                 onClick={() =>
                   setCustomizationMenuDesktop(!customizationMenuDesktop)
                 }
-                className="text-secondary hover:text-secondary  text-[18px] font-medium cursor-pointer transition-colors"
+                className='text-secondary hover:text-secondary cursor-pointer text-[18px] font-medium transition-colors'
               >
                 Customizations
               </button>
@@ -89,43 +89,43 @@ const Navbar: React.FC = () => {
           </ul>
         </div>
 
-        <div className="sm:hidden flex flex-1 justify-end items-center gap-4">
+        <div className='flex flex-1 items-center justify-end gap-4 sm:hidden'>
           {/* Hamburger Menu Button - inline SVG to ensure visibility */}
           <button
-            aria-label="Toggle menu"
-            className="w-10 h-10 flex items-center justify-center rounded-md text-secondary hover:text-secondary  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-white z-[100]"
+            aria-label='Toggle menu'
+            className='text-secondary hover:text-secondary z-[100] flex h-10 w-10 items-center justify-center rounded-md focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none'
             onClick={() => setToggle(!toggle)}
           >
             {toggle ? (
               // Close icon (X)
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-7 h-7"
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className='h-7 w-7'
               >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
+                <line x1='18' y1='6' x2='6' y2='18'></line>
+                <line x1='6' y1='6' x2='18' y2='18'></line>
               </svg>
             ) : (
               // Hamburger icon
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-7 h-7"
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className='h-7 w-7'
               >
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
+                <line x1='3' y1='6' x2='21' y2='6'></line>
+                <line x1='3' y1='12' x2='21' y2='12'></line>
+                <line x1='3' y1='18' x2='21' y2='18'></line>
               </svg>
             )}
           </button>
@@ -134,15 +134,15 @@ const Navbar: React.FC = () => {
           <div
             className={`${
               !toggle ? 'hidden' : 'flex'
-            } p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[200px] z-50 rounded-xl`}
+            } black-gradient absolute top-20 right-0 z-50 mx-4 my-2 min-w-[200px] rounded-xl p-6`}
           >
-            <ul className="list-none flex justify-end items-start flex-1 flex-col gap-4">
+            <ul className='flex flex-1 list-none flex-col items-start justify-end gap-4'>
               {/* Navigation Links */}
               {navLinks.map((nav) => (
                 <li
                   key={nav.id}
-                  className={`font-poppins font-medium cursor-pointer text-[16px] ${
-                    active === nav.title ? 'text-secondary ' : 'text-secondary'
+                  className={`font-poppins cursor-pointer text-[16px] font-medium ${
+                    active === nav.title ? 'text-secondary' : 'text-secondary'
                   }`}
                   onClick={() => {
                     setToggle(!toggle);
@@ -150,7 +150,7 @@ const Navbar: React.FC = () => {
                   }}
                 >
                   {nav.id === 'blog' ? (
-                    <Link href="/blog">{nav.title}</Link>
+                    <Link href='/blog'>{nav.title}</Link>
                   ) : (
                     <a href={`#${nav.id}`}>{nav.title}</a>
                   )}
@@ -158,9 +158,9 @@ const Navbar: React.FC = () => {
               ))}
 
               {/* Customizations */}
-              <li className="pt-2 relative">
+              <li className='relative pt-2'>
                 <button
-                  className="text-secondary text-[16px] font-medium cursor-pointer hover:text-secondary  transition-colors"
+                  className='text-secondary hover:text-secondary cursor-pointer text-[16px] font-medium transition-colors'
                   onClick={() =>
                     setCustomizationMenuMobile(!customizationMenuMobile)
                   }

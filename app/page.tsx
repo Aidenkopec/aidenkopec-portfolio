@@ -12,9 +12,9 @@ import WavyLines from '@/components/canvas/WavyLines';
 
 export default function Home() {
   return (
-    <div className="relative z-0 bg-primary-color max-w-full overflow-x-hidden">
-      <div className="relative">
-        <WavyLines className="-z-10" />
+    <div className='bg-primary-color relative z-0 max-w-full overflow-x-hidden'>
+      <div className='relative'>
+        <WavyLines className='-z-10' />
         <Navbar />
         <Hero />
       </div>
@@ -23,7 +23,7 @@ export default function Home() {
       <Tech />
       <Projects />
       <Testimonials />
-      <div className="relative z-0">
+      <div className='relative z-0'>
         <Contact />
         <StarsCanvas />
       </div>

@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+
 import CustomizationMenu from '../CustomizationMenu';
 import { styles } from '../../styles';
 
@@ -35,31 +36,31 @@ const BlogNavbar: React.FC = () => {
 
   return (
     <nav
-      className={`w-full flex items-center py-5 fixed top-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 z-50 flex w-full items-center py-5 transition-all duration-300 ${
         scrolled
-          ? 'bg-primary-color/95 backdrop-blur-sm shadow-lg'
+          ? 'bg-primary-color/95 shadow-lg backdrop-blur-sm'
           : 'bg-transparent'
       }`}
     >
       <div
-        className={`w-full flex justify-between items-center max-w-7xl mx-auto ${styles.paddingX}`}
+        className={`mx-auto flex w-full max-w-7xl items-center justify-between ${styles.paddingX}`}
       >
         {/* Logo/Home Link */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <p className="text-secondary  text-[18px] font-bold cursor-pointer flex transition-colors group-hover:text-[var(--text-color-variable)]">
+        <Link href='/' className='group flex items-center gap-2'>
+          <p className='text-secondary flex cursor-pointer text-[18px] font-bold transition-colors group-hover:text-[var(--text-color-variable)]'>
             Aiden Kopec &nbsp;
-            <span className="sm:block hidden"> | Full Stack Developer</span>
+            <span className='hidden sm:block'> | Full Stack Developer</span>
           </p>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden sm:flex items-center gap-10">
-          <ul className="list-none flex flex-row gap-10 items-center">
+        <div className='hidden items-center gap-10 sm:flex'>
+          <ul className='flex list-none flex-row items-center gap-10'>
             {blogNavLinks.map((nav) => (
               <li key={nav.id}>
                 <Link
                   href={nav.href}
-                  className="text-secondary  hover:text-secondary  text-[18px] font-medium cursor-pointer transition-colors duration-200"
+                  className='text-secondary hover:text-secondary cursor-pointer text-[18px] font-medium transition-colors duration-200'
                 >
                   {nav.title}
                 </Link>
@@ -67,12 +68,12 @@ const BlogNavbar: React.FC = () => {
             ))}
 
             {/* Customizations */}
-            <li className="flex items-center gap-4 relative">
+            <li className='relative flex items-center gap-4'>
               <button
                 onClick={() =>
                   setCustomizationMenuDesktop(!customizationMenuDesktop)
                 }
-                className="text-secondary  hover:text-secondary  text-[18px] font-medium cursor-pointer transition-colors duration-200"
+                className='text-secondary hover:text-secondary cursor-pointer text-[18px] font-medium transition-colors duration-200'
               >
                 Customizations
               </button>
@@ -85,42 +86,42 @@ const BlogNavbar: React.FC = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="sm:hidden flex flex-1 justify-end items-center gap-4">
+        <div className='flex flex-1 items-center justify-end gap-4 sm:hidden'>
           <button
-            aria-label="Toggle menu"
-            className="w-10 h-10 flex items-center justify-center rounded-md text-secondary  hover:text-secondary  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-white z-[100]"
+            aria-label='Toggle menu'
+            className='text-secondary hover:text-secondary z-[100] flex h-10 w-10 items-center justify-center rounded-md focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none'
             onClick={() => setToggle(!toggle)}
           >
             {toggle ? (
               // Close icon (X)
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-7 h-7"
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className='h-7 w-7'
               >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
+                <line x1='18' y1='6' x2='6' y2='18'></line>
+                <line x1='6' y1='6' x2='18' y2='18'></line>
               </svg>
             ) : (
               // Hamburger icon
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-7 h-7"
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className='h-7 w-7'
               >
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
+                <line x1='3' y1='6' x2='21' y2='6'></line>
+                <line x1='3' y1='12' x2='21' y2='12'></line>
+                <line x1='3' y1='18' x2='21' y2='18'></line>
               </svg>
             )}
           </button>
@@ -129,15 +130,15 @@ const BlogNavbar: React.FC = () => {
           <div
             className={`${
               !toggle ? 'hidden' : 'flex'
-            } p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[200px] z-50 rounded-xl`}
+            } black-gradient absolute top-20 right-0 z-50 mx-4 my-2 min-w-[200px] rounded-xl p-6`}
           >
-            <ul className="list-none flex justify-end items-start flex-1 flex-col gap-4">
+            <ul className='flex flex-1 list-none flex-col items-start justify-end gap-4'>
               {/* Navigation Links */}
               {blogNavLinks.map((nav) => (
                 <li key={nav.id}>
                   <Link
                     href={nav.href}
-                    className="font-poppins font-medium cursor-pointer text-[16px] text-secondary  hover:text-secondary  transition-colors duration-200"
+                    className='font-poppins text-secondary hover:text-secondary cursor-pointer text-[16px] font-medium transition-colors duration-200'
                     onClick={() => setToggle(false)}
                   >
                     {nav.title}
@@ -146,9 +147,9 @@ const BlogNavbar: React.FC = () => {
               ))}
 
               {/* Customizations */}
-              <li className="pt-2 relative">
+              <li className='relative pt-2'>
                 <button
-                  className="text-secondary  text-[16px] font-medium cursor-pointer hover:text-secondary  transition-colors duration-200"
+                  className='text-secondary hover:text-secondary cursor-pointer text-[16px] font-medium transition-colors duration-200'
                   onClick={() =>
                     setCustomizationMenuMobile(!customizationMenuMobile)
                   }

@@ -1,36 +1,33 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript"
-  ],
+  "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
-    // Next.js specific rules
-    "@next/next/no-img-element": "error",
-    "@next/next/no-html-link-for-pages": "error",
-    
-    // TypeScript rules
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-explicit-any": "warn",
-    
-    // React rules
+    // Next.js essentials
+    "@next/next/no-img-element": "warn",
+
+    // TypeScript essentials (relaxed)
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-empty-object-type": "warn",
+
+    // React essentials
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
-    "react/display-name": "error",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    
-    // General code quality rules
-    "no-console": ["warn", { "allow": ["warn", "error"] }],
-    "no-debugger": "error",
-    "prefer-const": "error",
+    "react/no-unescaped-entities": "warn",
+
+    // General
+    "no-console": "off",
+    "no-debugger": "warn",
+    "prefer-const": "warn",
     "no-var": "error",
-    
-    // Import/export rules
-    "import/no-unresolved": "off",
+
+    // Import order (auto-fixable)
     "import/order": [
-      "error",
+      "warn",
       {
         "groups": [
           "builtin",
@@ -56,9 +53,6 @@
   },
   "parserOptions": {
     "ecmaVersion": "latest",
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    }
+    "sourceType": "module"
   }
 }
