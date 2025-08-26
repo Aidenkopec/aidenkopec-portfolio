@@ -21,17 +21,20 @@ function BlogSkeleton() {
   return (
     <div className="grid gap-8 md:gap-12">
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="bg-tertiary p-6 rounded-lg animate-pulse">
-          <div className="h-6 bg-black-100 rounded mb-4 w-3/4"></div>
-          <div className="h-4 bg-black-100 rounded mb-2"></div>
-          <div className="h-4 bg-black-100 rounded mb-4 w-2/3"></div>
+        <div
+          key={i}
+          className="bg-black-100/20 backdrop-blur-sm border border-tertiary/20 p-6 rounded-lg animate-pulse"
+        >
+          <div className="h-6 bg-tertiary rounded mb-4 w-3/4"></div>
+          <div className="h-4 bg-tertiary rounded mb-2"></div>
+          <div className="h-4 bg-tertiary rounded mb-4 w-2/3"></div>
           <div className="flex gap-2 mb-4">
-            <div className="h-6 bg-black-100 rounded-full w-16"></div>
-            <div className="h-6 bg-black-100 rounded-full w-20"></div>
+            <div className="h-6 bg-tertiary rounded-full w-16"></div>
+            <div className="h-6 bg-tertiary rounded-full w-20"></div>
           </div>
           <div className="flex justify-between">
-            <div className="h-4 bg-black-100 rounded w-32"></div>
-            <div className="h-4 bg-black-100 rounded w-24"></div>
+            <div className="h-4 bg-tertiary rounded w-32"></div>
+            <div className="h-4 bg-tertiary rounded w-24"></div>
           </div>
         </div>
       ))}
