@@ -32,6 +32,12 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!toggle) {
+      setCustomizationMenuMobile(false);
+    }
+  }, [toggle]);
+
   return (
     <nav
       className={`${

@@ -1,9 +1,9 @@
 'use client';
-import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 
-import CustomizationMenu from '../CustomizationMenu';
 import { styles } from '../../styles';
+import CustomizationMenu from '../CustomizationMenu';
 
 const BlogNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -26,6 +26,12 @@ const BlogNavbar: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!toggle) {
+      setCustomizationMenuMobile(false);
+    }
+  }, [toggle]);
 
   const blogNavLinks = [
     { id: 'home', title: 'Home', href: '/' },

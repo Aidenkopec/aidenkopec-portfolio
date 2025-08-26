@@ -1,9 +1,9 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { themes, getThemePreviewColors } from '../styles';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';
+import { getThemePreviewColors, themes } from '../styles';
 
 interface CustomizationMenuProps {
   isOpen: boolean;
@@ -43,6 +43,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   useEffect(() => {
     if (isMobile && isOpen) {
       setIsFullScreen(true);
+    } else {
+      setIsFullScreen(false);
     }
   }, [isMobile, isOpen]);
 
@@ -67,19 +69,27 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscape);
-
-      // Prevent body scroll when fullscreen menu is open
-      if (isFullScreen) {
-        document.body.style.overflow = 'hidden';
-      }
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
     };
   }, [isOpen, onClose, isFullScreen]);
+
+  // Effect specifically for body scroll
+  useEffect(() => {
+    if (isFullScreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isFullScreen]);
 
   const handleThemeChange = (themeKey: string) => {
     setTheme(themeKey);
