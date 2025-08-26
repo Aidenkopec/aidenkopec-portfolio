@@ -139,7 +139,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     if (isHydrated) {
       localStorage.setItem(
         'floatingBarVisible',
-        JSON.stringify(isFloatingBarVisible)
+        JSON.stringify(isFloatingBarVisible),
       );
     }
   }, [isFloatingBarVisible, isHydrated]);
@@ -293,7 +293,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
           setHasError(true);
           setIsPlaying(false);
         }}
-        preload="metadata"
+        preload='metadata'
       />
     </MusicContext.Provider>
   );

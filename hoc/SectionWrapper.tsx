@@ -18,12 +18,12 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
   return (
     <motion.section
       variants={staggerContainer()}
-      initial="hidden"
-      whileInView="show"
+      initial='hidden'
+      whileInView='show'
       viewport={{ once: true, amount: 0 }}
-      className={`${styles.padding} max-w-7xl mx-auto relative z-0`}
+      className={`${styles.padding} relative z-0 mx-auto max-w-7xl`}
     >
-      <span className="hash-span" id={idName}>
+      <span className='hash-span' id={idName}>
         &nbsp;
       </span>
       {children}

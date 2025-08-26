@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+
 import { BlogPost } from '@/lib/types';
 
 interface BlogNavigationProps {
@@ -23,62 +24,62 @@ export function BlogNavigation({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="flex flex-col sm:flex-row gap-4 mt-16 pt-8 border-t border-tertiary"
+      className='border-tertiary mt-16 flex flex-col gap-4 border-t pt-8 sm:flex-row'
     >
       {/* Previous Post */}
-      <div className="flex-1">
+      <div className='flex-1'>
         {previousPost ? (
           <Link
             href={`/blog/${previousPost.slug}`}
-            className="group block p-6 bg-tertiary rounded-lg border border-black-100 hover:border-[var(--text-color-variable)] transition-all duration-300"
+            className='group bg-tertiary border-black-100 block rounded-lg border p-6 transition-all duration-300 hover:border-[var(--text-color-variable)]'
           >
-            <div className="flex items-center gap-3 text-secondary text-sm mb-2">
-              <ArrowLeft className="w-4 h-4" />
+            <div className='text-secondary mb-2 flex items-center gap-3 text-sm'>
+              <ArrowLeft className='h-4 w-4' />
               <span>Previous Post</span>
             </div>
-            <h3 className="text-lg font-semibold text-secondary  group-hover:text-[var(--text-color-variable)] transition-colors duration-200 line-clamp-2">
+            <h3 className='text-secondary line-clamp-2 text-lg font-semibold transition-colors duration-200 group-hover:text-[var(--text-color-variable)]'>
               {previousPost.title}
             </h3>
-            <p className="text-secondary mt-2 text-sm line-clamp-2">
+            <p className='text-secondary mt-2 line-clamp-2 text-sm'>
               {previousPost.description}
             </p>
           </Link>
         ) : (
-          <div className="p-6 bg-black-100 rounded-lg opacity-50">
-            <div className="flex items-center gap-3 text-secondary text-sm mb-2">
-              <ArrowLeft className="w-4 h-4" />
+          <div className='bg-black-100 rounded-lg p-6 opacity-50'>
+            <div className='text-secondary mb-2 flex items-center gap-3 text-sm'>
+              <ArrowLeft className='h-4 w-4' />
               <span>Previous Post</span>
             </div>
-            <p className="text-secondary">No previous post</p>
+            <p className='text-secondary'>No previous post</p>
           </div>
         )}
       </div>
 
       {/* Next Post */}
-      <div className="flex-1">
+      <div className='flex-1'>
         {nextPost ? (
           <Link
             href={`/blog/${nextPost.slug}`}
-            className="group block p-6 bg-tertiary rounded-lg border border-black-100 hover:border-[var(--text-color-variable)] transition-all duration-300 text-right"
+            className='group bg-tertiary border-black-100 block rounded-lg border p-6 text-right transition-all duration-300 hover:border-[var(--text-color-variable)]'
           >
-            <div className="flex items-center justify-end gap-3 text-secondary text-sm mb-2">
+            <div className='text-secondary mb-2 flex items-center justify-end gap-3 text-sm'>
               <span>Next Post</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className='h-4 w-4' />
             </div>
-            <h3 className="text-lg font-semibold text-secondary  group-hover:text-[var(--text-color-variable)] transition-colors duration-200 line-clamp-2">
+            <h3 className='text-secondary line-clamp-2 text-lg font-semibold transition-colors duration-200 group-hover:text-[var(--text-color-variable)]'>
               {nextPost.title}
             </h3>
-            <p className="text-secondary mt-2 text-sm line-clamp-2">
+            <p className='text-secondary mt-2 line-clamp-2 text-sm'>
               {nextPost.description}
             </p>
           </Link>
         ) : (
-          <div className="p-6 bg-black-100 rounded-lg opacity-50 text-right">
-            <div className="flex items-center justify-end gap-3 text-secondary text-sm mb-2">
+          <div className='bg-black-100 rounded-lg p-6 text-right opacity-50'>
+            <div className='text-secondary mb-2 flex items-center justify-end gap-3 text-sm'>
               <span>Next Post</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className='h-4 w-4' />
             </div>
-            <p className="text-secondary">No next post</p>
+            <p className='text-secondary'>No next post</p>
           </div>
         )}
       </div>
@@ -93,13 +94,13 @@ export function BackToBlog() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      className="text-center mt-12"
+      className='mt-12 text-center'
     >
       <Link
-        href="/blog"
-        className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--text-color-variable)] text-secondary  rounded-lg hover:bg-[var(--text-color-variable)]/80 transition-all duration-200 font-medium"
+        href='/blog'
+        className='text-secondary inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className='h-4 w-4' />
         Back to All Posts
       </Link>
     </motion.div>

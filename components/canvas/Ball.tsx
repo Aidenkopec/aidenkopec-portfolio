@@ -1,15 +1,15 @@
 'use client';
-import React, { Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
+import React, { Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
 import {
   Decal,
   Float,
   OrbitControls,
   Preload,
   useTexture,
-} from "@react-three/drei";
+} from '@react-three/drei';
 
-import CanvasLoader from "../Loader";
+import CanvasLoader from '../Loader';
 
 interface BallProps {
   imgUrl: string | { src: string };
@@ -21,7 +21,10 @@ interface BallCanvasProps {
 
 const Ball: React.FC<BallProps> = (props) => {
   // Handle both URL strings and Next.js image import objects
-  const textureUrl = typeof props.imgUrl === 'string' ? props.imgUrl : props.imgUrl?.src || props.imgUrl;
+  const textureUrl =
+    typeof props.imgUrl === 'string'
+      ? props.imgUrl
+      : props.imgUrl?.src || props.imgUrl;
   const [decal] = useTexture([textureUrl as string]);
 
   return (

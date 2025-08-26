@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a personal portfolio website built with Next.js 15 (App Router) showcasing a full-stack software developer's work and experience.
 
 ### Core Technologies
+
 - **Framework**: Next.js 15 with App Router and Turbopack
 - **Styling**: TailwindCSS 4 with custom theme system
 - **UI Library**: shadcn/ui components with Radix UI primitives
@@ -25,21 +26,25 @@ This is a personal portfolio website built with Next.js 15 (App Router) showcasi
 ### Project Structure
 
 **Core Pages**:
+
 - `app/page.tsx` - Main portfolio landing page with all sections
 - `app/layout.tsx` - Root layout with theme providers and global metadata
 
 **API Routes**:
+
 - `app/api/contact/route.ts` - Contact form submission with email notifications
 - `app/api/github/route.ts` - GitHub integration for project data
 
 **Component Architecture**:
+
 - `components/` - Main UI components (Hero, About, Experience, Tech, Projects, etc.)
 - `components/canvas/` - Three.js 3D components (Earth, Stars, Ball, Computers)
-- `components/ui/` - shadcn/ui components 
+- `components/ui/` - shadcn/ui components
 - `components/emails/` - React Email templates
 - `components/magicui/` - Enhanced UI components (confetti)
 
 **Core Systems**:
+
 - `context/MusicContext.tsx` - Global music player state management
 - `lib/github-service.ts` - GitHub API integration with caching
 - `constants/index.ts` - Static data (experiences, projects, technologies, testimonials)
@@ -49,8 +54,9 @@ This is a personal portfolio website built with Next.js 15 (App Router) showcasi
 **Theme System**: Five custom themes with CSS variables defined in globals.css. Theme switching via next-themes provider.
 
 **3D Canvas Components**: Interactive 3D elements using React Three Fiber:
+
 - Animated 3D computer model in Hero section
-- Floating tech balls in Tech section  
+- Floating tech balls in Tech section
 - Animated Earth globe in Contact section
 - Particle star field background
 

@@ -1,9 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Tag, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { ArrowLeft, Clock, Tag } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+
 import { BlogPost } from '@/lib/types';
 
 interface BlogHeaderProps {
@@ -18,13 +19,13 @@ export function BlogHeader({ post }: BlogHeaderProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-8"
+        className='mb-8'
       >
         <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 text-secondary  hover:text-secondary  transition-colors text-sm"
+          href='/blog'
+          className='text-secondary hover:text-secondary inline-flex items-center gap-2 text-sm transition-colors'
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className='h-4 w-4' />
           Back to blog
         </Link>
       </motion.div>
@@ -34,22 +35,22 @@ export function BlogHeader({ post }: BlogHeaderProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="mb-12 bg-tertiary p-8 rounded-xl border border-black-200"
+        className='bg-tertiary border-black-200 mb-12 rounded-xl border p-8'
       >
-        <div className="flex items-center gap-2 mb-6">
+        <div className='mb-6 flex items-center gap-2'>
           {/* Category Badge */}
           {post.category && (
-            <span className="text-xs font-medium py-1 px-2.5 bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)] rounded-full">
+            <span className='rounded-full bg-[var(--text-color-variable)]/20 px-2.5 py-1 text-xs font-medium text-[var(--text-color-variable)]'>
               {post.category}
             </span>
           )}
           {/* Featured Badge */}
           {post.featured && (
-            <span className="text-xs font-medium py-1 px-2.5 bg-[var(--text-color-variable)] text-secondary  rounded-full">
+            <span className='text-secondary rounded-full bg-[var(--text-color-variable)] px-2.5 py-1 text-xs font-medium'>
               Featured
             </span>
           )}
-          <time className="text-sm text-secondary " dateTime={post.date}>
+          <time className='text-secondary text-sm' dateTime={post.date}>
             {new Date(post.date).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -58,25 +59,25 @@ export function BlogHeader({ post }: BlogHeaderProps) {
           </time>
         </div>
 
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-secondary  mb-6">
+        <h1 className='text-secondary mb-6 text-3xl font-bold md:text-4xl lg:text-5xl'>
           {post.title}
         </h1>
 
-        <p className="text-lg text-secondary  max-w-3xl mb-8">
+        <p className='text-secondary mb-8 max-w-3xl text-lg'>
           {post.description}
         </p>
 
         {/* Meta Information */}
-        <div className="flex flex-wrap items-center gap-6 mb-6 text-secondary ">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            <span className="text-sm">{post.readingTime} min read</span>
+        <div className='text-secondary mb-6 flex flex-wrap items-center gap-6'>
+          <div className='flex items-center gap-2'>
+            <Clock className='h-4 w-4' />
+            <span className='text-sm'>{post.readingTime} min read</span>
           </div>
 
           {post.author && (
-            <div className="text-sm">
+            <div className='text-sm'>
               by{' '}
-              <span className="text-secondary  font-medium">
+              <span className='text-secondary font-medium'>
                 {post.author.name}
               </span>
             </div>
@@ -85,14 +86,14 @@ export function BlogHeader({ post }: BlogHeaderProps) {
 
         {/* Tags */}
         {post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className='flex flex-wrap gap-2'>
             {post.tags.map((tag) => (
               <Link
                 key={tag}
                 href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-black-100 text-secondary  hover:text-secondary  hover:bg-black-200 transition-all duration-200"
+                className='bg-black-100 text-secondary hover:text-secondary hover:bg-black-200 inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm transition-all duration-200'
               >
-                <Tag className="w-3 h-3" />
+                <Tag className='h-3 w-3' />
                 {tag}
               </Link>
             ))}
@@ -106,14 +107,14 @@ export function BlogHeader({ post }: BlogHeaderProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full bg-tertiary p-4 rounded-xl border border-black-200 mb-12"
+          className='bg-tertiary border-black-200 mb-12 w-full rounded-xl border p-4'
         >
-          <div className="w-full h-[30rem] relative rounded-lg overflow-hidden">
+          <div className='relative h-[30rem] w-full overflow-hidden rounded-lg'>
             <Image
               src={post.coverImage}
               alt={post.title}
               fill
-              className="object-cover"
+              className='object-cover'
               priority
             />
           </div>

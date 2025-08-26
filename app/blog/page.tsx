@@ -1,37 +1,34 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
-import { BlogCard } from '@/components/blog/BlogCard';
-import { BlogHero } from '@/components/blog/BlogHero';
-import { BlogCategories } from '@/components/blog/BlogCategories';
-import { BlogPagination } from '@/components/blog/BlogPagination';
-import { useBlogSearch } from '@/hooks/useBlogSearch';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
-import { BlogPost } from '@/lib/types';
+import { Suspense, useEffect, useState } from 'react';
 
-// Move metadata to a separate file or handle differently since this is now a client component
-const blogMetadata = {
-  title: 'Blog - Aiden Kopec',
-  description:
-    'Insights and experiences from a full-stack software developer. Learn about scalable web applications, AI tools, and modern development practices.',
-};
+import { BlogCard } from '@/components/blog/BlogCard';
+import { BlogCategories } from '@/components/blog/BlogCategories';
+import { BlogHero } from '@/components/blog/BlogHero';
+import { BlogPagination } from '@/components/blog/BlogPagination';
+import { useBlogSearch } from '@/hooks/useBlogSearch';
+import { BlogPost } from '@/lib/types';
 
 function BlogSkeleton() {
   return (
-    <div className="grid gap-8 md:gap-12">
+    <div className='grid gap-8 md:gap-12'>
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="bg-tertiary p-6 rounded-lg animate-pulse">
-          <div className="h-6 bg-black-100 rounded mb-4 w-3/4"></div>
-          <div className="h-4 bg-black-100 rounded mb-2"></div>
-          <div className="h-4 bg-black-100 rounded mb-4 w-2/3"></div>
-          <div className="flex gap-2 mb-4">
-            <div className="h-6 bg-black-100 rounded-full w-16"></div>
-            <div className="h-6 bg-black-100 rounded-full w-20"></div>
+        <div
+          key={i}
+          className='bg-black-100/20 border-tertiary/20 animate-pulse rounded-lg border p-6 backdrop-blur-sm'
+        >
+          <div className='bg-tertiary mb-4 h-6 w-3/4 rounded'></div>
+          <div className='bg-tertiary mb-2 h-4 rounded'></div>
+          <div className='bg-tertiary mb-4 h-4 w-2/3 rounded'></div>
+          <div className='mb-4 flex gap-2'>
+            <div className='bg-tertiary h-6 w-16 rounded-full'></div>
+            <div className='bg-tertiary h-6 w-20 rounded-full'></div>
           </div>
-          <div className="flex justify-between">
-            <div className="h-4 bg-black-100 rounded w-32"></div>
-            <div className="h-4 bg-black-100 rounded w-24"></div>
+          <div className='flex justify-between'>
+            <div className='bg-tertiary h-4 w-32 rounded'></div>
+            <div className='bg-tertiary h-4 w-24 rounded'></div>
           </div>
         </div>
       ))}
@@ -105,15 +102,15 @@ function BlogContent() {
       />
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-16 max-w-7xl">
+      <div className='container mx-auto max-w-7xl px-6 py-16'>
         {/* Featured Post Section */}
         {!isFiltered && featuredPosts.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-16"
-            id="featured"
+            className='mb-16'
+            id='featured'
           >
             {/* Single Large Featured Post */}
             <BlogCard
@@ -130,8 +127,8 @@ function BlogContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-12"
-          id="blog-content"
+          className='mb-12'
+          id='blog-content'
         >
           <BlogCategories
             categories={categories}
@@ -148,21 +145,21 @@ function BlogContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="section-head-text">
+          <div className='mb-8 flex items-center justify-between'>
+            <h2 className='section-head-text'>
               {isFiltered ? 'Filtered Results' : 'All Articles'}
             </h2>
           </div>
 
           {paginatedPosts.length > 0 ? (
             <>
-              <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+              <div className='grid auto-rows-fr gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
                 {paginatedPosts.map((post, index) => (
                   <BlogCard
                     key={post.slug}
                     post={post}
                     index={index}
-                    className="h-full"
+                    className='h-full'
                   />
                 ))}
               </div>
@@ -178,16 +175,16 @@ function BlogContent() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-16"
+              className='py-16 text-center'
             >
-              <div className="max-w-md mx-auto">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--text-color-variable)]/10 flex items-center justify-center">
-                  <Search className="w-8 h-8 text-[var(--text-color-variable)]" />
+              <div className='mx-auto max-w-md'>
+                <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--text-color-variable)]/10'>
+                  <Search className='h-8 w-8 text-[var(--text-color-variable)]' />
                 </div>
-                <h3 className="text-xl font-semibold text-secondary mb-2">
+                <h3 className='text-secondary mb-2 text-xl font-semibold'>
                   {isFiltered ? 'No articles found' : 'No blog posts yet'}
                 </h3>
-                <p className="text-secondary mb-6">
+                <p className='text-secondary mb-6'>
                   {isFiltered
                     ? 'Try adjusting your search or filter criteria'
                     : 'Stay tuned for upcoming posts about software development, AI tools, and more!'}
@@ -198,7 +195,7 @@ function BlogContent() {
                       setSearchTerm('');
                       setSelectedCategory(null);
                     }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--text-color-variable)] text-secondary  hover:bg-[var(--text-color-variable)]/90 transition-colors"
+                    className='text-secondary inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-4 py-2 transition-colors hover:bg-[var(--text-color-variable)]/90'
                   >
                     Clear filters
                   </button>
@@ -216,10 +213,10 @@ import BlogNavbar from '@/components/blog/BlogNavbar';
 
 export default function BlogPage() {
   return (
-    <main className="relative min-h-screen bg-primary-color">
+    <main className='bg-primary-color relative min-h-screen'>
       <BlogNavbar />
-      <div className="padding pt-24">
-        <div className="max-w-7xl mx-auto">
+      <div className='padding pt-24'>
+        <div className='mx-auto max-w-7xl'>
           {/* Blog Content - BlogHero becomes the main hero */}
           <Suspense fallback={<BlogSkeleton />}>
             <BlogContent />

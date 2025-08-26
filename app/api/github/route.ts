@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { getGitHubData } from '../../../lib/github-service';
 
 export async function GET(request: Request): Promise<NextResponse> {
@@ -11,7 +12,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     if (!githubData.user) {
       return NextResponse.json(
         { error: 'Unable to fetch GitHub data' },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -33,7 +34,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         error: 'Failed to fetch GitHub data',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

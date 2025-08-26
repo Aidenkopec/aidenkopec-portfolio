@@ -28,7 +28,7 @@ export const ContactNotificationEmail = ({
       <Container style={container}>
         <Section style={box}>
           <Heading style={h1}>New Contact Form Submission</Heading>
-          
+
           <Section style={infoSection}>
             <Text style={label}>From:</Text>
             <Text style={value}>{userName}</Text>

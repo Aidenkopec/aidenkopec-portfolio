@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+
 import UserAcknowledgmentEmail from '../../../components/emails/UserAcknowledgment';
 import ContactNotificationEmail from '../../../components/emails/ContactNotification';
 
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
     if (!name || !email || !message) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
         error: 'Failed to send emails',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

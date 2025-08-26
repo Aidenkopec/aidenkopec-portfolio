@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
+
 import { themes, getThemePreviewColors } from '../styles';
 
 interface ThemeSelectorProps {
@@ -56,19 +57,19 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       ref={selectorRef}
       className={`absolute top-full ${isMobile ? 'left-0' : 'right-0'} mt-2 ${
         isMobile ? 'w-72' : 'w-80'
-      } bg-black-100 border border-tertiary rounded-xl p-4 shadow-2xl z-[9999]`}
+      } bg-black-100 border-tertiary z-[9999] rounded-xl border p-4 shadow-2xl`}
     >
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-secondary  text-lg font-semibold">Choose Theme</h3>
+      <div className='mb-4 flex items-center justify-between'>
+        <h3 className='text-secondary text-lg font-semibold'>Choose Theme</h3>
         <button
           onClick={onClose}
-          className="text-secondary hover:text-secondary  transition-colors text-xl"
+          className='text-secondary hover:text-secondary text-xl transition-colors'
         >
           ×
         </button>
       </div>
 
-      <div className="space-y-3 max-h-80 overflow-y-auto">
+      <div className='max-h-80 space-y-3 overflow-y-auto'>
         {Object.entries(themes).map(([themeKey, themeData]) => {
           const colors = getThemePreviewColors(themeKey);
           const isSelected = theme === themeKey;
@@ -81,37 +82,34 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                 e.stopPropagation();
                 handleThemeChange(themeKey);
               }}
-              className={`
-                relative p-3 rounded-lg cursor-pointer transition-all duration-300 border
-                ${
-                  isSelected
-                    ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
-                    : 'border-tertiary hover:border-[var(--text-color-variable)] bg-tertiary hover:bg-[var(--tertiary-color)]'
-                }
-              `}
+              className={`relative cursor-pointer rounded-lg border p-3 transition-all duration-300 ${
+                isSelected
+                  ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
+                  : 'border-tertiary bg-tertiary hover:border-[var(--text-color-variable)] hover:bg-[var(--tertiary-color)]'
+              } `}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h4 className="text-secondary  font-medium text-sm mb-2">
+              <div className='flex items-center justify-between'>
+                <div className='flex-1'>
+                  <h4 className='text-secondary mb-2 text-sm font-medium'>
                     {themeData.name}
                   </h4>
-                  <div className="flex items-center gap-2">
+                  <div className='flex items-center gap-2'>
                     {colors && (
                       <>
                         <div
-                          className="w-4 h-4 rounded-full border border-gray-600"
+                          className='h-4 w-4 rounded-full border border-gray-600'
                           style={{ backgroundColor: colors.primary }}
-                          title="Primary Color"
+                          title='Primary Color'
                         />
                         <div
-                          className="w-4 h-4 rounded-full border border-gray-600"
+                          className='h-4 w-4 rounded-full border border-gray-600'
                           style={{ backgroundColor: colors.accent }}
-                          title="Accent Color"
+                          title='Accent Color'
                         />
                         <div
-                          className="w-4 h-4 rounded-full border border-gray-600"
+                          className='h-4 w-4 rounded-full border border-gray-600'
                           style={{ backgroundColor: colors.secondary }}
-                          title="Secondary Color"
+                          title='Secondary Color'
                         />
                       </>
                     )}
@@ -119,7 +117,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                 </div>
 
                 {isSelected && (
-                  <div className="text-[var(--text-color-variable)] text-sm font-medium">
+                  <div className='text-sm font-medium text-[var(--text-color-variable)]'>
                     ✓ Active
                   </div>
                 )}
@@ -128,7 +126,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
               {/* Theme preview gradient */}
               {colors && (
                 <div
-                  className="absolute top-0 right-0 w-1 h-full rounded-r-lg"
+                  className='absolute top-0 right-0 h-full w-1 rounded-r-lg'
                   style={{
                     background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
                   }}
@@ -139,8 +137,8 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
         })}
       </div>
 
-      <div className="mt-4 pt-3 border-t border-tertiary">
-        <p className="text-secondary text-xs text-center">
+      <div className='border-tertiary mt-4 border-t pt-3'>
+        <p className='text-secondary text-center text-xs'>
           Themes are automatically saved
         </p>
       </div>

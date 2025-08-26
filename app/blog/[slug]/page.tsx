@@ -1,13 +1,14 @@
-import { Suspense } from 'react';
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
-import { BlogHeader } from '@/components/blog/BlogHeader';
+import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
+
 import { BlogContent } from '@/components/blog/BlogContent';
-import { BlogNavigation, BackToBlog } from '@/components/blog/BlogNavigation';
-import { useMDXComponents } from '@/mdx-components';
+import { BlogHeader } from '@/components/blog/BlogHeader';
 import BlogNavbar from '@/components/blog/BlogNavbar';
+import { BackToBlog, BlogNavigation } from '@/components/blog/BlogNavigation';
+import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
+import { useMDXComponents } from '@/mdx-components';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -70,29 +71,60 @@ export async function generateMetadata({
 
 function BlogPostSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto animate-pulse">
+    <div className='mx-auto max-w-4xl animate-pulse'>
       {/* Header Skeleton */}
-      <div className="mb-12">
-        <div className="h-4 bg-black-100 rounded w-24 mb-6"></div>
-        <div className="h-12 bg-black-100 rounded mb-6"></div>
-        <div className="h-6 bg-black-100 rounded mb-8 w-3/4"></div>
-        <div className="flex gap-4 mb-8">
-          <div className="h-4 bg-black-100 rounded w-32"></div>
-          <div className="h-4 bg-black-100 rounded w-24"></div>
+      <div className='mb-12'>
+        <div className='bg-black-100 mb-6 h-4 w-24 rounded'></div>
+        <div className='bg-black-100 mb-6 h-12 rounded'></div>
+        <div className='bg-black-100 mb-8 h-6 w-3/4 rounded'></div>
+        <div className='mb-8 flex gap-4'>
+          <div className='bg-black-100 h-4 w-32 rounded'></div>
+          <div className='bg-black-100 h-4 w-24 rounded'></div>
         </div>
-        <div className="flex gap-2">
-          <div className="h-6 bg-black-100 rounded-full w-16"></div>
-          <div className="h-6 bg-black-100 rounded-full w-20"></div>
-          <div className="h-6 bg-black-100 rounded-full w-18"></div>
+        <div className='flex gap-2'>
+          <div className='bg-black-100 h-6 w-16 rounded-full'></div>
+          <div className='bg-black-100 h-6 w-20 rounded-full'></div>
+          <div className='bg-black-100 h-6 w-18 rounded-full'></div>
         </div>
       </div>
 
       {/* Content Skeleton */}
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {[...Array(8)].map((_, i) => (
-          <div key={i} className="h-4 bg-black-100 rounded w-full"></div>
+          <div key={i} className='bg-black-100 h-4 w-full rounded'></div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// Client component that handles MDX rendering
+function BlogPostRenderer({
+  post,
+  previousPost,
+  nextPost,
+}: {
+  post: any;
+  previousPost: any;
+  nextPost: any;
+}) {
+  // Use headings from parsed blog post
+  const headings = post.headings || [];
+
+  // Get MDX components for styling
+  const mdxComponents = useMDXComponents({});
+
+  return (
+    <div className='mx-auto max-w-7xl'>
+      <BlogHeader post={post} />
+
+      <BlogContent headings={headings} title={post.title} slug={post.slug}>
+        <MDXRemote source={post.content || ''} components={mdxComponents} />
+      </BlogContent>
+
+      <BlogNavigation previousPost={previousPost} nextPost={nextPost} />
+
+      <BackToBlog />
     </div>
   );
 }
@@ -113,24 +145,12 @@ async function BlogPostContent({ slug }: { slug: string }) {
     currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
   const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 
-  // Use headings from parsed blog post
-  const headings = post.headings || [];
-
-  // Get MDX components for styling
-  const mdxComponents = useMDXComponents({});
-
   return (
-    <div className="max-w-7xl mx-auto">
-      <BlogHeader post={post} />
-
-      <BlogContent headings={headings} title={post.title} slug={post.slug}>
-        <MDXRemote source={post.content || ''} components={mdxComponents} />
-      </BlogContent>
-
-      <BlogNavigation previousPost={previousPost} nextPost={nextPost} />
-
-      <BackToBlog />
-    </div>
+    <BlogPostRenderer
+      post={post}
+      previousPost={previousPost}
+      nextPost={nextPost}
+    />
   );
 }
 
@@ -138,10 +158,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
   return (
-    <main className="min-h-screen w-full bg-primary-color">
+    <main className='bg-primary-color min-h-screen w-full'>
       <BlogNavbar />
-      <div className="pt-28 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className='pt-28 pb-20'>
+        <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
           <Suspense fallback={<BlogPostSkeleton />}>
             <BlogPostContent slug={slug} />
           </Suspense>

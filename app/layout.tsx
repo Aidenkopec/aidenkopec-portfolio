@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
-import { MusicProvider } from '@/context/MusicContext';
+import type { Metadata, Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
+import { Geist, Geist_Mono } from 'next/font/google';
+
+import { MusicProvider } from '@/context/MusicContext';
+import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -14,7 +15,13 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL('https://aidenkopec.com'),
   title: 'Aiden Kopec - Full Stack Software Developer Portfolio',
   description:
     'Aiden Kopec is a Full Stack Software Developer specializing in scalable web apps, AI tools, and backend automations. Delivering $2M+ in business impact with expertise in Next.js, Vue.js, TypeScript, Node.js, EdgeDB, and modern technologies for efficiency and growth.',
@@ -34,12 +41,11 @@ export const metadata: Metadata = {
     'software developer portfolio',
   ],
   authors: [{ name: 'Aiden Kopec' }],
-  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   openGraph: {
     title: 'Aiden Kopec - Full Stack Software Developer Portfolio',
     description:
-      'Discover Aiden Kopec’s portfolio: Building scalable web apps, AI tools, and backend automations with Next.js, Vue.js, TypeScript, Node.js, and EdgeDB. $2M+ in business impact.',
+      "Discover Aiden Kopec's portfolio: Building scalable web apps, AI tools, and backend automations with Next.js, Vue.js, TypeScript, Node.js, and EdgeDB. $2M+ in business impact.",
     url: 'https://aidenkopec.com',
     siteName: 'Aiden Kopec Portfolio',
     images: [
@@ -73,14 +79,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
-          attribute="class"
+          attribute='class'
           themes={['glacierSapphire', 'obsidian', 'cosmicVoyage', 'auroraJade']}
-          defaultTheme="glacierSapphire"
+          defaultTheme='glacierSapphire'
           enableSystem={false}
         >
           <MusicProvider>{children}</MusicProvider>

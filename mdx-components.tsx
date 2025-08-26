@@ -19,7 +19,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       return (
         <h1
           id={id}
-          className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6 mt-8 first:mt-0 leading-tight"
+          className='mt-8 mb-6 text-2xl leading-tight font-bold text-white first:mt-0 sm:text-3xl md:text-4xl'
           {...props}
         >
           {children}
@@ -39,7 +39,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       return (
         <h2
           id={id}
-          className="text-2xl sm:text-3xl font-bold text-white mb-4 mt-8"
+          className='mt-8 mb-4 text-2xl font-bold text-white sm:text-3xl'
           {...props}
         >
           {children}
@@ -59,7 +59,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       return (
         <h3
           id={id}
-          className="text-xl sm:text-2xl font-semibold text-white mb-3 mt-6"
+          className='mt-6 mb-3 text-xl font-semibold text-white sm:text-2xl'
           {...props}
         >
           {children}
@@ -79,7 +79,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       return (
         <h4
           id={id}
-          className="text-lg sm:text-xl font-semibold text-white mb-2 mt-4"
+          className='mt-4 mb-2 text-lg font-semibold text-white sm:text-xl'
           {...props}
         >
           {children}
@@ -87,43 +87,43 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       );
     },
     p: ({ children }) => (
-      <p className="text-secondary mb-4 leading-relaxed">{children}</p>
+      <p className='text-secondary mb-4 leading-relaxed'>{children}</p>
     ),
     a: ({ href, children }) => (
       <Link
         href={href || '#'}
-        className="text-[var(--text-color-variable)] hover:underline transition-all duration-200"
+        className='text-[var(--text-color-variable)] transition-all duration-200 hover:underline'
       >
         {children}
       </Link>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-l-4 border-[var(--text-color-variable)] pl-4 my-6 italic text-secondary bg-black-100 p-4 rounded-r-lg">
+      <blockquote className='text-secondary bg-black-100 my-6 rounded-r-lg border-l-4 border-[var(--text-color-variable)] p-4 pl-4 italic'>
         {children}
       </blockquote>
     ),
     code: ({ children }) => (
-      <code className="bg-black-100 text-[var(--text-color-variable)] px-2 py-1 rounded text-sm font-mono">
+      <code className='bg-black-100 rounded px-2 py-1 font-mono text-sm text-[var(--text-color-variable)]'>
         {children}
       </code>
     ),
     pre: ({ children }) => (
-      <pre className="bg-black-100 p-4 rounded-lg overflow-x-auto my-6 border border-tertiary">
+      <pre className='bg-black-100 border-tertiary my-6 overflow-x-auto rounded-lg border p-4'>
         {children}
       </pre>
     ),
     ul: ({ children }) => (
-      <ul className="list-disc list-inside mb-4 space-y-2 text-secondary">
+      <ul className='text-secondary mb-4 list-inside list-disc space-y-2'>
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className="list-decimal list-inside mb-4 space-y-2 text-secondary">
+      <ol className='text-secondary mb-4 list-inside list-decimal space-y-2'>
         {children}
       </ol>
     ),
     li: ({ children }) => (
-      <li className="text-secondary leading-relaxed">{children}</li>
+      <li className='text-secondary leading-relaxed'>{children}</li>
     ),
     img: ({ src, alt, width, height, ...props }) => {
       const { ref, ...restProps } = props;
@@ -133,26 +133,26 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           alt={alt || ''}
           width={typeof width === 'string' ? parseInt(width) : width || 800}
           height={typeof height === 'string' ? parseInt(height) : height || 400}
-          className="rounded-lg my-6 w-full h-auto"
+          className='my-6 h-auto w-full rounded-lg'
           {...restProps}
         />
       );
     },
-    hr: () => <hr className="border-tertiary my-8" />,
+    hr: () => <hr className='border-tertiary my-8' />,
     table: ({ children }) => (
-      <div className="overflow-x-auto my-6">
-        <table className="w-full border-collapse border border-tertiary rounded-lg">
+      <div className='my-6 overflow-x-auto'>
+        <table className='border-tertiary w-full border-collapse rounded-lg border'>
           {children}
         </table>
       </div>
     ),
     th: ({ children }) => (
-      <th className="border border-tertiary bg-black-100 px-4 py-2 text-left font-semibold text-white">
+      <th className='border-tertiary bg-black-100 border px-4 py-2 text-left font-semibold text-white'>
         {children}
       </th>
     ),
     td: ({ children }) => (
-      <td className="border border-tertiary px-4 py-2 text-secondary">
+      <td className='border-tertiary text-secondary border px-4 py-2'>
         {children}
       </td>
     ),

@@ -48,7 +48,6 @@ export interface GitHubRepository {
   };
 }
 
-
 export interface Commit {
   date: string;
   message: string;
@@ -72,7 +71,7 @@ export interface CommitDay {
   level: number;
 }
 
-export interface CommitWeek extends Array<CommitDay> {}
+export type CommitWeek = CommitDay[];
 
 export interface ContributionCalendar {
   totalContributions: number;
@@ -96,7 +95,10 @@ export interface GitHubData {
 // Utility functions that can be used in both client and server components
 
 // Helper function to format commit message
-export const formatCommitMessage = (message: string, maxLength: number = 50): string => {
+export const formatCommitMessage = (
+  message: string,
+  maxLength: number = 50,
+): string => {
   if (message.length <= maxLength) {
     return message;
   }

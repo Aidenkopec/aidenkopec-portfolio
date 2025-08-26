@@ -1,11 +1,12 @@
 'use client';
-import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import React, { useRef, useState } from 'react';
 
-import { styles } from '../styles';
-import { EarthCanvas } from './canvas';
 import SectionWrapper from '../hoc/SectionWrapper';
+import { styles } from '../styles';
 import { slideIn } from '../utils';
+
+import { EarthCanvas } from './canvas';
 
 interface FormData {
   name: string;
@@ -26,7 +27,7 @@ const Contact: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ): void => {
     const { target } = e;
     const { name, value } = target;
@@ -62,7 +63,7 @@ const Contact: React.FC = () => {
   };
 
   const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     e.preventDefault();
     setLoading(true);
@@ -102,13 +103,13 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <SectionWrapper idName="contact">
+    <SectionWrapper idName='contact'>
       <div
-        className={`xl:mt-12 flex xl:flex-row flex-col-reverse gap-10 overflow-hidden`}
+        className={`flex flex-col-reverse gap-10 overflow-hidden xl:mt-12 xl:flex-row`}
       >
         <motion.div
           variants={slideIn('left', 'tween', 0.2, 1) as any}
-          className="flex-[0.75] bg-black-100 p-8 rounded-2xl"
+          className='bg-black-100 flex-[0.75] rounded-2xl p-8'
         >
           {!submitSuccess ? (
             // Show Form
@@ -119,51 +120,51 @@ const Contact: React.FC = () => {
               <form
                 ref={formRef}
                 onSubmit={handleSubmit}
-                className="mt-12 flex flex-col gap-8"
+                className='mt-12 flex flex-col gap-8'
               >
-                <label className="flex flex-col">
-                  <span className="text-secondary  font-medium mb-4">
+                <label className='flex flex-col'>
+                  <span className='text-secondary mb-4 font-medium'>
                     Your Name
                   </span>
                   <input
-                    type="text"
-                    name="name"
+                    type='text'
+                    name='name'
                     value={form.name}
                     onChange={handleChange}
                     placeholder="What's your name?"
-                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-secondary  rounded-lg outline-none border-none font-medium"
+                    className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
                   />
                 </label>
-                <label className="flex flex-col">
-                  <span className="text-secondary  font-medium mb-4">
+                <label className='flex flex-col'>
+                  <span className='text-secondary mb-4 font-medium'>
                     Your email
                   </span>
                   <input
-                    type="email"
-                    name="email"
+                    type='email'
+                    name='email'
                     value={form.email}
                     onChange={handleChange}
                     placeholder="What's your email address?"
-                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-secondary  rounded-lg outline-none border-none font-medium"
+                    className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
                   />
                 </label>
-                <label className="flex flex-col">
-                  <span className="text-secondary  font-medium mb-4">
+                <label className='flex flex-col'>
+                  <span className='text-secondary mb-4 font-medium'>
                     Your Message
                   </span>
                   <textarea
                     rows={7}
-                    name="message"
+                    name='message'
                     value={form.message}
                     onChange={handleChange}
-                    placeholder="Please type your message"
-                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-secondary  rounded-lg outline-none border-none font-medium"
+                    placeholder='Please type your message'
+                    className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
                   />
                 </label>
 
                 <button
-                  type="submit"
-                  className="bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-secondary  font-bold shadow-md shadow-primary hover:bg-tertiary/90 transition-colors disabled:opacity-50"
+                  type='submit'
+                  className='bg-tertiary text-secondary shadow-primary hover:bg-tertiary/90 w-fit rounded-xl px-8 py-3 font-bold shadow-md transition-colors outline-none disabled:opacity-50'
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send'}
@@ -175,31 +176,31 @@ const Contact: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="mt-6 p-6 bg-gradient-to-r from-red-400/10 to-orange-500/10 border border-red-400/20 rounded-xl backdrop-blur-sm"
+                    className='mt-6 rounded-xl border border-red-400/20 bg-gradient-to-r from-red-400/10 to-orange-500/10 p-6 backdrop-blur-sm'
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-red-400 rounded-full flex items-center justify-center">
+                    <div className='flex items-center space-x-3'>
+                      <div className='flex-shrink-0'>
+                        <div className='flex h-8 w-8 items-center justify-center rounded-full bg-red-400'>
                           <svg
-                            className="w-5 h-5 text-secondary "
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                            className='text-secondary h-5 w-5'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
                           >
                             <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
                               strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
+                              d='M6 18L18 6M6 6l12 12'
                             />
                           </svg>
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-lg font-medium text-red-400">
+                        <h3 className='text-lg font-medium text-red-400'>
                           Oops! Something went wrong
                         </h3>
-                        <p className="text-secondary mt-1">{errorMessage}</p>
+                        <p className='text-secondary mt-1'>{errorMessage}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -212,47 +213,47 @@ const Contact: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="flex flex-col items-center justify-center min-h-[500px] text-center"
+              className='flex min-h-[500px] flex-col items-center justify-center text-center'
             >
-              <div className="w-20 h-20 bg-green-400 rounded-full flex items-center justify-center mb-8 mx-auto">
+              <div className='mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-green-400'>
                 <svg
-                  className="w-10 h-10 text-secondary "
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  className='text-secondary h-10 w-10'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                     strokeWidth={2}
-                    d="M5 13l4 4L19 7"
+                    d='M5 13l4 4L19 7'
                   />
                 </svg>
               </div>
 
-              <h2 className="text-4xl font-bold text-green-400 mb-4">
+              <h2 className='mb-4 text-4xl font-bold text-green-400'>
                 Message Sent!
               </h2>
-              <p className="text-xl text-secondary mb-2">
+              <p className='text-secondary mb-2 text-xl'>
                 Thank you,{' '}
-                <span className="text-secondary  font-semibold">
+                <span className='text-secondary font-semibold'>
                   {form.name}
                 </span>
                 !
               </p>
-              <p className="text-lg text-secondary mb-8 max-w-md">
-                I've received your message and will get back to you as soon as
-                possible.
+              <p className='text-secondary mb-8 max-w-md text-lg'>
+                I&apos;ve received your message and will get back to you as soon
+                as possible.
               </p>
 
               <button
                 onClick={resetForm}
-                className="bg-tertiary py-3 px-8 rounded-xl outline-none text-secondary  font-bold shadow-md shadow-primary hover:bg-tertiary/90 transition-colors mb-4"
+                className='bg-tertiary text-secondary shadow-primary hover:bg-tertiary/90 mb-4 rounded-xl px-8 py-3 font-bold shadow-md transition-colors outline-none'
               >
                 Send Another Message
               </button>
 
-              <p className="text-sm text-secondary/70">
+              <p className='text-secondary/70 text-sm'>
                 This form will reset automatically in 10 seconds
               </p>
             </motion.div>
@@ -261,7 +262,7 @@ const Contact: React.FC = () => {
 
         <motion.div
           variants={slideIn('right', 'tween', 0.2, 1) as any}
-          className="xl:flex-1 xl:h-auto md:h-[550px] h-[350px]"
+          className='h-[350px] md:h-[550px] xl:h-auto xl:flex-1'
         >
           <EarthCanvas />
         </motion.div>
