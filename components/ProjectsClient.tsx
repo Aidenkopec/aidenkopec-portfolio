@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { DateTime } from 'luxon';
-import React, { useState } from 'react';
+import Image from 'next/image';
+import React, { useEffect, useRef, useState } from 'react';
 import Tilt from 'react-parallax-tilt';
 
 import {
@@ -190,11 +190,34 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     visible: false,
   });
 
-  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
-    const newYear = e.target.value;
-    setSelectedYear(newYear);
-    onYearChange(newYear);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleYearChange = (year: string): void => {
+    setSelectedYear(year);
+    onYearChange(year);
+    setDropdownOpen(false);
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   const showTooltip = (
     event: React.MouseEvent,
@@ -243,18 +266,18 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     let startWeek = 0;
     weeks.forEach((week, index) => {
       let firstDayOfWeek: string | null = null;
-      
+
       // Find the first valid day in the week
       if ('contributionDays' in week && week.contributionDays?.length > 0) {
         firstDayOfWeek = week.contributionDays[0].date;
       } else if (Array.isArray(week) && week.length > 0) {
         firstDayOfWeek = week[0].date;
       }
-      
+
       if (firstDayOfWeek) {
         const firstDay = DateTime.fromISO(firstDayOfWeek);
         const monthName = firstDay.toFormat('MMM'); // Use Luxon's formatting
-        
+
         if (monthName !== currentMonth) {
           if (currentMonth !== null) {
             monthLabels.push({
@@ -265,7 +288,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
           currentMonth = monthName;
           startWeek = index;
         }
-        
+
         if (index === weeks.length - 1) {
           monthLabels.push({
             label: currentMonth,
@@ -285,17 +308,54 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
         <h4 className='text-secondary text-[16px] font-semibold'>
           {total} contributions in {selectedYear}
         </h4>
-        <select
-          value={selectedYear}
-          onChange={handleYearChange}
-          className='bg-black-100 text-secondary border-tertiary cursor-pointer rounded border px-2 py-1 text-sm transition-colors hover:border-[var(--text-color-variable)]'
-        >
-          {availableYears.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
+
+        {/* Custom Year Dropdown */}
+        <div className='relative' ref={dropdownRef}>
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className='bg-black-100 border-tertiary text-secondary flex items-center justify-between gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
+          >
+            <span className='flex items-center gap-1.5 text-[11px] sm:text-sm'>
+              📅 {selectedYear}
+            </span>
+            <div
+              className={`chevron scale-75 transition-transform duration-150 ${
+                dropdownOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          {dropdownOpen && (
+            <div className='bg-black-100 border-tertiary absolute top-full right-0 z-20 mt-1.5 min-w-[120px] overflow-hidden rounded-md border shadow-lg shadow-black/30 sm:min-w-[140px]'>
+              <div className='py-0.5'>
+                {availableYears.map((year, index) => (
+                  <button
+                    key={year}
+                    onClick={() => handleYearChange(year.toString())}
+                    className={`text-secondary hover:text-secondary w-full px-3 py-2 text-left text-xs font-medium transition-colors duration-150 hover:bg-[var(--text-color-variable)]/10 sm:px-4 sm:py-2.5 sm:text-sm ${
+                      selectedYear === year.toString()
+                        ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
+                        : ''
+                    }`}
+                  >
+                    <div className='flex items-center gap-1.5 sm:gap-2'>
+                      <span className='text-[10px] sm:text-xs'>📅</span>
+                      <span className='text-[11px] sm:text-sm'>{year}</span>
+                      {selectedYear === year.toString() && (
+                        <div className='ml-auto text-[10px] text-[var(--text-color-variable)] sm:text-xs'>
+                          ✓
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Glowing border effect */}
+              <div className='pointer-events-none absolute inset-0 rounded-md border border-[var(--text-color-variable)]/20' />
+            </div>
+          )}
+        </div>
       </div>
 
       {weeks.length > 0 ? (
@@ -563,7 +623,9 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   githubData,
 }) => {
   const currentYear = new Date().getFullYear();
-  const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
+  const [selectedYear, setSelectedYear] = useState<string>(
+    currentYear.toString(),
+  );
   const [contributionData, setContributionData] = useState<
     ContributionCalendar | undefined
   >(githubData.commitCalendar);
