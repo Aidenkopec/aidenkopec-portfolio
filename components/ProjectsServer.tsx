@@ -100,6 +100,7 @@ export default async function ProjectsServer() {
       <ProjectsSectionHeader
         title='GitHub Activity Dashboard'
         className='mt-20'
+        showGitHubLink={true}
       />
 
       {/* GitHub Stats Overview with Suspense */}

@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { Marquee } from './magicui/marquee';
 
+import { GITHUB_URL } from '../constants';
 import {
   formatCommitMessage,
   getContributionColor,
@@ -680,6 +681,44 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
   );
 };
 
+// GitHub Link Component
+const GitHubLink: React.FC = () => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleGitHubClick = (): void => {
+    window.open(GITHUB_URL, '_blank');
+  };
+
+  return (
+    <motion.button
+      onClick={handleGitHubClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <Image
+        src={github}
+        alt='GitHub'
+        width={16}
+        height={16}
+        className={`transition-transform duration-300 ${isHovered ? 'scale-110 rotate-12' : ''}`}
+      />
+      <span
+        className={`text-sm font-medium transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--secondary-color)]'}`}
+      >
+        View GitHub
+      </span>
+      <div
+        className={`transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`}
+      >
+        ↗
+      </div>
+    </motion.button>
+  );
+};
+
 export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   githubData,
 }) => {
@@ -803,10 +842,14 @@ export const ProjectsDescription: React.FC = () => {
 export const ProjectsSectionHeader: React.FC<{
   title: string;
   className?: string;
-}> = ({ title, className = '' }) => {
+  showGitHubLink?: boolean;
+}> = ({ title, className = '', showGitHubLink = false }) => {
   return (
     <motion.div variants={textVariant() as any} className={className}>
-      <h3 className='text-secondary mb-8 text-[24px] font-bold'>{title}</h3>
+      <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <h3 className='text-secondary text-[24px] font-bold'>{title}</h3>
+        {showGitHubLink && <GitHubLink />}
+      </div>
     </motion.div>
   );
 };

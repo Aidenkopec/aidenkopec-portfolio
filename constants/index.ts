@@ -75,6 +75,9 @@ interface Project {
   isGitHub: boolean;
 }
 
+// Social links
+export const GITHUB_URL = 'https://github.com/Aidenkopec';
+
 export const navLinks: NavLink[] = [
   {
     id: 'about',
