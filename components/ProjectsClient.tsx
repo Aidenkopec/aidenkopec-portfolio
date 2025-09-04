@@ -14,6 +14,7 @@ import {
   type GitHubData,
 } from '../lib/github-utils';
 import { github } from '../public/assets';
+import globe from '../public/assets/globe.svg';
 import { styles } from '../styles';
 import { fadeIn, textVariant } from '../utils';
 
@@ -28,7 +29,8 @@ interface Project {
   description: string;
   tags: ProjectTag[];
   image: any;
-  source_code_link: string;
+  link: string;
+  isGitHub: boolean;
 }
 
 interface ProjectCardProps {
@@ -36,7 +38,8 @@ interface ProjectCardProps {
   name: string;
   description: string;
   image: any;
-  source_code_link: string;
+  link: string;
+  isGitHub: boolean;
 }
 
 interface StatCardProps {
@@ -70,12 +73,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   name,
   description,
   image,
-  source_code_link,
+  link,
+  isGitHub,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleSourceClick = (): void => {
-    window.open(source_code_link, '_blank');
+    window.open(link, '_blank');
   };
 
   return (
@@ -85,9 +89,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`relative h-[230px] w-full transform-gpu overflow-hidden rounded-xl border border-[var(--black-100)] bg-gradient-to-br from-[var(--tertiary-color)] via-[var(--black-100)] to-[var(--tertiary-color)] p-[1px] transition-all duration-300 ${isHovered ? 'scale-[1.02] shadow-[var(--text-color-variable)]/20 shadow-lg' : ''}`}>
+      <div
+        className={`relative h-[230px] w-full transform-gpu overflow-hidden rounded-xl border border-[var(--black-100)] bg-gradient-to-br from-[var(--tertiary-color)] via-[var(--black-100)] to-[var(--tertiary-color)] p-[1px] transition-all duration-300 ${isHovered ? 'scale-[1.02] shadow-[var(--text-color-variable)]/20 shadow-lg' : ''}`}
+      >
         {/* Gradient border effect */}
-        <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-[var(--text-color-variable)]/20 via-transparent to-[var(--text-color-variable)]/20 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+        <div
+          className={`absolute inset-0 rounded-xl bg-gradient-to-r from-[var(--text-color-variable)]/20 via-transparent to-[var(--text-color-variable)]/20 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+        />
 
         {/* Main card content */}
         <div className='relative h-full w-full rounded-xl bg-[var(--tertiary-color)] p-3'>
@@ -104,15 +112,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             {/* Gradient overlay */}
             <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
 
-            {/* GitHub button */}
+            {/* Icon button - GitHub or Website */}
             <div className='absolute top-2 right-2'>
               <div
                 onClick={handleSourceClick}
                 className='flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/80 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-[var(--text-color-variable)]'
               >
                 <Image
-                  src={github}
-                  alt='source code'
+                  src={isGitHub ? github : globe}
+                  alt={isGitHub ? 'source code' : 'visit website'}
                   width={12}
                   height={12}
                   className='object-contain'
@@ -122,16 +130,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
 
           {/* Content section */}
-          <div className='flex h-[calc(100%-104px)] flex-col'>
+          <div className='flex h-[calc(100%-104px)] flex-col justify-center'>
             <div>
-              <h3 className={`mb-1 line-clamp-1 text-[14px] font-bold transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--white-100)]'}`}>
+              <h3
+                className={`mb-2 line-clamp-1 text-[16px] font-bold transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--white-100)]'}`}
+              >
                 {name}
               </h3>
-              <p className='line-clamp-3 text-[11px] leading-[14px] text-[var(--secondary-color)]/80'>
+              <p className='line-clamp-3 text-[12px] leading-[16px] text-[var(--secondary-color)]/80'>
                 {description}
               </p>
             </div>
-
           </div>
         </div>
       </div>
@@ -590,7 +599,14 @@ export const ProjectCards: React.FC<{ projects: Project[] }> = ({
               key={`project-row1-${index}`}
               className='w-[240px] flex-shrink-0 hover:z-10'
             >
-              <ProjectCard index={index} {...project} />
+              <ProjectCard
+                index={index}
+                name={project.name}
+                description={project.description}
+                image={project.image}
+                link={project.link}
+                isGitHub={project.isGitHub}
+              />
             </div>
           ))}
         </Marquee>
@@ -606,7 +622,14 @@ export const ProjectCards: React.FC<{ projects: Project[] }> = ({
               key={`project-row2-${index}`}
               className='w-[240px] flex-shrink-0 hover:z-10'
             >
-              <ProjectCard index={index + 4} {...project} />
+              <ProjectCard
+                index={index + 4}
+                name={project.name}
+                description={project.description}
+                image={project.image}
+                link={project.link}
+                isGitHub={project.isGitHub}
+              />
             </div>
           ))}
         </Marquee>

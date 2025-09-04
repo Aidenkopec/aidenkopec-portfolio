@@ -71,7 +71,8 @@ interface Project {
   description: string;
   tags: ProjectTag[];
   image: any;
-  source_code_link: string;
+  link: string;
+  isGitHub: boolean;
 }
 
 export const navLinks: NavLink[] = [
@@ -224,7 +225,8 @@ const projects: Project[] = [
       },
     ],
     image: solvexdigital,
-    source_code_link: 'https://solvexdigital.com',
+    link: 'https://solvexdigital.com',
+    isGitHub: false,
   },
   {
     name: 'Teevision - 3D T-Shirt Customizer',
@@ -249,8 +251,8 @@ const projects: Project[] = [
       },
     ],
     image: teevision,
-    source_code_link:
-      'https://github.com/Aidenkopec/project-3d-clothing-website',
+    link: 'https://github.com/Aidenkopec/project-3d-clothing-website',
+    isGitHub: true,
   },
   {
     name: 'Cryptocurrency Trading Bot System',
@@ -275,7 +277,8 @@ const projects: Project[] = [
       },
     ],
     image: freqtrade,
-    source_code_link: 'https://github.com',
+    link: 'https://github.com',
+    isGitHub: true,
   },
   {
     name: 'E-Commerce Analytics Dashboard',
@@ -300,7 +303,8 @@ const projects: Project[] = [
       },
     ],
     image: react,
-    source_code_link: 'https://github.com',
+    link: 'https://github.com',
+    isGitHub: true,
   },
   {
     name: 'AI-Powered Content Generator',
@@ -325,7 +329,8 @@ const projects: Project[] = [
       },
     ],
     image: typescript,
-    source_code_link: 'https://github.com',
+    link: 'https://github.com',
+    isGitHub: true,
   },
   {
     name: 'Real-Time Chat Application',
@@ -350,7 +355,8 @@ const projects: Project[] = [
       },
     ],
     image: vue,
-    source_code_link: 'https://github.com',
+    link: 'https://github.com',
+    isGitHub: true,
   },
   {
     name: 'DevOps Monitoring Suite',
@@ -375,7 +381,8 @@ const projects: Project[] = [
       },
     ],
     image: aws,
-    source_code_link: 'https://github.com',
+    link: 'https://github.com',
+    isGitHub: true,
   },
   {
     name: 'Blockchain Voting System',
@@ -400,7 +407,8 @@ const projects: Project[] = [
       },
     ],
     image: nodejs,
-    source_code_link: 'https://github.com',
+    link: 'https://github.com',
+    isGitHub: true,
   },
 ];
 
