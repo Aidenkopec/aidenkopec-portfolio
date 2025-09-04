@@ -19,9 +19,17 @@ import launchcode from '../public/companies/launchcode.png';
 import opit from '../public/companies/opit.png';
 
 // Project images - Static imports
+import digitaldreamscapes from '../public/projects/digital-dreamscapes.png';
 import freqtrade from '../public/projects/freqtrade-logo.png';
+import iwinparlays from '../public/projects/i-win-parlays.png';
+import idotogether from '../public/projects/idotogether.png';
+import n8n from '../public/projects/n8n.png';
+import pdconstruction from '../public/projects/pd-construction.png';
+import relfeild from '../public/projects/relfeild.png';
 import solvexdigital from '../public/projects/solvex-digital.svg';
+import summalink from '../public/projects/summalink.png';
 import teevision from '../public/projects/tee-vision.png';
+import victoriaandriley from '../public/projects/vic-riley-wedding.png';
 
 // Service icons (engineering focus) - Static imports
 import backendAutomationErp from '../public/engineering-focus/backendAutomationErp.png';
@@ -61,17 +69,11 @@ interface Testimonial {
   company: string;
 }
 
-interface ProjectTag {
-  name: string;
-  color: string;
-}
-
 interface Project {
   name: string;
   description: string;
-  tags: ProjectTag[];
-  image: any;
-  link: string;
+  image?: any;
+  link: string | null;
   isGitHub: boolean;
 }
 
@@ -206,212 +208,113 @@ const testimonials: Testimonial[] = [
 
 const projects: Project[] = [
   {
-    name: 'Solvex Digital Agency Platform',
+    name: 'Solvex Digital',
     description:
       'Founded and operated a digital agency delivering full-stack web applications, GPT-powered AI integrations, and SEO solutions. Led 8 client projects from planning to deployment.',
-    tags: [
-      {
-        name: 'Next.js',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Node.js',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'AI Integration',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'EdgeDB',
-        color: 'orange-text-gradient',
-      },
-    ],
     image: solvexdigital,
     link: 'https://solvexdigital.com',
     isGitHub: false,
   },
   {
-    name: 'Teevision - 3D T-Shirt Customizer',
+    name: 'Teevision',
     description:
       'Design custom T-shirts in stunning 3D! Built with React, ThreeJS, TailwindCSS, Framer Motion, and DALLE AI. Features real-time 3D rendering, custom color palettes, and downloadable designs.',
-    tags: [
-      {
-        name: 'React',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'ThreeJS',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Framer Motion',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'TailwindCSS',
-        color: 'orange-text-gradient',
-      },
-    ],
     image: teevision,
-    link: 'https://github.com/Aidenkopec/project-3d-clothing-website',
-    isGitHub: true,
+    link: 'https://teevision.netlify.app',
+    isGitHub: false,
   },
   {
-    name: 'Cryptocurrency Trading Bot System',
+    name: 'Cryptocurrency Trading Bot',
     description:
       'Built a containerized cryptocurrency trading system using the Freqtrade framework with custom Python strategies. Implemented dual-asset selection algorithm and advanced technical indicators.',
-    tags: [
-      {
-        name: 'Python',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'Docker',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Trading Algorithms',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'Technical Analysis',
-        color: 'orange-text-gradient',
-      },
-    ],
     image: freqtrade,
-    link: 'https://github.com',
+    link: 'https://github.com/Aidenkopec/crypto-bot-trading',
     isGitHub: true,
   },
   {
-    name: 'E-Commerce Analytics Dashboard',
+    name: 'I Do Together',
     description:
-      'Real-time analytics platform for e-commerce businesses with advanced data visualization, sales forecasting, and customer behavior insights. Built with modern React and powerful backend APIs.',
-    tags: [
-      {
-        name: 'React',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'Node.js',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'PostgreSQL',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'AWS',
-        color: 'orange-text-gradient',
-      },
-    ],
-    image: react,
-    link: 'https://github.com',
+      'A company selling digital wedding websites. Features include RSVP and reservation management, guest tracking, allergy tracking, and song request submissions to fully digitalize weddings.',
+    link: 'https://www.idotogether.com',
+    image: idotogether,
+    isGitHub: false,
+  },
+  {
+    name: 'I Win Parlays',
+    description:
+      'Sports betting app that generates optimized parlays, providing analysis, probabilities, and detailed reasoning for each pick.',
+    link: 'https://www.iwinparlays.com',
+    image: iwinparlays,
+    isGitHub: false,
+  },
+  {
+    name: 'Relfeild',
+    description:
+      'Oilfield directory and accountability platform for oil & gas companies. Users can leave and view reviews, check hours, services, and contact details.',
+    link: 'https://oil-gas-ochre.vercel.app',
+    image: relfeild,
+    isGitHub: false,
+  },
+  {
+    name: 'Digital Dream Scapes',
+    description:
+      'AI image generation community platform where users can create AI art and share it within a community feed.',
+    link: 'https://digital-dreamscapes.netlify.app/',
+    isGitHub: false,
+    image: digitaldreamscapes,
+  },
+  {
+    name: 'Pivot Tools',
+    description:
+      'Corporate website for Pivot Tools, an oilfield tool rental company showcasing services and offerings.',
+    link: null,
+    isGitHub: false,
+  },
+  {
+    name: 'Sparta Tech Coatings',
+    description:
+      'Website for Sparta Tech Coatings, a company specializing in epoxy flooring solutions.',
+    link: null,
+    isGitHub: false,
+  },
+  {
+    name: 'PD Construction',
+    description:
+      'Corporate website for PD Construction, featuring small-scale construction services like fences, sheds, and more.',
+    link: 'https://www.pdconstruction.ca',
+    isGitHub: false,
+    image: pdconstruction,
+  },
+  {
+    name: 'Dribbble Clone',
+    description:
+      'A functional Dribbble clone with user authentication, image posting, and project showcase capabilities.',
+    link: 'https://github.com/Aidenkopec/dribbble-clone',
     isGitHub: true,
   },
   {
-    name: 'AI-Powered Content Generator',
+    name: 'Article Summarizer',
     description:
-      'Intelligent content creation platform leveraging GPT models for automated blog writing, social media posts, and marketing copy. Features custom templates and SEO optimization.',
-    tags: [
-      {
-        name: 'TypeScript',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'OpenAI',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Next.js',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'TailwindCSS',
-        color: 'orange-text-gradient',
-      },
-    ],
-    image: typescript,
-    link: 'https://github.com',
-    isGitHub: true,
+      'AI-powered app using GPT to summarize long-form articles into concise, readable insights.',
+    link: 'https://summalink.netlify.app/',
+    isGitHub: false,
+    image: summalink,
   },
   {
-    name: 'Real-Time Chat Application',
+    name: 'n8n Workflows',
     description:
-      'Scalable messaging platform with real-time communication, file sharing, and group management. Built with WebSocket technology and modern UI frameworks.',
-    tags: [
-      {
-        name: 'Vue.js',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'WebSocket',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'Redis',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'Docker',
-        color: 'orange-text-gradient',
-      },
-    ],
-    image: vue,
-    link: 'https://github.com',
+      'Collection of automation workflows built with n8n for task automation and system integrations.',
+    link: 'https://github.com/Aidenkopec/n8n-workflows',
     isGitHub: true,
+    image: n8n,
   },
   {
-    name: 'DevOps Monitoring Suite',
+    name: 'Victoria & Riley Wedding Website',
     description:
-      'Comprehensive infrastructure monitoring solution with custom dashboards, automated alerts, and performance analytics. Deployed across multiple cloud environments.',
-    tags: [
-      {
-        name: 'AWS',
-        color: 'orange-text-gradient',
-      },
-      {
-        name: 'Docker',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'Node.js',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Monitoring',
-        color: 'pink-text-gradient',
-      },
-    ],
-    image: aws,
-    link: 'https://github.com',
-    isGitHub: true,
-  },
-  {
-    name: 'Blockchain Voting System',
-    description:
-      'Secure and transparent voting platform built on blockchain technology. Features voter verification, real-time results, and immutable vote tracking for enhanced election integrity.',
-    tags: [
-      {
-        name: 'Blockchain',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'React',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Smart Contracts',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'Web3',
-        color: 'orange-text-gradient',
-      },
-    ],
-    image: nodejs,
-    link: 'https://github.com',
-    isGitHub: true,
+      'Custom wedding website designed for Victoria and Riley. Includes event schedule, RSVP functionality, and registry details.',
+    link: null,
+    isGitHub: false,
+    image: victoriaandriley,
   },
 ];
 

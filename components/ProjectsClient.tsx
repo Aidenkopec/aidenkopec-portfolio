@@ -6,6 +6,7 @@ import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Marquee } from './magicui/marquee';
+import ProjectPlaceholder from './ProjectPlaceholder';
 
 import { GITHUB_URL } from '../constants';
 import {
@@ -20,17 +21,11 @@ import { styles } from '../styles';
 import { fadeIn, textVariant } from '../utils';
 
 // Types for component props
-interface ProjectTag {
-  name: string;
-  color: string;
-}
-
 interface Project {
   name: string;
   description: string;
-  tags: ProjectTag[];
-  image: any;
-  link: string;
+  image?: any;
+  link: string | null;
   isGitHub: boolean;
 }
 
@@ -38,8 +33,8 @@ interface ProjectCardProps {
   index: number;
   name: string;
   description: string;
-  image: any;
-  link: string;
+  image?: any;
+  link: string | null;
   isGitHub: boolean;
 }
 
@@ -80,7 +75,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const handleSourceClick = (): void => {
-    window.open(link, '_blank');
+    if (link) {
+      window.open(link, '_blank');
+    }
   };
 
   return (
@@ -102,32 +99,38 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         <div className='relative h-full w-full rounded-xl bg-[var(--tertiary-color)] p-3'>
           {/* Image section */}
           <div className='relative mb-3 h-[80px] w-full overflow-hidden rounded-lg'>
-            <Image
-              src={image}
-              alt={`${name} project screenshot`}
-              fill
-              className={`object-cover transition-transform duration-500 ${isHovered ? 'scale-105' : ''}`}
-              sizes='(max-width: 768px) 100vw, 240px'
-            />
+            {image ? (
+              <Image
+                src={image}
+                alt={`${name} project screenshot`}
+                fill
+                className={`object-cover transition-transform duration-500 ${isHovered ? 'scale-105' : ''}`}
+                sizes='(max-width: 768px) 100vw, 240px'
+              />
+            ) : (
+              <ProjectPlaceholder isHovered={isHovered} />
+            )}
 
             {/* Gradient overlay */}
             <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
 
-            {/* Icon button - GitHub or Website */}
-            <div className='absolute top-2 right-2'>
-              <div
-                onClick={handleSourceClick}
-                className='flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/80 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-[var(--text-color-variable)]'
-              >
-                <Image
-                  src={isGitHub ? github : globe}
-                  alt={isGitHub ? 'source code' : 'visit website'}
-                  width={12}
-                  height={12}
-                  className='object-contain'
-                />
+            {/* Icon button - GitHub or Website (only if link exists) */}
+            {link && (
+              <div className='absolute top-2 right-2'>
+                <div
+                  onClick={handleSourceClick}
+                  className='flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/80 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-[var(--text-color-variable)]'
+                >
+                  <Image
+                    src={isGitHub ? github : globe}
+                    alt={isGitHub ? 'source code' : 'visit website'}
+                    width={12}
+                    height={12}
+                    className='object-contain'
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Content section */}
@@ -579,9 +582,10 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 export const ProjectCards: React.FC<{ projects: Project[] }> = ({
   projects,
 }) => {
-  // Split projects into two rows
-  const firstRow = projects.slice(0, 4);
-  const secondRow = projects.slice(4, 8);
+  // Dynamically split projects into two rows
+  const midPoint = Math.ceil(projects.length / 2);
+  const firstRow = projects.slice(0, midPoint);
+  const secondRow = projects.slice(midPoint);
 
   return (
     <div className='relative w-full overflow-hidden'>
@@ -624,7 +628,7 @@ export const ProjectCards: React.FC<{ projects: Project[] }> = ({
               className='w-[240px] flex-shrink-0 hover:z-10'
             >
               <ProjectCard
-                index={index + 4}
+                index={index + midPoint}
                 name={project.name}
                 description={project.description}
                 image={project.image}
