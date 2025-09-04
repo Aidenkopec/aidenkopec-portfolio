@@ -5,7 +5,7 @@ import { getGitHubData } from '../../../lib/github-service';
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const url = new URL(request.url);
-    const year = url.searchParams.get('year') || 'last';
+    const year = url.searchParams.get('year') || new Date().getFullYear().toString();
 
     const githubData = await getGitHubData(year);
 

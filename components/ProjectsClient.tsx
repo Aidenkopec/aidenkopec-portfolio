@@ -1,19 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import Tilt from 'react-parallax-tilt';
 import Image from 'next/image';
+import { DateTime } from 'luxon';
+import React, { useState } from 'react';
+import Tilt from 'react-parallax-tilt';
 
-import { github } from '../public/assets';
-import { fadeIn, textVariant } from '../utils';
-import { styles } from '../styles';
 import {
   formatCommitMessage,
   getContributionColor,
-  type GitHubData,
   type ContributionCalendar,
+  type GitHubData,
 } from '../lib/github-utils';
+import { github } from '../public/assets';
+import { styles } from '../styles';
+import { fadeIn, textVariant } from '../utils';
 
 // Types for component props
 interface ProjectTag {
@@ -235,21 +236,25 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   const weeks = commitCalendar?.weeks || [];
   const total = commitCalendar?.totalContributions || 0;
 
-  // Generate month labels
+  // Generate month labels using Luxon for proper Jan-Dec ordering
   const monthLabels: { label: string; span: number }[] = [];
   if (weeks.length > 0) {
     let currentMonth: string | null = null;
     let startWeek = 0;
     weeks.forEach((week, index) => {
-      if (
-        'contributionDays' in week &&
-        week.contributionDays &&
-        week.contributionDays.length > 0
-      ) {
-        const firstDay = new Date(week.contributionDays[0].date);
-        const monthName = firstDay.toLocaleString('default', {
-          month: 'short',
-        });
+      let firstDayOfWeek: string | null = null;
+      
+      // Find the first valid day in the week
+      if ('contributionDays' in week && week.contributionDays?.length > 0) {
+        firstDayOfWeek = week.contributionDays[0].date;
+      } else if (Array.isArray(week) && week.length > 0) {
+        firstDayOfWeek = week[0].date;
+      }
+      
+      if (firstDayOfWeek) {
+        const firstDay = DateTime.fromISO(firstDayOfWeek);
+        const monthName = firstDay.toFormat('MMM'); // Use Luxon's formatting
+        
         if (monthName !== currentMonth) {
           if (currentMonth !== null) {
             monthLabels.push({
@@ -260,6 +265,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
           currentMonth = monthName;
           startWeek = index;
         }
+        
         if (index === weeks.length - 1) {
           monthLabels.push({
             label: currentMonth,
@@ -277,15 +283,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     >
       <div className='mb-4 flex items-center justify-between'>
         <h4 className='text-secondary text-[16px] font-semibold'>
-          {total} contributions in{' '}
-          {selectedYear === 'last' ? 'the last year' : selectedYear}
+          {total} contributions in {selectedYear}
         </h4>
         <select
           value={selectedYear}
           onChange={handleYearChange}
           className='bg-black-100 text-secondary border-tertiary cursor-pointer rounded border px-2 py-1 text-sm transition-colors hover:border-[var(--text-color-variable)]'
         >
-          <option value='last'>Last year</option>
           {availableYears.map((year) => (
             <option key={year} value={year}>
               {year}
@@ -321,13 +325,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
               <div className='mb-3 flex'>
                 {/* Day of week labels */}
                 <div className='text-secondary mr-2 flex flex-col justify-start gap-[2px] pt-1 text-xs'>
+                  <div className='h-3 text-[10px] leading-3'></div>
                   <div className='h-3 text-[10px] leading-3'>Mon</div>
                   <div className='h-3 text-[10px] leading-3'></div>
                   <div className='h-3 text-[10px] leading-3'>Wed</div>
                   <div className='h-3 text-[10px] leading-3'></div>
                   <div className='h-3 text-[10px] leading-3'>Fri</div>
                   <div className='h-3 text-[10px] leading-3'></div>
-                  <div className='h-3 text-[10px] leading-3'>Sun</div>
                 </div>
 
                 {/* Contribution Grid */}
@@ -347,16 +351,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                                       ? 3
                                       : 4;
 
-                            const date = new Date(day.date);
-                            const formattedDate = date.toLocaleDateString(
-                              'en-US',
-                              {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            );
+                            const date = DateTime.fromISO(day.date);
+                            const formattedDate = date.toLocaleString({
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            });
 
                             return (
                               <motion.div
@@ -388,16 +389,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                             );
                           })
                         : week.map((day, dayIndex) => {
-                            const date = new Date(day.date);
-                            const formattedDate = date.toLocaleDateString(
-                              'en-US',
-                              {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            );
+                            const date = DateTime.fromISO(day.date);
+                            const formattedDate = date.toLocaleString({
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            });
 
                             return (
                               <motion.div
@@ -565,7 +563,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   githubData,
 }) => {
   const currentYear = new Date().getFullYear();
-  const [selectedYear, setSelectedYear] = useState<string>('last');
+  const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
   const [contributionData, setContributionData] = useState<
     ContributionCalendar | undefined
   >(githubData.commitCalendar);

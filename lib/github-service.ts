@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { cache } from 'react';
 
 import 'server-only';
@@ -167,49 +168,56 @@ function generateCommitGraph(
   year?: string,
 ): ContributionCalendar {
   const weeks: CommitWeek[] = [];
-  let startDate: Date;
-  let endDate: Date;
+  let startDate: DateTime;
+  let endDate: DateTime;
 
   if (year && year !== 'last') {
-    startDate = new Date(`${year}-01-01`);
-    endDate = new Date(`${year}-12-31`);
+    // Use calendar year boundaries (Jan 1 - Dec 31)
+    startDate = DateTime.fromObject({ year: parseInt(year), month: 1, day: 1 });
+    endDate = DateTime.fromObject({ year: parseInt(year), month: 12, day: 31 });
   } else {
-    const today = new Date();
-    startDate = new Date(today);
-    startDate.setDate(today.getDate() - 364);
+    // For "last" year, use rolling 365 days
+    const today = DateTime.now();
+    startDate = today.minus({ days: 364 });
     endDate = today;
   }
 
-  const totalDays = Math.ceil(
-    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
-  );
-  const totalWeeks = Math.ceil(totalDays / 7);
+  // Start from the first Sunday of the date range to align with GitHub's grid
+  const firstSunday = startDate.startOf('week').minus({ days: 1 }); // Luxon week starts Monday, get Sunday before
+  const lastDate = endDate.endOf('day');
 
-  for (let week = 0; week < totalWeeks; week++) {
-    const weekStart = new Date(startDate);
-    weekStart.setDate(startDate.getDate() + week * 7);
+  let currentDate = firstSunday;
 
-    const days: CommitDay[] = [];
-    for (let day = 0; day < 7; day++) {
-      const currentDate = new Date(weekStart);
-      currentDate.setDate(weekStart.getDate() + day);
+  while (currentDate <= lastDate) {
+    const weekDays: CommitDay[] = [];
 
-      if (currentDate > endDate) {
-        break;
+    // Generate 7 days for each week
+    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+      const dayDate = currentDate.plus({ days: dayOffset });
+
+      // Only include days that are within our actual date range
+      if (dayDate >= startDate && dayDate <= endDate) {
+        const dayCommits = commits.filter((commit) => {
+          const commitDate = DateTime.fromISO(commit.date);
+          return commitDate.hasSame(dayDate, 'day');
+        });
+
+        weekDays.push({
+          date:
+            dayDate.toISODate() ||
+            dayDate.toISO() ||
+            dayDate.toFormat('yyyy-MM-dd'),
+          count: dayCommits.length,
+          level: getContributionLevel(dayCommits.length),
+        });
       }
-
-      const dayCommits = commits.filter((commit) => {
-        const commitDate = new Date(commit.date);
-        return commitDate.toDateString() === currentDate.toDateString();
-      });
-
-      days.push({
-        date: currentDate.toISOString().split('T')[0],
-        count: dayCommits.length,
-        level: getContributionLevel(dayCommits.length),
-      });
     }
-    weeks.push(days);
+
+    if (weekDays.length > 0) {
+      weeks.push(weekDays);
+    }
+
+    currentDate = currentDate.plus({ weeks: 1 });
   }
 
   return {
@@ -228,7 +236,7 @@ function getContributionLevel(count: number): number {
 
 // Main function to get all GitHub data, callable from Server Components
 export const getGitHubData = cache(
-  async (year: string = 'last'): Promise<GitHubData> => {
+  async (year: string = new Date().getFullYear().toString()): Promise<GitHubData> => {
     try {
       const [userData, repositories, commits, commitCalendar] =
         await Promise.all([

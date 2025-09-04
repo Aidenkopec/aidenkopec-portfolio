@@ -142,10 +142,12 @@ const experiences: Experience[] = [
     iconBg: '#E6DEDD',
     date: 'January 2024 - Present',
     points: [
-      'Developed 40+ custom KPI reports and 10 real-time dashboards, saving thousands of labor hours annually and resolving $2M+ in inventory discrepancies within finance',
-      'Built full-stack Bill of Materials platform translating complex 3D CAD outputs into actionable manufacturing instructions, dramatically improving shop floor accuracy',
-      'Implemented dynamic budgeting system and automated ERP workflows using BullMQ, achieving 20x deployment speed improvement and migrating core systems from React to Vue',
-      'Engineered real-time inventory tracking platform with interactive global mapping system, displaying live locations of products worldwide',
+      'Developed <strong>40+ custom KPI reports and 10 real-time dashboards</strong>, replacing multi-week manual reporting with live insights and saving thousands of labor hours annually across departments. Resolved <strong>$2M+</strong> in inventory discrepancies within finance and engineered the underlying reporting infrastructure to ensure fast, reliable, and secure data access company-wide.',
+      'Developed a full-stack <strong>Bill of Materials platform</strong>, translating complex 3D CAD outputs into actionable manufacturing instructions, dramatically improving shop floor accuracy.',
+      'Implemented a dynamic <strong>budgeting and forecasting system</strong> (P3), enhancing financial predictability and profitability analysis.',
+      'Designed and deployed a full-stack automation and monitoring system (<strong>BullMQ</strong>), automating ERP workflows (user sync, project imports, commissions) and building custom <strong>Axapta (Dynamics AX ERP) modules</strong> across finance, inventory, sales, production, and other core business operations.',
+      'Automated operational accountability with a custom <strong>issue-tracking system</strong> and engineered a <strong>real-time inventory tracking platform</strong>, displaying live locations of products worldwide through an interactive mapping system.',
+      'Refactored and optimized infrastructure, achieving a <strong>20x deployment speed improvement</strong> and migrating core systems from React to Vue.',
     ],
   },
   {
@@ -155,7 +157,7 @@ const experiences: Experience[] = [
     iconBg: '#383E56',
     date: 'May 2023 - December 2023',
     points: [
-      'Built and optimized web and mobile applications, improving performance by 30% and boosting user satisfaction by 25%',
+      'Built and optimized web and mobile applications, improving performance by <strong>30%</strong> and boosting user satisfaction by <strong>25%</strong>',
       'Led full development lifecycle of diverse applications, ensuring efficient deployment and robust performance across client projects',
       'Configured and managed network architectures and server setups, demonstrating proficiency in network engineering and reliable systems',
     ],
