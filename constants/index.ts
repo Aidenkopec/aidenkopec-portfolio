@@ -204,7 +204,7 @@ const projects: Project[] = [
   {
     name: 'Solvex Digital Agency Platform',
     description:
-      'Founded and operated a digital agency delivering full-stack web applications, GPT-powered AI integrations, and SEO solutions. Led 8 client projects from planning to deployment, delivering production-ready platforms with modern technologies and achieving significant business growth for clients.',
+      'Founded and operated a digital agency delivering full-stack web applications, GPT-powered AI integrations, and SEO solutions. Led 8 client projects from planning to deployment.',
     tags: [
       {
         name: 'Next.js',
@@ -229,7 +229,7 @@ const projects: Project[] = [
   {
     name: 'Teevision - 3D T-Shirt Customizer',
     description:
-      'Design custom T-shirts in stunning 3D! Built with React, ThreeJS, TailwindCSS, Framer Motion, and DALLE AI. Features real-time 3D rendering, custom color palettes, logo uploads, and downloadable designs. Achieve a seamless user experience with responsive design and industry-standard best practices. Interactive 3D environment with smooth animations and modern UI.',
+      'Design custom T-shirts in stunning 3D! Built with React, ThreeJS, TailwindCSS, Framer Motion, and DALLE AI. Features real-time 3D rendering, custom color palettes, and downloadable designs.',
     tags: [
       {
         name: 'React',
@@ -255,7 +255,7 @@ const projects: Project[] = [
   {
     name: 'Cryptocurrency Trading Bot System',
     description:
-      'Built a containerized cryptocurrency trading system using the Freqtrade framework with custom Python strategies. Implemented dual-asset selection algorithm, advanced technical indicators (RSI, MACD, Bollinger Bands), dynamic risk management, and comprehensive backtesting with performance analytics deployed via Docker on Kraken exchange.',
+      'Built a containerized cryptocurrency trading system using the Freqtrade framework with custom Python strategies. Implemented dual-asset selection algorithm and advanced technical indicators.',
     tags: [
       {
         name: 'Python',
@@ -275,6 +275,131 @@ const projects: Project[] = [
       },
     ],
     image: freqtrade,
+    source_code_link: 'https://github.com',
+  },
+  {
+    name: 'E-Commerce Analytics Dashboard',
+    description:
+      'Real-time analytics platform for e-commerce businesses with advanced data visualization, sales forecasting, and customer behavior insights. Built with modern React and powerful backend APIs.',
+    tags: [
+      {
+        name: 'React',
+        color: 'blue-text-gradient',
+      },
+      {
+        name: 'Node.js',
+        color: 'green-text-gradient',
+      },
+      {
+        name: 'PostgreSQL',
+        color: 'pink-text-gradient',
+      },
+      {
+        name: 'AWS',
+        color: 'orange-text-gradient',
+      },
+    ],
+    image: react,
+    source_code_link: 'https://github.com',
+  },
+  {
+    name: 'AI-Powered Content Generator',
+    description:
+      'Intelligent content creation platform leveraging GPT models for automated blog writing, social media posts, and marketing copy. Features custom templates and SEO optimization.',
+    tags: [
+      {
+        name: 'TypeScript',
+        color: 'blue-text-gradient',
+      },
+      {
+        name: 'OpenAI',
+        color: 'green-text-gradient',
+      },
+      {
+        name: 'Next.js',
+        color: 'pink-text-gradient',
+      },
+      {
+        name: 'TailwindCSS',
+        color: 'orange-text-gradient',
+      },
+    ],
+    image: typescript,
+    source_code_link: 'https://github.com',
+  },
+  {
+    name: 'Real-Time Chat Application',
+    description:
+      'Scalable messaging platform with real-time communication, file sharing, and group management. Built with WebSocket technology and modern UI frameworks.',
+    tags: [
+      {
+        name: 'Vue.js',
+        color: 'green-text-gradient',
+      },
+      {
+        name: 'WebSocket',
+        color: 'blue-text-gradient',
+      },
+      {
+        name: 'Redis',
+        color: 'pink-text-gradient',
+      },
+      {
+        name: 'Docker',
+        color: 'orange-text-gradient',
+      },
+    ],
+    image: vue,
+    source_code_link: 'https://github.com',
+  },
+  {
+    name: 'DevOps Monitoring Suite',
+    description:
+      'Comprehensive infrastructure monitoring solution with custom dashboards, automated alerts, and performance analytics. Deployed across multiple cloud environments.',
+    tags: [
+      {
+        name: 'AWS',
+        color: 'orange-text-gradient',
+      },
+      {
+        name: 'Docker',
+        color: 'blue-text-gradient',
+      },
+      {
+        name: 'Node.js',
+        color: 'green-text-gradient',
+      },
+      {
+        name: 'Monitoring',
+        color: 'pink-text-gradient',
+      },
+    ],
+    image: aws,
+    source_code_link: 'https://github.com',
+  },
+  {
+    name: 'Blockchain Voting System',
+    description:
+      'Secure and transparent voting platform built on blockchain technology. Features voter verification, real-time results, and immutable vote tracking for enhanced election integrity.',
+    tags: [
+      {
+        name: 'Blockchain',
+        color: 'blue-text-gradient',
+      },
+      {
+        name: 'React',
+        color: 'green-text-gradient',
+      },
+      {
+        name: 'Smart Contracts',
+        color: 'pink-text-gradient',
+      },
+      {
+        name: 'Web3',
+        color: 'orange-text-gradient',
+      },
+    ],
+    image: nodejs,
     source_code_link: 'https://github.com',
   },
 ];

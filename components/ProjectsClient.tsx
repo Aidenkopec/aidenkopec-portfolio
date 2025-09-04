@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
-import Tilt from 'react-parallax-tilt';
+
+import { Marquee } from './magicui/marquee';
 
 import {
   formatCommitMessage,
@@ -30,8 +31,12 @@ interface Project {
   source_code_link: string;
 }
 
-interface ProjectCardProps extends Project {
+interface ProjectCardProps {
   index: number;
+  name: string;
+  description: string;
+  image: any;
+  source_code_link: string;
 }
 
 interface StatCardProps {
@@ -64,10 +69,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   index,
   name,
   description,
-  tags,
   image,
   source_code_link,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   const handleSourceClick = (): void => {
     window.open(source_code_link, '_blank');
   };
@@ -75,62 +81,60 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   return (
     <motion.div
       variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
-      className='flex flex-col'
+      className='relative'
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <Tilt
-        tiltMaxAngleX={25}
-        tiltMaxAngleY={25}
-        scale={1.02}
-        transitionSpeed={450}
-        className='bg-tertiary flex h-full w-full flex-col rounded-2xl border-2 border-[var(--tertiary-color)] p-5 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
-      >
-        <div className='relative h-[200px] w-full'>
-          <Image
-            src={image}
-            alt={`${name} project screenshot`}
-            fill
-            className='rounded-xl object-cover'
-            sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-          />
+      <div className={`relative h-[230px] w-full transform-gpu overflow-hidden rounded-xl border border-[var(--black-100)] bg-gradient-to-br from-[var(--tertiary-color)] via-[var(--black-100)] to-[var(--tertiary-color)] p-[1px] transition-all duration-300 ${isHovered ? 'scale-[1.02] shadow-[var(--text-color-variable)]/20 shadow-lg' : ''}`}>
+        {/* Gradient border effect */}
+        <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-[var(--text-color-variable)]/20 via-transparent to-[var(--text-color-variable)]/20 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
 
-          <div className='card-img_hover absolute inset-0 m-3 flex justify-end'>
-            <div
-              onClick={handleSourceClick}
-              className='black-gradient flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-transform hover:scale-110'
-            >
-              <Image
-                src={github}
-                alt='source code'
-                width={20}
-                height={20}
-                className='object-contain'
-              />
+        {/* Main card content */}
+        <div className='relative h-full w-full rounded-xl bg-[var(--tertiary-color)] p-3'>
+          {/* Image section */}
+          <div className='relative mb-3 h-[80px] w-full overflow-hidden rounded-lg'>
+            <Image
+              src={image}
+              alt={`${name} project screenshot`}
+              fill
+              className={`object-cover transition-transform duration-500 ${isHovered ? 'scale-105' : ''}`}
+              sizes='(max-width: 768px) 100vw, 240px'
+            />
+
+            {/* Gradient overlay */}
+            <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
+
+            {/* GitHub button */}
+            <div className='absolute top-2 right-2'>
+              <div
+                onClick={handleSourceClick}
+                className='flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/80 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-[var(--text-color-variable)]'
+              >
+                <Image
+                  src={github}
+                  alt='source code'
+                  width={12}
+                  height={12}
+                  className='object-contain'
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className='mt-5 flex flex-1 flex-col justify-between'>
-          <div>
-            <h3 className='text-secondary mb-2 text-[20px] font-bold'>
-              {name}
-            </h3>
-            <p className='text-secondary text-[14px] leading-[22px]'>
-              {description}
-            </p>
-          </div>
-
-          <div className='mt-4 flex flex-wrap gap-2'>
-            {tags.map((tag) => (
-              <p
-                key={`${name}-${tag.name}`}
-                className={`rounded-full border border-gray-500 bg-gray-800/50 px-3 py-1.5 text-[12px] backdrop-blur-sm ${tag.color}`}
-              >
-                #{tag.name}
+          {/* Content section */}
+          <div className='flex h-[calc(100%-104px)] flex-col'>
+            <div>
+              <h3 className={`mb-1 line-clamp-1 text-[14px] font-bold transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--white-100)]'}`}>
+                {name}
+              </h3>
+              <p className='line-clamp-3 text-[11px] leading-[14px] text-[var(--secondary-color)]/80'>
+                {description}
               </p>
-            ))}
+            </div>
+
           </div>
         </div>
-      </Tilt>
+      </div>
     </motion.div>
   );
 };
@@ -147,13 +151,7 @@ const StatCard: React.FC<StatCardProps> = ({
     variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
     className='min-w-[160px] flex-1'
   >
-    <Tilt
-      tiltMaxAngleX={15}
-      tiltMaxAngleY={15}
-      scale={1.02}
-      transitionSpeed={450}
-      className='bg-tertiary border-tertiary rounded-xl border p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
-    >
+    <div className='bg-tertiary border-tertiary transform-gpu rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
       <div className='mb-2 flex items-center justify-between'>
         <div className='text-secondary text-xl font-bold'>
           {loading ? (
@@ -169,7 +167,7 @@ const StatCard: React.FC<StatCardProps> = ({
         )}
       </div>
       <p className='text-secondary text-xs font-medium'>{title}</p>
-    </Tilt>
+    </div>
   </motion.div>
 );
 
@@ -328,7 +326,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
           {dropdownOpen && (
             <div className='bg-black-100 border-tertiary absolute top-full right-0 z-20 mt-1.5 min-w-[120px] overflow-hidden rounded-md border shadow-lg shadow-black/30 sm:min-w-[140px]'>
               <div className='py-0.5'>
-                {availableYears.map((year, index) => (
+                {availableYears.map((year) => (
                   <button
                     key={year}
                     onClick={() => handleYearChange(year.toString())}
@@ -571,12 +569,52 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 export const ProjectCards: React.FC<{ projects: Project[] }> = ({
   projects,
 }) => {
+  // Split projects into two rows
+  const firstRow = projects.slice(0, 4);
+  const secondRow = projects.slice(4, 8);
+
   return (
-    <>
-      {projects.map((project: Project, index: number) => (
-        <ProjectCard key={`project-${index}`} index={index} {...project} />
-      ))}
-    </>
+    <div className='relative w-full overflow-hidden'>
+      {/* Background gradient effects */}
+      <div className='pointer-events-none absolute top-0 left-0 z-10 h-full w-20 bg-gradient-to-r from-[var(--primary-color)] to-transparent' />
+      <div className='pointer-events-none absolute top-0 right-0 z-10 h-full w-20 bg-gradient-to-l from-[var(--primary-color)] to-transparent' />
+
+      <div className='space-y-6'>
+        {/* First Row - Left to Right */}
+        <Marquee
+          pauseOnHover
+          className='cursor-pointer py-2 [--duration:45s] [--gap:1.5rem]'
+        >
+          {firstRow.map((project: Project, index: number) => (
+            <div
+              key={`project-row1-${index}`}
+              className='w-[240px] flex-shrink-0 hover:z-10'
+            >
+              <ProjectCard index={index} {...project} />
+            </div>
+          ))}
+        </Marquee>
+
+        {/* Second Row - Right to Left */}
+        <Marquee
+          pauseOnHover
+          reverse
+          className='cursor-pointer py-2 [--duration:45s] [--gap:1.5rem]'
+        >
+          {secondRow.map((project: Project, index: number) => (
+            <div
+              key={`project-row2-${index}`}
+              className='w-[240px] flex-shrink-0 hover:z-10'
+            >
+              <ProjectCard index={index + 4} {...project} />
+            </div>
+          ))}
+        </Marquee>
+      </div>
+
+      {/* Subtle ambient glow effect */}
+      <div className='pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-[var(--text-color-variable)]/[0.02] to-transparent' />
+    </div>
   );
 };
 
@@ -669,13 +707,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
         variants={fadeIn('up', 'spring', 0.4, 0.75) as any}
         className='w-full'
       >
-        <Tilt
-          tiltMaxAngleX={15}
-          tiltMaxAngleY={15}
-          scale={1.02}
-          transitionSpeed={450}
-          className='bg-tertiary border-tertiary rounded-xl border p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
-        >
+        <div className='bg-tertiary border-tertiary transform-gpu rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
           <h4 className='text-secondary mb-4 text-[16px] font-semibold'>
             Recent Commits
           </h4>
@@ -712,7 +744,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
               No recent commits found
             </div>
           )}
-        </Tilt>
+        </div>
       </motion.div>
     </div>
   );
