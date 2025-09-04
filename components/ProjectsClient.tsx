@@ -141,7 +141,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               >
                 {name}
               </h3>
-              <p className='line-clamp-3 text-[12px] leading-[16px] text-[var(--secondary-color)]/80'>
+              <p className='line-clamp-5 text-[12px] leading-[16px] text-[var(--secondary-color)]/80'>
                 {description}
               </p>
             </div>

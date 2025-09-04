@@ -210,7 +210,7 @@ const projects: Project[] = [
   {
     name: 'Solvex Digital',
     description:
-      'Founded and operated a digital agency delivering full-stack web applications, GPT-powered AI integrations, and SEO solutions. Led 8 client projects from planning to deployment.',
+      'Founded and operated Solvex Digital, a custom software agency delivering AI-powered web applications and automation solutions to diverse business clients. Specialized in React/Next.js development with EdgeDB integration, creating intelligent systems that streamline workflows and drive operational efficiency.',
     image: solvexdigital,
     link: 'https://solvexdigital.com',
     isGitHub: false,
@@ -218,7 +218,7 @@ const projects: Project[] = [
   {
     name: 'Teevision',
     description:
-      'Design custom T-shirts in stunning 3D! Built with React, ThreeJS, TailwindCSS, Framer Motion, and DALLE AI. Features real-time 3D rendering, custom color palettes, and downloadable designs.',
+      'Interactive 3D t-shirt design platform that brings creative ideas to life instantly. Users experiment with unlimited design combinations using photorealistic 3D preview technology, eliminating guesswork and enabling perfect customization before ordering.',
     image: teevision,
     link: 'https://teevision.netlify.app',
     isGitHub: false,
@@ -226,7 +226,7 @@ const projects: Project[] = [
   {
     name: 'Cryptocurrency Trading Bot',
     description:
-      'Built a containerized cryptocurrency trading system using the Freqtrade framework with custom Python strategies. Implemented dual-asset selection algorithm and advanced technical indicators.',
+      'Automated trading system that executes 24/7 profitable crypto strategies without human emotion or error. Advanced algorithms analyze market patterns to maximize returns while minimizing risk exposure.',
     image: freqtrade,
     link: 'https://github.com/Aidenkopec/crypto-bot-trading',
     isGitHub: true,
@@ -234,7 +234,7 @@ const projects: Project[] = [
   {
     name: 'I Do Together',
     description:
-      'A company selling digital wedding websites. Features include RSVP and reservation management, guest tracking, allergy tracking, and song request submissions to fully digitalize weddings.',
+      'Complete wedding digitalization platform that transforms chaotic planning into organized celebration management. Couples centralize guest communication, automate RSVP collection, track attendance in real-time, and coordinate every wedding detail in one streamlined dashboard.',
     link: 'https://www.idotogether.com',
     image: idotogether,
     isGitHub: false,
@@ -242,7 +242,7 @@ const projects: Project[] = [
   {
     name: 'I Win Parlays',
     description:
-      'Sports betting app that generates optimized parlays, providing analysis, probabilities, and detailed reasoning for each pick.',
+      'AI-driven sports betting platform that turns casual bettors into profitable players. Advanced analytics and probability calculations deliver optimized parlay recommendations with transparent win reasoning.',
     link: 'https://www.iwinparlays.com',
     image: iwinparlays,
     isGitHub: false,
@@ -250,7 +250,7 @@ const projects: Project[] = [
   {
     name: 'Relfeild',
     description:
-      'Oilfield directory and accountability platform for oil & gas companies. Users can leave and view reviews, check hours, services, and contact details.',
+      'Comprehensive oilfield accountability platform that eliminates unreliable contractor headaches. Companies instantly access verified reviews, service hours, and contact details to make confident hiring decisions.',
     link: 'https://oil-gas-ochre.vercel.app',
     image: relfeild,
     isGitHub: false,
@@ -258,7 +258,7 @@ const projects: Project[] = [
   {
     name: 'Digital Dream Scapes',
     description:
-      'AI image generation community platform where users can create AI art and share it within a community feed.',
+      'AI-powered creative community where artists explore imagination without limits. Users generate professional-quality AI artwork, share creations with fellow artists, and discover endless inspiration through an integrated social platform designed for creative collaboration.',
     link: 'https://digital-dreamscapes.netlify.app/',
     isGitHub: false,
     image: digitaldreamscapes,
@@ -266,36 +266,36 @@ const projects: Project[] = [
   {
     name: 'Pivot Tools',
     description:
-      'Corporate website for Pivot Tools, an oilfield tool rental company showcasing services and offerings.',
+      'High-converting corporate website that transformed Pivot Tools into the go-to oilfield equipment rental choice. Streamlined service showcase drives qualified leads and accelerates sales cycles.',
     link: null,
     isGitHub: false,
   },
   {
     name: 'Sparta Tech Coatings',
     description:
-      'Website for Sparta Tech Coatings, a company specializing in epoxy flooring solutions.',
+      'Lead-generating website that positions Sparta Tech as the premium epoxy flooring authority. Professional showcase converts visitors into high-value customers seeking quality coating solutions.',
     link: null,
     isGitHub: false,
   },
   {
     name: 'PD Construction',
     description:
-      'Corporate website for PD Construction, featuring small-scale construction services like fences, sheds, and more.',
+      'Revenue-driving website that transforms PD Construction from local contractor to trusted construction authority. Showcases quality craftsmanship that attracts premium residential and commercial projects.',
     link: 'https://www.pdconstruction.ca',
     isGitHub: false,
     image: pdconstruction,
   },
-  {
-    name: 'Dribbble Clone',
-    description:
-      'A functional Dribbble clone with user authentication, image posting, and project showcase capabilities.',
-    link: 'https://github.com/Aidenkopec/dribbble-clone',
-    isGitHub: true,
-  },
+  // {
+  //   name: 'Dribbble Clone',
+  //   description:
+  //     'Feature-rich creative portfolio platform built for professional designers who demand complete presentation control. Authenticated users upload high-resolution work, organize projects into custom collections, and showcase their creative expertise through a clean, modern interface.',
+  //   link: 'https://github.com/Aidenkopec/dribbble-clone',
+  //   isGitHub: true,
+  // },
   {
     name: 'Article Summarizer',
     description:
-      'AI-powered app using GPT to summarize long-form articles into concise, readable insights.',
+      'Time-saving AI tool that transforms hours of reading into minutes of insight. Professionals extract key information from lengthy articles instantly, boosting productivity and decision-making speed.',
     link: 'https://summalink.netlify.app/',
     isGitHub: false,
     image: summalink,
@@ -303,7 +303,7 @@ const projects: Project[] = [
   {
     name: 'n8n Workflows',
     description:
-      'Collection of automation workflows built with n8n for task automation and system integrations.',
+      'Comprehensive collection of n8n automation workflows and templates for streamlining business processes. Pre-built integrations connect popular tools and services, providing developers and businesses with ready-to-use automation solutions and implementation examples.',
     link: 'https://github.com/Aidenkopec/n8n-workflows',
     isGitHub: true,
     image: n8n,
@@ -311,7 +311,7 @@ const projects: Project[] = [
   {
     name: 'Victoria & Riley Wedding Website',
     description:
-      'Custom wedding website designed for Victoria and Riley. Includes event schedule, RSVP functionality, and registry details.',
+      'Elegant custom wedding platform that transformed chaotic planning into seamless coordination. Personalized design with RSVP management and registry integration created the perfect celebration experience.',
     link: null,
     isGitHub: false,
     image: victoriaandriley,
