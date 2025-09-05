@@ -19,9 +19,17 @@ import launchcode from '../public/companies/launchcode.png';
 import opit from '../public/companies/opit.png';
 
 // Project images - Static imports
+import digitaldreamscapes from '../public/projects/digital-dreamscapes.png';
 import freqtrade from '../public/projects/freqtrade-logo.png';
+import iwinparlays from '../public/projects/i-win-parlays.png';
+import idotogether from '../public/projects/idotogether.png';
+import n8n from '../public/projects/n8n.png';
+import pdconstruction from '../public/projects/pd-construction.png';
+import relfeild from '../public/projects/relfeild.png';
 import solvexdigital from '../public/projects/solvex-digital.svg';
+import summalink from '../public/projects/summalink.png';
 import teevision from '../public/projects/tee-vision.png';
+import victoriaandriley from '../public/projects/vic-riley-wedding.png';
 
 // Service icons (engineering focus) - Static imports
 import backendAutomationErp from '../public/engineering-focus/backendAutomationErp.png';
@@ -61,18 +69,16 @@ interface Testimonial {
   company: string;
 }
 
-interface ProjectTag {
-  name: string;
-  color: string;
-}
-
 interface Project {
   name: string;
   description: string;
-  tags: ProjectTag[];
-  image: any;
-  source_code_link: string;
+  image?: any;
+  link: string | null;
+  isGitHub: boolean;
 }
+
+// Social links
+export const GITHUB_URL = 'https://github.com/Aidenkopec';
 
 export const navLinks: NavLink[] = [
   {
@@ -142,34 +148,37 @@ const experiences: Experience[] = [
     iconBg: '#E6DEDD',
     date: 'January 2024 - Present',
     points: [
-      'Developed 40+ custom KPI reports and 10 real-time dashboards, saving thousands of labor hours annually and resolving $2M+ in inventory discrepancies within finance',
-      'Built full-stack Bill of Materials platform translating complex 3D CAD outputs into actionable manufacturing instructions, dramatically improving shop floor accuracy',
-      'Implemented dynamic budgeting system and automated ERP workflows using BullMQ, achieving 20x deployment speed improvement and migrating core systems from React to Vue',
-      'Engineered real-time inventory tracking platform with interactive global mapping system, displaying live locations of products worldwide',
+      'Eliminated manual reporting - Built <strong>40+ custom reports and 10 live dashboards</strong>, saving <strong>thousands of hours annually</strong> and uncovering significant inventory discrepancies.',
+      'Streamlined manufacturing operations - Created platform turning complex 3D designs into clear production instructions, reducing errors and improving efficiency.',
+      'Improved financial planning - Developed <strong>real-time budget tracking</strong> and profitability analysis system for executive decision-making.',
+      'Automated business processes - Built systems handling employee syncing, project imports, and commission calculations automatically.',
+      'Created inventory visibility - Developed <strong>real-time tracking system</strong> showing exact product locations worldwide with interactive mapping.',
+      'Built accountability system - Developed issue tracking platform monitoring process compliance and maintaining operational standards.',
+      'Accelerated system performance - Optimized infrastructure achieving <strong>20x performance improvements</strong> and better reliability.',
+      'Modernized technology platform - Upgraded core applications to current frameworks for improved efficiency and scalability.',
     ],
   },
   {
-    title: 'Full Stack Developer',
+    title: 'IT Support Specialist',
     company_name: 'One Piece IT',
     icon: opit,
     iconBg: '#383E56',
     date: 'May 2023 - December 2023',
     points: [
-      'Built and optimized web and mobile applications, improving performance by 30% and boosting user satisfaction by 25%',
-      'Led full development lifecycle of diverse applications, ensuring efficient deployment and robust performance across client projects',
-      'Configured and managed network architectures and server setups, demonstrating proficiency in network engineering and reliable systems',
+      'Automated IT workflows - Developed <strong>Windows and Linux shell scripts</strong> for <strong>system automation</strong>, streamlining processes and reducing manual work.',
+      'Managed infrastructure deployment - Configured network architecture and server setups, building foundational understanding of system administration.',
     ],
   },
   {
-    title: 'Software Developer',
+    title: 'Software Developer Intern',
     company_name: 'Launchcode',
     icon: launchcode,
     iconBg: '#383E56',
     date: 'April 2022 - December 2022',
     points: [
-      'Led development of a specialized quote-to-cash platform tailored for the Oil and Gas sector, demonstrating leadership and project management skills',
-      'Employed React, TypeScript, Node.js, PostgreSQL, Git, Docker, and AWS showcasing technical versatility and full-stack proficiency',
-      'Managed front-end and back-end development, client requirements gathering, and workflow design for complex business processes',
+      'Led development team - <strong>Managed team of 5 developers</strong> over <strong>6-month capstone project</strong> creating quote-to-cash platform for Oil and Gas sector.',
+      'Orchestrated full-stack implementation - Built solution with <strong>React, TypeScript, Node.js, and PostgreSQL</strong>, coordinating team efforts and ensuring seamless integration.',
+      'Directed stakeholder communication - Managed requirements gathering and client meetings, translating business needs into actionable development tasks.',
     ],
   },
 ];
@@ -200,80 +209,113 @@ const testimonials: Testimonial[] = [
 
 const projects: Project[] = [
   {
-    name: 'Solvex Digital Agency Platform',
+    name: 'Solvex Digital',
     description:
-      'Founded and operated a digital agency delivering full-stack web applications, GPT-powered AI integrations, and SEO solutions. Led 8 client projects from planning to deployment, delivering production-ready platforms with modern technologies and achieving significant business growth for clients.',
-    tags: [
-      {
-        name: 'Next.js',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Node.js',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'AI Integration',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'EdgeDB',
-        color: 'orange-text-gradient',
-      },
-    ],
+      'Founded and operated Solvex Digital, a custom software agency delivering AI-powered web applications and automation solutions to diverse business clients. Specialized in React/Next.js development with EdgeDB integration, creating intelligent systems that streamline workflows and drive operational efficiency.',
     image: solvexdigital,
-    source_code_link: 'https://solvexdigital.com',
+    link: 'https://solvexdigital.com',
+    isGitHub: false,
   },
   {
-    name: 'Teevision - 3D T-Shirt Customizer',
+    name: 'Teevision',
     description:
-      'Design custom T-shirts in stunning 3D! Built with React, ThreeJS, TailwindCSS, Framer Motion, and DALLE AI. Features real-time 3D rendering, custom color palettes, logo uploads, and downloadable designs. Achieve a seamless user experience with responsive design and industry-standard best practices. Interactive 3D environment with smooth animations and modern UI.',
-    tags: [
-      {
-        name: 'React',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'ThreeJS',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Framer Motion',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'TailwindCSS',
-        color: 'orange-text-gradient',
-      },
-    ],
+      'Interactive 3D t-shirt design platform that brings creative ideas to life instantly. Users experiment with unlimited design combinations using photorealistic 3D preview technology, eliminating guesswork and enabling perfect customization before ordering.',
     image: teevision,
-    source_code_link:
-      'https://github.com/Aidenkopec/project-3d-clothing-website',
+    link: 'https://teevision.netlify.app',
+    isGitHub: false,
   },
   {
-    name: 'Cryptocurrency Trading Bot System',
+    name: 'Cryptocurrency Trading Bot',
     description:
-      'Built a containerized cryptocurrency trading system using the Freqtrade framework with custom Python strategies. Implemented dual-asset selection algorithm, advanced technical indicators (RSI, MACD, Bollinger Bands), dynamic risk management, and comprehensive backtesting with performance analytics deployed via Docker on Kraken exchange.',
-    tags: [
-      {
-        name: 'Python',
-        color: 'blue-text-gradient',
-      },
-      {
-        name: 'Docker',
-        color: 'green-text-gradient',
-      },
-      {
-        name: 'Trading Algorithms',
-        color: 'pink-text-gradient',
-      },
-      {
-        name: 'Technical Analysis',
-        color: 'orange-text-gradient',
-      },
-    ],
+      'Automated trading system that executes 24/7 profitable crypto strategies without human emotion or error. Advanced algorithms analyze market patterns to maximize returns while minimizing risk exposure.',
     image: freqtrade,
-    source_code_link: 'https://github.com',
+    link: 'https://github.com/Aidenkopec/crypto-bot-trading',
+    isGitHub: true,
+  },
+  {
+    name: 'I Do Together',
+    description:
+      'Complete wedding digitalization platform that transforms chaotic planning into organized celebration management. Couples centralize guest communication, automate RSVP collection, track attendance in real-time, and coordinate every wedding detail in one streamlined dashboard.',
+    link: 'https://www.idotogether.com',
+    image: idotogether,
+    isGitHub: false,
+  },
+  {
+    name: 'I Win Parlays',
+    description:
+      'AI-driven sports betting platform that turns casual bettors into profitable players. Advanced analytics and probability calculations deliver optimized parlay recommendations with transparent win reasoning.',
+    link: 'https://www.iwinparlays.com',
+    image: iwinparlays,
+    isGitHub: false,
+  },
+  {
+    name: 'Relfeild',
+    description:
+      'Comprehensive oilfield accountability platform that eliminates unreliable contractor headaches. Companies instantly access verified reviews, service hours, and contact details to make confident hiring decisions.',
+    link: 'https://oil-gas-ochre.vercel.app',
+    image: relfeild,
+    isGitHub: false,
+  },
+  {
+    name: 'Digital Dream Scapes',
+    description:
+      'AI-powered creative community where artists explore imagination without limits. Users generate professional-quality AI artwork, share creations with fellow artists, and discover endless inspiration through an integrated social platform designed for creative collaboration.',
+    link: 'https://digital-dreamscapes.netlify.app/',
+    isGitHub: false,
+    image: digitaldreamscapes,
+  },
+  {
+    name: 'Pivot Tools',
+    description:
+      'High-converting corporate website that transformed Pivot Tools into the go-to oilfield equipment rental choice. Streamlined service showcase drives qualified leads and accelerates sales cycles.',
+    link: null,
+    isGitHub: false,
+  },
+  {
+    name: 'Sparta Tech Coatings',
+    description:
+      'Lead-generating website that positions Sparta Tech as the premium epoxy flooring authority. Professional showcase converts visitors into high-value customers seeking quality coating solutions.',
+    link: null,
+    isGitHub: false,
+  },
+  {
+    name: 'PD Construction',
+    description:
+      'Revenue-driving website that transforms PD Construction from local contractor to trusted construction authority. Showcases quality craftsmanship that attracts premium residential and commercial projects.',
+    link: 'https://www.pdconstruction.ca',
+    isGitHub: false,
+    image: pdconstruction,
+  },
+  // {
+  //   name: 'Dribbble Clone',
+  //   description:
+  //     'Feature-rich creative portfolio platform built for professional designers who demand complete presentation control. Authenticated users upload high-resolution work, organize projects into custom collections, and showcase their creative expertise through a clean, modern interface.',
+  //   link: 'https://github.com/Aidenkopec/dribbble-clone',
+  //   isGitHub: true,
+  // },
+  {
+    name: 'Article Summarizer',
+    description:
+      'Time-saving AI tool that transforms hours of reading into minutes of insight. Professionals extract key information from lengthy articles instantly, boosting productivity and decision-making speed.',
+    link: 'https://summalink.netlify.app/',
+    isGitHub: false,
+    image: summalink,
+  },
+  {
+    name: 'n8n Workflows',
+    description:
+      'Comprehensive collection of n8n automation workflows and templates for streamlining business processes. Pre-built integrations connect popular tools and services, providing developers and businesses with ready-to-use automation solutions and implementation examples.',
+    link: 'https://github.com/Aidenkopec/n8n-workflows',
+    isGitHub: true,
+    image: n8n,
+  },
+  {
+    name: 'Victoria & Riley Wedding Website',
+    description:
+      'Elegant custom wedding platform that transformed chaotic planning into seamless coordination. Personalized design with RSVP management and registry integration created the perfect celebration experience.',
+    link: null,
+    isGitHub: false,
+    image: victoriaandriley,
   },
 ];
 

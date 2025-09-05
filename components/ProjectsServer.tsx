@@ -1,15 +1,15 @@
-import { Suspense } from 'react';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
+import { Suspense } from 'react';
 
 import { projects } from '../constants';
 import { getGitHubData, preloadGitHubData } from '../lib/github-service';
 
 import {
-  ProjectCards,
-  GitHubStats,
   GitHubDashboard,
-  ProjectsHeader,
+  GitHubStats,
+  ProjectCards,
   ProjectsDescription,
+  ProjectsHeader,
   ProjectsSectionHeader,
 } from './ProjectsClient';
 
@@ -92,7 +92,7 @@ export default async function ProjectsServer() {
       {/* Featured Projects Section */}
       <ProjectsSectionHeader title='Featured Projects' className='mt-16' />
 
-      <div className='mb-20 grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3'>
+      <div className='mb-20'>
         <ProjectCards projects={projects} />
       </div>
 
@@ -100,6 +100,7 @@ export default async function ProjectsServer() {
       <ProjectsSectionHeader
         title='GitHub Activity Dashboard'
         className='mt-20'
+        showGitHubLink={true}
       />
 
       {/* GitHub Stats Overview with Suspense */}

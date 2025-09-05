@@ -115,8 +115,8 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
 
   const colors = themeColors[currentTheme];
 
-  // Enhanced material processing for optimal lighting response
-  React.useEffect(() => {
+  // Enhanced material processing for optimal lighting response - runs immediately
+  const processMaterials = React.useCallback(() => {
     if (computer.scene) {
       computer.scene.traverse((child: any) => {
         if (child.isMesh) {
@@ -137,32 +137,31 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
               child.material.name?.toLowerCase().includes('wood') ||
               child.material.name?.toLowerCase().includes('desk');
 
+            // Set metalness immediately to prevent initial shininess
             if (child.material.metalness !== undefined) {
               if (isDesk) {
                 child.material.metalness = 0;
               } else if (isScreen) {
                 child.material.metalness = 0.05;
               } else {
-                child.material.metalness = 0.05;
+                child.material.metalness = 0.05; // Reduced from potentially high default
               }
             }
 
+            // Set roughness immediately to prevent initial shininess
             if (child.material.roughness !== undefined) {
               if (isDesk) {
                 child.material.roughness = 0.95;
               } else if (isScreen) {
                 child.material.roughness = 0.1;
               } else {
-                child.material.roughness = 0.8;
+                child.material.roughness = 0.8; // Higher roughness = less shiny
               }
             }
 
-            // Reduced envMapIntensity for darker themes
-            if (
-              (isDesk || !isScreen) &&
-              child.material.envMapIntensity !== undefined
-            ) {
-              child.material.envMapIntensity = isDesk ? 0.05 : 0.1; // Further reduced for subtlety
+            // Immediately reduce envMapIntensity to prevent excessive reflections
+            if (child.material.envMapIntensity !== undefined) {
+              child.material.envMapIntensity = isDesk ? 0.02 : 0.05; // Even lower for immediate load
             }
 
             // Theme-based hardware coloring
@@ -223,7 +222,17 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
     colors.frameColor,
     colors.hardwareAccent,
     colors.screenEmissive,
-  ]); // Re-run on theme change
+  ]);
+
+  // Process materials immediately when scene is available
+  React.useEffect(() => {
+    processMaterials();
+  }, [processMaterials]);
+
+  // Also process materials immediately during render (synchronously)
+  React.useMemo(() => {
+    processMaterials();
+  }, [processMaterials]);
 
   return (
     <mesh>
@@ -303,9 +312,8 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
         decay={2}
         color={colors.topDown}
       />
-      {/* Theme-specific environment */}
-      <Environment preset={colors.envPreset as any} />{' '}
-      {/* Added intensity control for subtlety */}
+      {/* Theme-specific environment with reduced intensity */}
+      <Environment preset={colors.envPreset as any} background={false} />
       <primitive
         object={computer.scene}
         scale={isMobile ? 0.7 : 0.75}
@@ -337,7 +345,7 @@ const ComputersCanvas: React.FC = () => {
 
   return (
     <Canvas
-      frameloop='demand' // Changed to demand for better perf; renders only when needed
+      frameloop='always' // Changed to always for consistent rendering and material processing
       shadows={{ enabled: true, type: THREE.PCFSoftShadowMap }}
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
@@ -345,7 +353,7 @@ const ComputersCanvas: React.FC = () => {
         preserveDrawingBuffer: true,
         antialias: true,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.1, // Slight reduction for darker feel
+        toneMappingExposure: 0.9, // Reduced to prevent initial brightness
         outputColorSpace: THREE.SRGBColorSpace,
         powerPreference: 'high-performance',
       }}

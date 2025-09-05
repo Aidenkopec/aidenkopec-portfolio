@@ -1,36 +1,41 @@
 'use client';
 
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import Tilt from 'react-parallax-tilt';
+import { DateTime } from 'luxon';
 import Image from 'next/image';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { github } from '../public/assets';
-import { fadeIn, textVariant } from '../utils';
-import { styles } from '../styles';
+import { Marquee } from './magicui/marquee';
+import ProjectPlaceholder from './ProjectPlaceholder';
+
+import { GITHUB_URL } from '../constants';
 import {
   formatCommitMessage,
   getContributionColor,
-  type GitHubData,
   type ContributionCalendar,
+  type GitHubData,
 } from '../lib/github-utils';
+import { github } from '../public/assets';
+import globe from '../public/assets/globe.svg';
+import { styles } from '../styles';
+import { fadeIn, textVariant } from '../utils';
 
 // Types for component props
-interface ProjectTag {
-  name: string;
-  color: string;
-}
-
 interface Project {
   name: string;
   description: string;
-  tags: ProjectTag[];
-  image: any;
-  source_code_link: string;
+  image?: any;
+  link: string | null;
+  isGitHub: boolean;
 }
 
-interface ProjectCardProps extends Project {
+interface ProjectCardProps {
   index: number;
+  name: string;
+  description: string;
+  image?: any;
+  link: string | null;
+  isGitHub: boolean;
 }
 
 interface StatCardProps {
@@ -46,7 +51,7 @@ interface CommitGraphProps {
   loading: boolean;
   selectedYear: string;
   setSelectedYear: (year: string) => void;
-  availableYears: number[];
+  availableYears: (string | number)[];
   onYearChange: (year: string) => void;
 }
 
@@ -63,73 +68,86 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   index,
   name,
   description,
-  tags,
   image,
-  source_code_link,
+  link,
+  isGitHub,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   const handleSourceClick = (): void => {
-    window.open(source_code_link, '_blank');
+    if (link) {
+      window.open(link, '_blank');
+    }
   };
 
   return (
     <motion.div
       variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
-      className='flex flex-col'
+      className='relative'
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <Tilt
-        tiltMaxAngleX={25}
-        tiltMaxAngleY={25}
-        scale={1.02}
-        transitionSpeed={450}
-        className='bg-tertiary flex h-full w-full flex-col rounded-2xl border-2 border-[var(--tertiary-color)] p-5 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
+      <div
+        className={`relative h-[230px] w-full transform-gpu overflow-hidden rounded-xl border border-[var(--black-100)] bg-gradient-to-br from-[var(--tertiary-color)] via-[var(--black-100)] to-[var(--tertiary-color)] p-[1px] transition-all duration-300 ${isHovered ? 'scale-[1.02] shadow-[var(--text-color-variable)]/20 shadow-lg' : ''}`}
       >
-        <div className='relative h-[200px] w-full'>
-          <Image
-            src={image}
-            alt={`${name} project screenshot`}
-            fill
-            className='rounded-xl object-cover'
-            sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-          />
+        {/* Gradient border effect */}
+        <div
+          className={`absolute inset-0 rounded-xl bg-gradient-to-r from-[var(--text-color-variable)]/20 via-transparent to-[var(--text-color-variable)]/20 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+        />
 
-          <div className='card-img_hover absolute inset-0 m-3 flex justify-end'>
-            <div
-              onClick={handleSourceClick}
-              className='black-gradient flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-transform hover:scale-110'
-            >
+        {/* Main card content */}
+        <div className='relative h-full w-full rounded-xl bg-[var(--tertiary-color)] p-3'>
+          {/* Image section */}
+          <div className='relative mb-3 h-[80px] w-full overflow-hidden rounded-lg'>
+            {image ? (
               <Image
-                src={github}
-                alt='source code'
-                width={20}
-                height={20}
-                className='object-contain'
+                src={image}
+                alt={`${name} project screenshot`}
+                fill
+                className={`object-cover transition-transform duration-500 ${isHovered ? 'scale-105' : ''}`}
+                sizes='(max-width: 768px) 100vw, 240px'
               />
+            ) : (
+              <ProjectPlaceholder isHovered={isHovered} />
+            )}
+
+            {/* Gradient overlay */}
+            <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
+
+            {/* Icon button - GitHub or Website (only if link exists) */}
+            {link && (
+              <div className='absolute top-2 right-2'>
+                <div
+                  onClick={handleSourceClick}
+                  className='flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/80 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-[var(--text-color-variable)]'
+                >
+                  <Image
+                    src={isGitHub ? github : globe}
+                    alt={isGitHub ? 'source code' : 'visit website'}
+                    width={12}
+                    height={12}
+                    className='object-contain'
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Content section */}
+          <div className='flex h-[calc(100%-104px)] flex-col justify-center'>
+            <div>
+              <h3
+                className={`mb-2 line-clamp-1 text-[16px] font-bold transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--white-100)]'}`}
+              >
+                {name}
+              </h3>
+              <p className='line-clamp-5 text-[12px] leading-[16px] text-[var(--secondary-color)]/80'>
+                {description}
+              </p>
             </div>
           </div>
         </div>
-
-        <div className='mt-5 flex flex-1 flex-col justify-between'>
-          <div>
-            <h3 className='text-secondary mb-2 text-[20px] font-bold'>
-              {name}
-            </h3>
-            <p className='text-secondary text-[14px] leading-[22px]'>
-              {description}
-            </p>
-          </div>
-
-          <div className='mt-4 flex flex-wrap gap-2'>
-            {tags.map((tag) => (
-              <p
-                key={`${name}-${tag.name}`}
-                className={`rounded-full border border-gray-500 bg-gray-800/50 px-3 py-1.5 text-[12px] backdrop-blur-sm ${tag.color}`}
-              >
-                #{tag.name}
-              </p>
-            ))}
-          </div>
-        </div>
-      </Tilt>
+      </div>
     </motion.div>
   );
 };
@@ -146,13 +164,7 @@ const StatCard: React.FC<StatCardProps> = ({
     variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
     className='min-w-[160px] flex-1'
   >
-    <Tilt
-      tiltMaxAngleX={15}
-      tiltMaxAngleY={15}
-      scale={1.02}
-      transitionSpeed={450}
-      className='bg-tertiary border-tertiary rounded-xl border p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
-    >
+    <div className='bg-tertiary border-tertiary transform-gpu rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
       <div className='mb-2 flex items-center justify-between'>
         <div className='text-secondary text-xl font-bold'>
           {loading ? (
@@ -168,7 +180,7 @@ const StatCard: React.FC<StatCardProps> = ({
         )}
       </div>
       <p className='text-secondary text-xs font-medium'>{title}</p>
-    </Tilt>
+    </div>
   </motion.div>
 );
 
@@ -189,11 +201,34 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     visible: false,
   });
 
-  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
-    const newYear = e.target.value;
-    setSelectedYear(newYear);
-    onYearChange(newYear);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleYearChange = (year: string): void => {
+    setSelectedYear(year);
+    onYearChange(year);
+    setDropdownOpen(false);
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   const showTooltip = (
     event: React.MouseEvent,
@@ -235,21 +270,25 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   const weeks = commitCalendar?.weeks || [];
   const total = commitCalendar?.totalContributions || 0;
 
-  // Generate month labels
+  // Generate month labels using Luxon for proper Jan-Dec ordering
   const monthLabels: { label: string; span: number }[] = [];
   if (weeks.length > 0) {
     let currentMonth: string | null = null;
     let startWeek = 0;
     weeks.forEach((week, index) => {
-      if (
-        'contributionDays' in week &&
-        week.contributionDays &&
-        week.contributionDays.length > 0
-      ) {
-        const firstDay = new Date(week.contributionDays[0].date);
-        const monthName = firstDay.toLocaleString('default', {
-          month: 'short',
-        });
+      let firstDayOfWeek: string | null = null;
+
+      // Find the first valid day in the week
+      if ('contributionDays' in week && week.contributionDays?.length > 0) {
+        firstDayOfWeek = week.contributionDays[0].date;
+      } else if (Array.isArray(week) && week.length > 0) {
+        firstDayOfWeek = week[0].date;
+      }
+
+      if (firstDayOfWeek) {
+        const firstDay = DateTime.fromISO(firstDayOfWeek);
+        const monthName = firstDay.toFormat('MMM'); // Use Luxon's formatting
+
         if (monthName !== currentMonth) {
           if (currentMonth !== null) {
             monthLabels.push({
@@ -260,6 +299,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
           currentMonth = monthName;
           startWeek = index;
         }
+
         if (index === weeks.length - 1) {
           monthLabels.push({
             label: currentMonth,
@@ -280,18 +320,56 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
           {total} contributions in{' '}
           {selectedYear === 'last' ? 'the last year' : selectedYear}
         </h4>
-        <select
-          value={selectedYear}
-          onChange={handleYearChange}
-          className='bg-black-100 text-secondary border-tertiary cursor-pointer rounded border px-2 py-1 text-sm transition-colors hover:border-[var(--text-color-variable)]'
-        >
-          <option value='last'>Last year</option>
-          {availableYears.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
+
+        {/* Custom Year Dropdown */}
+        <div className='relative' ref={dropdownRef}>
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className='bg-black-100 border-tertiary text-secondary flex items-center justify-between gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
+          >
+            <span className='flex items-center gap-1.5 text-[11px] sm:text-sm'>
+              📅 {selectedYear === 'last' ? 'Last year' : selectedYear}
+            </span>
+            <div
+              className={`chevron scale-75 transition-transform duration-150 ${
+                dropdownOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          {dropdownOpen && (
+            <div className='bg-black-100 border-tertiary absolute top-full right-0 z-20 mt-1.5 min-w-[120px] overflow-hidden rounded-md border shadow-lg shadow-black/30 sm:min-w-[140px]'>
+              <div className='py-0.5'>
+                {availableYears.map((year) => (
+                  <button
+                    key={year}
+                    onClick={() => handleYearChange(year.toString())}
+                    className={`text-secondary hover:text-secondary w-full px-3 py-2 text-left text-xs font-medium transition-colors duration-150 hover:bg-[var(--text-color-variable)]/10 sm:px-4 sm:py-2.5 sm:text-sm ${
+                      selectedYear === year.toString()
+                        ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
+                        : ''
+                    }`}
+                  >
+                    <div className='flex items-center gap-1.5 sm:gap-2'>
+                      <span className='text-[10px] sm:text-xs'>📅</span>
+                      <span className='text-[11px] sm:text-sm'>
+                        {year === 'last' ? 'Last year' : year}
+                      </span>
+                      {selectedYear === year.toString() && (
+                        <div className='ml-auto text-[10px] text-[var(--text-color-variable)] sm:text-xs'>
+                          ✓
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Glowing border effect */}
+              <div className='pointer-events-none absolute inset-0 rounded-md border border-[var(--text-color-variable)]/20' />
+            </div>
+          )}
+        </div>
       </div>
 
       {weeks.length > 0 ? (
@@ -321,13 +399,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
               <div className='mb-3 flex'>
                 {/* Day of week labels */}
                 <div className='text-secondary mr-2 flex flex-col justify-start gap-[2px] pt-1 text-xs'>
+                  <div className='h-3 text-[10px] leading-3'></div>
                   <div className='h-3 text-[10px] leading-3'>Mon</div>
                   <div className='h-3 text-[10px] leading-3'></div>
                   <div className='h-3 text-[10px] leading-3'>Wed</div>
                   <div className='h-3 text-[10px] leading-3'></div>
                   <div className='h-3 text-[10px] leading-3'>Fri</div>
                   <div className='h-3 text-[10px] leading-3'></div>
-                  <div className='h-3 text-[10px] leading-3'>Sun</div>
                 </div>
 
                 {/* Contribution Grid */}
@@ -347,16 +425,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                                       ? 3
                                       : 4;
 
-                            const date = new Date(day.date);
-                            const formattedDate = date.toLocaleDateString(
-                              'en-US',
-                              {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            );
+                            const date = DateTime.fromISO(day.date);
+                            const formattedDate = date.toLocaleString({
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            });
 
                             return (
                               <motion.div
@@ -388,16 +463,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                             );
                           })
                         : week.map((day, dayIndex) => {
-                            const date = new Date(day.date);
-                            const formattedDate = date.toLocaleDateString(
-                              'en-US',
-                              {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            );
+                            const date = DateTime.fromISO(day.date);
+                            const formattedDate = date.toLocaleString({
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            });
 
                             return (
                               <motion.div
@@ -513,12 +585,67 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 export const ProjectCards: React.FC<{ projects: Project[] }> = ({
   projects,
 }) => {
+  // Dynamically split projects into two rows
+  const midPoint = Math.ceil(projects.length / 2);
+  const firstRow = projects.slice(0, midPoint);
+  const secondRow = projects.slice(midPoint);
+
   return (
-    <>
-      {projects.map((project: Project, index: number) => (
-        <ProjectCard key={`project-${index}`} index={index} {...project} />
-      ))}
-    </>
+    <div className='relative w-full overflow-hidden'>
+      {/* Background gradient effects */}
+      <div className='pointer-events-none absolute top-0 left-0 z-10 h-full w-20 bg-gradient-to-r from-[var(--primary-color)] to-transparent' />
+      <div className='pointer-events-none absolute top-0 right-0 z-10 h-full w-20 bg-gradient-to-l from-[var(--primary-color)] to-transparent' />
+
+      <div className='space-y-6'>
+        {/* First Row - Left to Right */}
+        <Marquee
+          pauseOnHover
+          className='cursor-pointer py-2 [--duration:45s] [--gap:1.5rem]'
+        >
+          {firstRow.map((project: Project, index: number) => (
+            <div
+              key={`project-row1-${index}`}
+              className='w-[240px] flex-shrink-0 hover:z-10'
+            >
+              <ProjectCard
+                index={index}
+                name={project.name}
+                description={project.description}
+                image={project.image}
+                link={project.link}
+                isGitHub={project.isGitHub}
+              />
+            </div>
+          ))}
+        </Marquee>
+
+        {/* Second Row - Right to Left */}
+        <Marquee
+          pauseOnHover
+          reverse
+          className='cursor-pointer py-2 [--duration:45s] [--gap:1.5rem]'
+        >
+          {secondRow.map((project: Project, index: number) => (
+            <div
+              key={`project-row2-${index}`}
+              className='w-[240px] flex-shrink-0 hover:z-10'
+            >
+              <ProjectCard
+                index={index + midPoint}
+                name={project.name}
+                description={project.description}
+                image={project.image}
+                link={project.link}
+                isGitHub={project.isGitHub}
+              />
+            </div>
+          ))}
+        </Marquee>
+      </div>
+
+      {/* Subtle ambient glow effect */}
+      <div className='pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-[var(--text-color-variable)]/[0.02] to-transparent' />
+    </div>
   );
 };
 
@@ -561,6 +688,44 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
   );
 };
 
+// GitHub Link Component
+const GitHubLink: React.FC = () => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleGitHubClick = (): void => {
+    window.open(GITHUB_URL, '_blank');
+  };
+
+  return (
+    <motion.button
+      onClick={handleGitHubClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <Image
+        src={github}
+        alt='GitHub'
+        width={16}
+        height={16}
+        className={`transition-transform duration-300 ${isHovered ? 'scale-110 rotate-12' : ''}`}
+      />
+      <span
+        className={`text-sm font-medium transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--secondary-color)]'}`}
+      >
+        View GitHub
+      </span>
+      <div
+        className={`transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`}
+      >
+        ↗
+      </div>
+    </motion.button>
+  );
+};
+
 export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   githubData,
 }) => {
@@ -570,7 +735,12 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
     ContributionCalendar | undefined
   >(githubData.commitCalendar);
   const [loading, setLoading] = useState(false);
-  const availableYears = [currentYear, currentYear - 1, currentYear - 2];
+  const availableYears = [
+    'last',
+    currentYear,
+    currentYear - 1,
+    currentYear - 2,
+  ];
 
   const fetchContributionData = async (year: string) => {
     setLoading(true);
@@ -609,13 +779,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
         variants={fadeIn('up', 'spring', 0.4, 0.75) as any}
         className='w-full'
       >
-        <Tilt
-          tiltMaxAngleX={15}
-          tiltMaxAngleY={15}
-          scale={1.02}
-          transitionSpeed={450}
-          className='bg-tertiary border-tertiary rounded-xl border p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
-        >
+        <div className='bg-tertiary border-tertiary transform-gpu rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
           <h4 className='text-secondary mb-4 text-[16px] font-semibold'>
             Recent Commits
           </h4>
@@ -652,7 +816,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
               No recent commits found
             </div>
           )}
-        </Tilt>
+        </div>
       </motion.div>
     </div>
   );
@@ -675,11 +839,11 @@ export const ProjectsDescription: React.FC = () => {
         variants={fadeIn('up', 'spring', 0.1, 1) as any}
         className='text-secondary mt-3 max-w-3xl text-[17px] leading-[30px]'
       >
-        Explore my development journey through featured projects and live GitHub
-        contributions. From full-stack applications to AI-powered tools, each
-        project represents a commitment to quality code and innovative
-        solutions. The live GitHub data showcases consistent coding practices,
-        diverse technology stack, and collaborative project development.
+        A collection of projects that showcase problem-solving through
+        development. Whether helping couples coordinate their weddings or
+        building tools for crypto trading, each application represents learning,
+        iteration, and delivering functional solutions. Each one solves a
+        different problem in its own way.
       </motion.p>
     </div>
   );
@@ -688,10 +852,14 @@ export const ProjectsDescription: React.FC = () => {
 export const ProjectsSectionHeader: React.FC<{
   title: string;
   className?: string;
-}> = ({ title, className = '' }) => {
+  showGitHubLink?: boolean;
+}> = ({ title, className = '', showGitHubLink = false }) => {
   return (
     <motion.div variants={textVariant() as any} className={className}>
-      <h3 className='text-secondary mb-8 text-[24px] font-bold'>{title}</h3>
+      <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <h3 className='text-secondary text-[24px] font-bold'>{title}</h3>
+        {showGitHubLink && <GitHubLink />}
+      </div>
     </motion.div>
   );
 };
