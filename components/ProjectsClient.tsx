@@ -317,7 +317,8 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     >
       <div className='mb-4 flex items-center justify-between'>
         <h4 className='text-secondary text-[16px] font-semibold'>
-          {total} contributions in {selectedYear === 'last' ? 'the last year' : selectedYear}
+          {total} contributions in{' '}
+          {selectedYear === 'last' ? 'the last year' : selectedYear}
         </h4>
 
         {/* Custom Year Dropdown */}
@@ -734,7 +735,12 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
     ContributionCalendar | undefined
   >(githubData.commitCalendar);
   const [loading, setLoading] = useState(false);
-  const availableYears = ['last', currentYear, currentYear - 1, currentYear - 2];
+  const availableYears = [
+    'last',
+    currentYear,
+    currentYear - 1,
+    currentYear - 2,
+  ];
 
   const fetchContributionData = async (year: string) => {
     setLoading(true);
@@ -833,11 +839,11 @@ export const ProjectsDescription: React.FC = () => {
         variants={fadeIn('up', 'spring', 0.1, 1) as any}
         className='text-secondary mt-3 max-w-3xl text-[17px] leading-[30px]'
       >
-        Explore my development journey through featured projects and live GitHub
-        contributions. From full-stack applications to AI-powered tools, each
-        project represents a commitment to quality code and innovative
-        solutions. The live GitHub data showcases consistent coding practices,
-        diverse technology stack, and collaborative project development.
+        A collection of projects that showcase problem-solving through
+        development. Whether helping couples coordinate their weddings or
+        building tools for crypto trading, each application represents learning,
+        iteration, and delivering functional solutions. Each one solves a
+        different problem in its own way.
       </motion.p>
     </div>
   );

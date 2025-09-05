@@ -70,37 +70,27 @@ const About: React.FC = () => {
         variants={fadeIn('up', 'spring', 0.1, 1) as any}
         className='text-secondary mt-4 max-w-3xl text-[17px] leading-[30px]'
       >
-        I&apos;m a Full Stack Software Developer with a proven track record of
-        delivering scalable, production-grade systems that drive efficiency,
-        accuracy, and visibility across complex, multi-department environments.
-        My expertise spans backend automation, real-time reporting
-        infrastructure, ERP integrations, and full-stack platforms that support
-        high-impact operations across diverse business functions.
+        I&apos;m a Full Stack Developer who transforms complex business
+        challenges into powerful software solutions. Whether eliminating weeks
+        of manual reporting or building platforms that streamline operations, I
+        create systems that genuinely improve how people work.
         <br />
         <br />
-        At Evans Consoles, I&apos;ve developed 40+ custom KPI reports and 10
-        real-time dashboards, saving thousands of labor hours annually and
-        resolving $2M+ in inventory discrepancies. I built a comprehensive Bill
-        of Materials platform and implemented dynamic budgeting systems using
-        cutting-edge technologies like Vue 3, Node.js, BullMQ, and Redis,
-        achieving a 20x deployment speed improvement.
+        At Evans Consoles, I&apos;ve developed live dashboards tracking critical
+        business metrics and built a dynamic budgeting system providing
+        real-time profitability analysis for decision-making. My toolkit centers
+        around Vue, Node.js, TypeScript, and EdgeDB - technologies I use daily
+        to build robust, scalable solutions.
         <br />
         <br />
-        My technical arsenal includes modern frontend frameworks (Vue 3, React,
-        Next.js), robust backend technologies (Node.js, Python), advanced
-        databases (EdgeDB, PostgreSQL, Redis), and comprehensive DevOps
-        practices (Docker, Kubernetes, AWS). I excel at translating real-world
-        challenges into modern, high-performance software that drives tangible
-        business outcomes across organizations.
+        Beyond work, I&apos;m driven by curiosity to explore emerging
+        technologies through personal projects. From AI integrations to
+        automated trading systems, I tackle technical challenges that push my
+        skills forward and bring fresh insights back to my professional work.
         <br />
         <br />
-        Beyond client work, I founded Solvex Digital, delivering full-stack web
-        applications and GPT-powered AI integrations to 8+ clients. I&apos;ve
-        also developed sophisticated systems like containerized cryptocurrency
-        trading bots with advanced algorithmic strategies, demonstrating my
-        ability to tackle complex technical challenges across diverse domains.
-        <br />
-        <br />
+        When I&apos;m not coding, you&apos;ll find me on the ski slopes or
+        hiking mountain trails.
       </motion.p>
 
       <div className='mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-8'>

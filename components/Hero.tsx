@@ -27,8 +27,8 @@ const Hero: React.FC = () => {
           </h1>
           <p className={`${styles.heroSubText}`}>
             {/*className='sm:block hidden'*/}
-            Dream. Design. Deliver. <br />
-            turning ideas into reality
+            Analyze. Build. Transform. <br />
+            Turning business challenges into powerful solutions.
           </p>
         </div>
       </div>
