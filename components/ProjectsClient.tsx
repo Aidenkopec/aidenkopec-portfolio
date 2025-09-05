@@ -51,7 +51,7 @@ interface CommitGraphProps {
   loading: boolean;
   selectedYear: string;
   setSelectedYear: (year: string) => void;
-  availableYears: number[];
+  availableYears: (string | number)[];
   onYearChange: (year: string) => void;
 }
 
@@ -317,7 +317,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     >
       <div className='mb-4 flex items-center justify-between'>
         <h4 className='text-secondary text-[16px] font-semibold'>
-          {total} contributions in {selectedYear}
+          {total} contributions in {selectedYear === 'last' ? 'the last year' : selectedYear}
         </h4>
 
         {/* Custom Year Dropdown */}
@@ -327,7 +327,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
             className='bg-black-100 border-tertiary text-secondary flex items-center justify-between gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
           >
             <span className='flex items-center gap-1.5 text-[11px] sm:text-sm'>
-              📅 {selectedYear}
+              📅 {selectedYear === 'last' ? 'Last year' : selectedYear}
             </span>
             <div
               className={`chevron scale-75 transition-transform duration-150 ${
@@ -351,7 +351,9 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                   >
                     <div className='flex items-center gap-1.5 sm:gap-2'>
                       <span className='text-[10px] sm:text-xs'>📅</span>
-                      <span className='text-[11px] sm:text-sm'>{year}</span>
+                      <span className='text-[11px] sm:text-sm'>
+                        {year === 'last' ? 'Last year' : year}
+                      </span>
                       {selectedYear === year.toString() && (
                         <div className='ml-auto text-[10px] text-[var(--text-color-variable)] sm:text-xs'>
                           ✓
@@ -727,14 +729,12 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   githubData,
 }) => {
   const currentYear = new Date().getFullYear();
-  const [selectedYear, setSelectedYear] = useState<string>(
-    currentYear.toString(),
-  );
+  const [selectedYear, setSelectedYear] = useState<string>('last');
   const [contributionData, setContributionData] = useState<
     ContributionCalendar | undefined
   >(githubData.commitCalendar);
   const [loading, setLoading] = useState(false);
-  const availableYears = [currentYear, currentYear - 1, currentYear - 2];
+  const availableYears = ['last', currentYear, currentYear - 1, currentYear - 2];
 
   const fetchContributionData = async (year: string) => {
     setLoading(true);

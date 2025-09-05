@@ -236,7 +236,7 @@ function getContributionLevel(count: number): number {
 
 // Main function to get all GitHub data, callable from Server Components
 export const getGitHubData = cache(
-  async (year: string = new Date().getFullYear().toString()): Promise<GitHubData> => {
+  async (year: string = 'last'): Promise<GitHubData> => {
     try {
       const [userData, repositories, commits, commitCalendar] =
         await Promise.all([
