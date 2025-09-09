@@ -79,6 +79,23 @@ export function BlogCard({
                 <p className='text-secondary mb-4 line-clamp-4 text-sm leading-relaxed sm:mb-5 sm:line-clamp-5 sm:text-base lg:mb-6 lg:text-lg'>
                   {post.description}
                 </p>
+
+                {/* Read More Button */}
+                <motion.div
+                  className='mb-0 sm:mb-1'
+                  whileHover={{ x: 2 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <span className='inline-flex items-center gap-1 text-sm font-medium text-[var(--secondary-color)] transition-colors duration-200 group-hover:text-[var(--text-color-variable)]'>
+                    Read More
+                    <motion.span
+                      className='transition-transform duration-200 group-hover:translate-x-1'
+                      whileHover={{ x: 2 }}
+                    >
+                      →
+                    </motion.span>
+                  </span>
+                </motion.div>
               </div>
 
               {/* Footer */}
@@ -126,7 +143,6 @@ export function BlogCard({
     );
   }
 
-  // Render standard Solvex-style card (thumbnail-first layout)
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -190,6 +206,23 @@ export function BlogCard({
               <p className='text-secondary mb-3 line-clamp-2 text-sm leading-relaxed sm:mb-4 sm:line-clamp-3 sm:text-base lg:text-base'>
                 {post.description}
               </p>
+
+              {/* Read More Button */}
+              <motion.div
+                className='mb-0'
+                whileHover={{ x: 2 }}
+                transition={{ duration: 0.2 }}
+              >
+                <span className='inline-flex items-center gap-1 text-sm font-medium text-[var(--secondary-color)] transition-colors duration-200 group-hover:text-[var(--text-color-variable)]'>
+                  Read More
+                  <motion.span
+                    className='transition-transform duration-200 group-hover:translate-x-1'
+                    whileHover={{ x: 2 }}
+                  >
+                    →
+                  </motion.span>
+                </span>
+              </motion.div>
             </div>
 
             {/* Footer */}
