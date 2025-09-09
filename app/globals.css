@@ -377,6 +377,10 @@ body {
   color: var(--secondary-color);
 }
 
+.group:hover .group-hover\:text-\[var\(--text-color-variable\)\] {
+  color: var(--text-color-variable) !important;
+}
+
 /* shadcn/ui base layer - using your theme variables */
 @layer base {
   * {
