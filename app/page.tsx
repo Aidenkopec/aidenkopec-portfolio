@@ -4,6 +4,7 @@ import About from '@/components/About';
 import Experience from '@/components/Experience';
 import Tech from '@/components/Tech';
 import Projects from '@/components/Projects';
+import RecentBlogs from '@/components/RecentBlogs';
 import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
 import FloatingMusicBar from '@/components/FloatingMusicBar';
@@ -22,6 +23,7 @@ export default function Home() {
       <Experience />
       <Tech />
       <Projects />
+      <RecentBlogs />
       <Testimonials />
       <div className='relative z-0'>
         <Contact />
