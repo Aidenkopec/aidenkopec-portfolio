@@ -106,7 +106,8 @@ export async function POST(request: NextRequest) {
     const { name, email, message, turnstileToken } = await request.json();
 
     // Get client IP for rate limiting
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const forwarded = request.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
 
     // 1. Check rate limiting first
     const rateLimitCheck = checkRateLimit(ip);
