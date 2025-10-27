@@ -1,6 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import React, { useRef, useState } from 'react';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 import SectionWrapper from '../hoc/SectionWrapper';
 import { styles } from '../styles';
@@ -25,6 +26,7 @@ const Contact: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -55,6 +57,7 @@ const Contact: React.FC = () => {
   const resetForm = () => {
     setSubmitSuccess(false);
     setErrorMessage('');
+    setTurnstileToken('');
     setForm({
       name: '',
       email: '',
@@ -70,6 +73,31 @@ const Contact: React.FC = () => {
     setErrorMessage('');
     setSubmitSuccess(false);
 
+    // Client-side validation
+    if (!form.name.trim() || form.name.trim().length < 2) {
+      setErrorMessage('Please enter a valid name (at least 2 characters).');
+      setLoading(false);
+      return;
+    }
+
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setErrorMessage('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+
+    if (!form.message.trim() || form.message.trim().length < 10) {
+      setErrorMessage('Please enter a message (at least 10 characters).');
+      setLoading(false);
+      return;
+    }
+
+    if (!turnstileToken) {
+      setErrorMessage('Please complete the security verification.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -80,8 +108,11 @@ const Contact: React.FC = () => {
           name: form.name,
           email: form.email,
           message: form.message,
+          turnstileToken: turnstileToken,
         }),
       });
+
+      const data = await response.json();
 
       if (response.ok) {
         setLoading(false);
@@ -93,12 +124,14 @@ const Contact: React.FC = () => {
           resetForm();
         }, 10000);
       } else {
-        throw new Error('Failed to send message');
+        throw new Error(data.error || 'Failed to send message');
       }
     } catch (error) {
       setLoading(false);
       console.error('Error sending message:', error);
-      setErrorMessage('Something went wrong. Please try again.');
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+      );
     }
   };
 
@@ -132,6 +165,9 @@ const Contact: React.FC = () => {
                     value={form.name}
                     onChange={handleChange}
                     placeholder="What's your name?"
+                    required
+                    minLength={2}
+                    maxLength={100}
                     className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
                   />
                 </label>
@@ -145,6 +181,7 @@ const Contact: React.FC = () => {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="What's your email address?"
+                    required
                     className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
                   />
                 </label>
@@ -158,14 +195,35 @@ const Contact: React.FC = () => {
                     value={form.message}
                     onChange={handleChange}
                     placeholder='Please type your message'
+                    required
+                    minLength={10}
+                    maxLength={2000}
                     className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
                   />
                 </label>
 
+                {/* Turnstile CAPTCHA Widget */}
+                <div className='flex flex-col gap-2'>
+                  <Turnstile
+                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+                    onSuccess={(token) => setTurnstileToken(token)}
+                    onError={() => {
+                      setErrorMessage('Security verification failed. Please refresh and try again.');
+                    }}
+                    onExpire={() => {
+                      setTurnstileToken('');
+                    }}
+                    options={{
+                      theme: 'dark',
+                      size: 'normal',
+                    }}
+                  />
+                </div>
+
                 <button
                   type='submit'
                   className='bg-tertiary text-secondary shadow-primary hover:bg-tertiary/90 w-fit rounded-xl px-8 py-3 font-bold shadow-md transition-colors outline-none disabled:opacity-50'
-                  disabled={loading}
+                  disabled={loading || !turnstileToken}
                 >
                   {loading ? 'Sending...' : 'Send'}
                 </button>
