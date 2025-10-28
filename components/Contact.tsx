@@ -36,6 +36,11 @@ const Contact: React.FC = () => {
       ...form,
       [name]: value,
     });
+
+    // Clear error message when user starts typing
+    if (errorMessage) {
+      setErrorMessage('');
+    }
   };
 
   const triggerConfetti = () => {
@@ -62,13 +67,67 @@ const Contact: React.FC = () => {
     });
   };
 
+  const validateLocally = (): boolean => {
+    // Name validation
+    if (!form.name.trim()) {
+      setErrorMessage('Name is required');
+      return false;
+    }
+
+    if (form.name.trim().length < 2) {
+      setErrorMessage('Name must be at least 2 characters');
+      return false;
+    }
+
+    if (form.name.trim().length > 100) {
+      setErrorMessage('Name must be less than 100 characters');
+      return false;
+    }
+
+    // Email validation
+    if (!form.email.trim()) {
+      setErrorMessage('Email is required');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email.trim().toLowerCase())) {
+      setErrorMessage('Please provide a valid email address');
+      return false;
+    }
+
+    // Message validation
+    if (!form.message.trim()) {
+      setErrorMessage('Message is required');
+      return false;
+    }
+
+    if (form.message.trim().length < 10) {
+      setErrorMessage('Message must be at least 10 characters');
+      return false;
+    }
+
+    if (form.message.trim().length > 5000) {
+      setErrorMessage('Message must be less than 5000 characters');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     e.preventDefault();
-    setLoading(true);
     setErrorMessage('');
     setSubmitSuccess(false);
+
+    // Validate locally first
+    if (!validateLocally()) {
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await fetch('/api/contact', {
@@ -93,12 +152,17 @@ const Contact: React.FC = () => {
           resetForm();
         }, 10000);
       } else {
-        throw new Error('Failed to send message');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to send message');
       }
     } catch (error) {
       setLoading(false);
       console.error('Error sending message:', error);
-      setErrorMessage('Something went wrong. Please try again.');
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong. Please try again.',
+      );
     }
   };
 
