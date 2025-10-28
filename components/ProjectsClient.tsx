@@ -774,14 +774,14 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
         />
       </motion.div>
 
-      {/* Recent Commits Section */}
+      {/* Open Source Activity Section */}
       <motion.div
         variants={fadeIn('up', 'spring', 0.4, 0.75) as any}
         className='w-full'
       >
         <div className='bg-tertiary border-tertiary transform-gpu rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
           <h4 className='text-secondary mb-4 text-[16px] font-semibold'>
-            Recent Commits
+            Open Source Activity
           </h4>
 
           {githubData.commits && githubData.commits.length > 0 ? (
@@ -813,7 +813,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
             </div>
           ) : (
             <div className='text-secondary py-4 text-center text-sm'>
-              No recent commits found
+              No recent public commits - see contribution graph above for full activity
             </div>
           )}
         </div>

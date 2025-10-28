@@ -80,34 +80,91 @@ const fetchRepositories = cache(async (): Promise<GitHubRepository[]> => {
 });
 
 const fetchRecentCommits = cache(async (): Promise<Commit[]> => {
-  const eventsUrl = `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events/public?per_page=100`;
-  const events = await githubFetch(eventsUrl);
-
-  if (!Array.isArray(events)) {
+  // If no GitHub token, we can't use GraphQL API
+  if (!GITHUB_TOKEN) {
+    console.warn(
+      'GITHUB_TOKEN not found. Cannot fetch recent commits via GraphQL.',
+    );
     return [];
   }
 
-  const commits: Commit[] = [];
-  for (const event of events) {
-    if (
-      event.type === 'PushEvent' &&
-      event.payload &&
-      Array.isArray(event.payload.commits)
-    ) {
-      const repoName = event.repo?.name || 'unknown';
-      for (const commit of event.payload.commits) {
-        commits.push({
-          date: event.created_at,
-          message: commit.message || 'Commit',
-          repo: repoName,
-          sha: commit.sha || '',
-        });
-        if (commits.length >= 25) break;
+  // GraphQL query to fetch recent commits across all repositories
+  // Fetching from top 5 recently pushed PUBLIC repos, with 5 commits each = ~25 commits to sort
+  // Privacy filter ensures no private repository data is exposed
+  const query = `
+    query {
+      viewer {
+        repositories(first: 5, orderBy: {field: PUSHED_AT, direction: DESC}, ownerAffiliations: OWNER, privacy: PUBLIC) {
+          nodes {
+            name
+            defaultBranchRef {
+              target {
+                ... on Commit {
+                  history(first: 5) {
+                    edges {
+                      node {
+                        oid
+                        message
+                        committedDate
+                        author {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
-    if (commits.length >= 25) break;
+  `;
+
+  try {
+    const data = await githubFetch(`${GITHUB_API_BASE}/graphql`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!data?.data?.viewer?.repositories?.nodes) {
+      console.error('Invalid GraphQL response for commits');
+      return [];
+    }
+
+    const commits: Commit[] = [];
+    const repositories = data.data.viewer.repositories.nodes;
+
+    // Collect all commits from all repositories
+    for (const repo of repositories) {
+      if (!repo?.defaultBranchRef?.target?.history?.edges) {
+        continue;
+      }
+
+      const repoName = repo.name;
+      const commitEdges = repo.defaultBranchRef.target.history.edges;
+
+      for (const edge of commitEdges) {
+        const commitNode = edge.node;
+        commits.push({
+          date: commitNode.committedDate,
+          message: commitNode.message.split('\n')[0], // First line only
+          repo: repoName,
+          sha: commitNode.oid,
+        });
+      }
+    }
+
+    // Sort by date (newest first) and limit to 5
+    commits.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+    return commits.slice(0, 5);
+  } catch (error) {
+    console.error('Error fetching commits via GraphQL:', error);
+    return [];
   }
-  return commits;
 });
 
 const fetchContributionCalendar = cache(
