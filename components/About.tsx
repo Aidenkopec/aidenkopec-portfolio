@@ -76,11 +76,11 @@ const About: React.FC = () => {
         create systems that genuinely improve how people work.
         <br />
         <br />
-        At Evans Consoles, I&apos;ve developed live dashboards tracking critical
-        business metrics and built a dynamic budgeting system providing
+        At Evans Consoles, I&apos;ve built live dashboards tracking critical
+        business metrics and developed a dynamic budgeting system providing
         real-time profitability analysis for decision-making. My toolkit centers
-        around Vue, Node.js, TypeScript, and EdgeDB - technologies I use daily
-        to build robust, scalable solutions.
+        around Next.js, Vue, Node.js, TypeScript, and EdgeDB - technologies I use
+        daily to build solutions that scale.
         <br />
         <br />
         Beyond work, I&apos;m driven by curiosity to explore emerging

@@ -208,7 +208,7 @@ const projects: Project[] = [
   {
     name: 'Solvex Digital',
     description:
-      'Founded and operated Solvex Digital, a custom software agency delivering AI-powered web applications and automation solutions to diverse business clients. Specialized in React/Next.js development with EdgeDB integration, creating intelligent systems that streamline workflows and drive operational efficiency.',
+      'Custom software agency I founded, building AI-powered web applications and automation solutions for business clients. Specializes in full-stack development with React, Next.js, and EdgeDB, creating systems that automate workflows and solve operational challenges.',
     image: solvexdigital,
     link: 'https://solvexdigital.com',
     isGitHub: false,
@@ -216,7 +216,7 @@ const projects: Project[] = [
   {
     name: 'Teevision',
     description:
-      'Interactive 3D t-shirt design platform that brings creative ideas to life instantly. Users experiment with unlimited design combinations using photorealistic 3D preview technology, eliminating guesswork and enabling perfect customization before ordering.',
+      '3D t-shirt design platform built with Three.js allowing users to customize designs in real-time with photorealistic preview. Users can experiment with colors, patterns, and graphics before ordering their custom apparel.',
     image: teevision,
     link: 'https://teevision.netlify.app',
     isGitHub: false,
@@ -224,7 +224,7 @@ const projects: Project[] = [
   {
     name: 'Cryptocurrency Trading Bot',
     description:
-      'Automated trading system that executes 24/7 profitable crypto strategies without human emotion or error. Advanced algorithms analyze market patterns to maximize returns while minimizing risk exposure.',
+      'Cryptocurrency trading bot built with Python and Freqtrade framework. Automates trading strategies using technical indicators and backtesting, executing trades 24/7 based on configured parameters and risk management rules.',
     image: freqtrade,
     link: 'https://github.com/Aidenkopec/crypto-bot-trading',
     isGitHub: true,
@@ -232,7 +232,7 @@ const projects: Project[] = [
   {
     name: 'I Do Together',
     description:
-      'Complete wedding digitalization platform that transforms chaotic planning into organized celebration management. Couples centralize guest communication, automate RSVP collection, track attendance in real-time, and coordinate every wedding detail in one streamlined dashboard.',
+      'Wedding planning platform that centralizes guest management, RSVP tracking, and event coordination. Built with real-time updates allowing couples to manage invitations, track attendance, and communicate with guests from a single dashboard.',
     link: 'https://www.idotogether.com',
     image: idotogether,
     isGitHub: false,
@@ -240,7 +240,7 @@ const projects: Project[] = [
   {
     name: 'I Win Parlays',
     description:
-      'AI-driven sports betting platform that turns casual bettors into profitable players. Advanced analytics and probability calculations deliver optimized parlay recommendations with transparent win reasoning.',
+      'Sports betting analytics platform using AI to analyze odds and calculate probabilities. Generates parlay recommendations with transparent win/loss reasoning and statistical analysis to help users make informed betting decisions.',
     link: 'https://www.iwinparlays.com',
     image: iwinparlays,
     isGitHub: false,
@@ -248,7 +248,7 @@ const projects: Project[] = [
   {
     name: 'Relfeild',
     description:
-      'Comprehensive oilfield accountability platform that eliminates unreliable contractor headaches. Companies instantly access verified reviews, service hours, and contact details to make confident hiring decisions.',
+      'Oilfield contractor directory platform connecting companies with service providers. Features verified reviews, service hour tracking, and contact management to help companies find and vet contractors for projects.',
     link: 'https://oil-gas-ochre.vercel.app',
     image: relfeild,
     isGitHub: false,
@@ -256,7 +256,7 @@ const projects: Project[] = [
   {
     name: 'Digital Dream Scapes',
     description:
-      'AI-powered creative community where artists explore imagination without limits. Users generate professional-quality AI artwork, share creations with fellow artists, and discover endless inspiration through an integrated social platform designed for creative collaboration.',
+      'AI art generation platform with integrated social features. Users create AI-generated artwork, share their creations with the community, and explore content from other artists in a collaborative creative space.',
     link: 'https://digital-dreamscapes.netlify.app/',
     isGitHub: false,
     image: digitaldreamscapes,
@@ -264,36 +264,29 @@ const projects: Project[] = [
   {
     name: 'Pivot Tools',
     description:
-      'High-converting corporate website that transformed Pivot Tools into the go-to oilfield equipment rental choice. Streamlined service showcase drives qualified leads and accelerates sales cycles.',
+      'Corporate website built for Pivot Tools, an oilfield equipment rental company. Showcases available equipment, services, and contact information to generate leads and streamline the rental inquiry process.',
     link: null,
     isGitHub: false,
   },
   {
     name: 'Sparta Tech Coatings',
     description:
-      'Lead-generating website that positions Sparta Tech as the premium epoxy flooring authority. Professional showcase converts visitors into high-value customers seeking quality coating solutions.',
+      'Business website for Sparta Tech Coatings, an epoxy flooring company. Features service offerings, project gallery, and contact forms to generate leads and showcase completed flooring installations.',
     link: null,
     isGitHub: false,
   },
   {
     name: 'PD Construction',
     description:
-      'Revenue-driving website that transforms PD Construction from local contractor to trusted construction authority. Showcases quality craftsmanship that attracts premium residential and commercial projects.',
+      'Construction company website for PD Construction showcasing residential and commercial projects. Features portfolio of completed work, service descriptions, and client testimonials to generate project inquiries.',
     link: 'https://www.pdconstruction.ca',
     isGitHub: false,
     image: pdconstruction,
   },
-  // {
-  //   name: 'Dribbble Clone',
-  //   description:
-  //     'Feature-rich creative portfolio platform built for professional designers who demand complete presentation control. Authenticated users upload high-resolution work, organize projects into custom collections, and showcase their creative expertise through a clean, modern interface.',
-  //   link: 'https://github.com/Aidenkopec/dribbble-clone',
-  //   isGitHub: true,
-  // },
   {
     name: 'Article Summarizer',
     description:
-      'Time-saving AI tool that transforms hours of reading into minutes of insight. Professionals extract key information from lengthy articles instantly, boosting productivity and decision-making speed.',
+      'AI-powered article summarization tool that extracts key information from lengthy content. Users input article URLs and receive condensed summaries highlighting the main points and insights.',
     link: 'https://summalink.netlify.app/',
     isGitHub: false,
     image: summalink,
@@ -301,7 +294,7 @@ const projects: Project[] = [
   {
     name: 'n8n Workflows',
     description:
-      'Comprehensive collection of n8n automation workflows and templates for streamlining business processes. Pre-built integrations connect popular tools and services, providing developers and businesses with ready-to-use automation solutions and implementation examples.',
+      'Collection of n8n automation workflows and templates. Includes pre-built integrations and workflow examples for common automation tasks, available as open-source templates for developers to use and customize.',
     link: 'https://github.com/Aidenkopec/n8n-workflows',
     isGitHub: true,
     image: n8n,
@@ -309,7 +302,7 @@ const projects: Project[] = [
   {
     name: 'Victoria & Riley Wedding Website',
     description:
-      'Elegant custom wedding platform that transformed chaotic planning into seamless coordination. Personalized design with RSVP management and registry integration created the perfect celebration experience.',
+      'Custom wedding website built for Victoria & Riley featuring event details, RSVP management, and registry integration. Personalized design matching the couple\'s wedding theme and colors.',
     link: null,
     isGitHub: false,
     image: victoriaandriley,

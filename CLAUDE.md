@@ -153,3 +153,48 @@ Required for full functionality:
 - GitHub token (if used) should be added to `.env.local` for development
 - The 3D components may not render in development without proper WebGL support
 - Use the blog tag system for categorization and filtering
+
+## Blog Writing Guidelines
+
+### Tone & Style Inspiration
+
+This blog takes inspiration from:
+
+- **Pieter Levels (levels.io):** Authentic voice with no corporate BS. Shows real projects with real results and real failures. Inspires action through doing, not preaching. Authority comes from shipping, not credentials.
+- **Paul Graham (paulgraham.com):** Thought-provoking essays with clarity of thought over hype. Makes readers think differently about familiar topics without being preachy.
+
+### Core Principles for Blog Posts
+
+1. **Authentic over polished** - Write like a real person, not a content machine
+2. **Show, don't promise** - Let the work speak for itself, no empty claims
+3. **Honest about failures** - Share what didn't work, not just successes
+4. **Inspire through possibility** - Show what can be built, don't preach or teach
+5. **No forced cadence** - Publish when there's something worth sharing, not on a schedule
+6. **Practical over theoretical** - Real implementations with code, not toy examples or concept discussions
+
+### Voice Guidelines
+
+- **Conversational and direct** - "I built this" not "one could build this"
+- **No marketing-speak** - Avoid "game-changing," "revolutionary," "cutting-edge"
+- **No false promises** - Don't commit to schedules or overclaim value
+- **Embrace uncertainty** - "Let's see where this goes" is better than fake confidence
+- **Short sentences, clear thoughts** - Write for clarity, not complexity
+
+### Content Focus
+
+The blog explores practical AI and automation applications:
+
+- Real projects with actual code and honest results
+- Emerging tools tested honestly (n8n, AI APIs, automation platforms)
+- Experiments that may succeed or fail - share both outcomes
+- Practical applications that solve real problems, not tutorials for the sake of tutorials
+- Topics include: lead generation, automated trading, AI-powered workflows, data extraction, whatever catches interest
+
+### What to Avoid
+
+- Generic "intro to..." posts that rewrite documentation
+- Toy calculators or demo apps with no real-world application
+- Clickbait titles or overpromising headlines
+- Perfect success stories without context of failures
+- Forced weekly content or artificial deadlines
+- Teaching tone - show and inspire, don't lecture
