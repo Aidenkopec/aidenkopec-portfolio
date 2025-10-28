@@ -148,14 +148,11 @@ const experiences: Experience[] = [
     iconBg: '#E6DEDD',
     date: 'January 2024 - Present',
     points: [
-      'Eliminated manual reporting - Built <strong>40+ custom reports and 10 live dashboards</strong>, saving <strong>thousands of hours annually</strong> and uncovering significant inventory discrepancies.',
-      'Streamlined manufacturing operations - Created platform turning complex 3D designs into clear production instructions, reducing errors and improving efficiency.',
-      'Improved financial planning - Developed <strong>real-time budget tracking</strong> and profitability analysis system for executive decision-making.',
-      'Automated business processes - Built systems handling employee syncing, project imports, and commission calculations automatically.',
-      'Created inventory visibility - Developed <strong>real-time tracking system</strong> showing exact product locations worldwide with interactive mapping.',
-      'Built accountability system - Developed issue tracking platform monitoring process compliance and maintaining operational standards.',
-      'Accelerated system performance - Optimized infrastructure achieving <strong>20x performance improvements</strong> and better reliability.',
-      'Modernized technology platform - Upgraded core applications to current frameworks for improved efficiency and scalability.',
+      'Design <strong>40+ custom reports and 10 live dashboards</strong> eliminating manual data compilation and uncovering significant inventory discrepancies.',
+      'Spearhead <strong>real-time budget tracking</strong> and profitability analysis platform for executive decision-making.',
+      'Developed <strong>real-time inventory tracking system</strong> with Apple MapKit, displaying exact product locations worldwide through interactive maps.',
+      'Engineer BullMQ-based task orchestration system automating data synchronization, system integrations, and business workflows, achieving <strong>20x</strong> performance improvement.',
+      'Built comprehensive quality tracking and process compliance system that monitors operational standards across all departments.',
     ],
   },
   {
@@ -165,8 +162,8 @@ const experiences: Experience[] = [
     iconBg: '#383E56',
     date: 'May 2023 - December 2023',
     points: [
-      'Automated IT workflows - Developed <strong>Windows and Linux shell scripts</strong> for <strong>system automation</strong>, streamlining processes and reducing manual work.',
-      'Managed infrastructure deployment - Configured network architecture and server setups, building foundational understanding of system administration.',
+      'Developed <strong>Windows and Linux shell scripts</strong> for <strong>system automation</strong>, streamlining processes and reducing manual work.',
+      'Configured network architecture and server infrastructure, building foundational expertise in system administration.',
     ],
   },
   {
@@ -176,9 +173,9 @@ const experiences: Experience[] = [
     iconBg: '#383E56',
     date: 'April 2022 - December 2022',
     points: [
-      'Led development team - <strong>Managed team of 5 developers</strong> over <strong>6-month capstone project</strong> creating quote-to-cash platform for Oil and Gas sector.',
-      'Orchestrated full-stack implementation - Built solution with <strong>React, TypeScript, Node.js, and PostgreSQL</strong>, coordinating team efforts and ensuring seamless integration.',
-      'Directed stakeholder communication - Managed requirements gathering and client meetings, translating business needs into actionable development tasks.',
+      '<strong>Managed team of 5 developers</strong> over <strong>6-month capstone project</strong> creating quote-to-cash platform for Oil and Gas sector.',
+      'Developed full-stack solution using <strong>React, TypeScript, Node.js, and PostgreSQL</strong> while coordinating cross-functional team efforts.',
+      'Facilitated requirements gathering and client communication, translating business needs into actionable development tasks.',
     ],
   },
 ];
