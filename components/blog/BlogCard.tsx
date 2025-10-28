@@ -17,7 +17,6 @@ interface BlogCardProps {
 export function BlogCard({
   post,
   className = '',
-
   index = 0,
   singleFeatured = false,
 }: BlogCardProps) {
@@ -41,11 +40,14 @@ export function BlogCard({
             {/* Thumbnail Container for Single Featured */}
             <div className='bg-black-100/20 flex items-center justify-center p-4 sm:p-6 lg:w-1/2 lg:p-8'>
               {post.coverImage ? (
-                <Image
-                  src={post.coverImage}
-                  alt={post.title}
-                  className='max-h-32 max-w-full rounded-lg object-contain sm:max-h-40 lg:max-h-48'
-                />
+                <div className='relative h-32 w-full sm:h-40 lg:h-48'>
+                  <Image
+                    fill
+                    src={post.coverImage}
+                    alt={post.title}
+                    className='rounded-lg object-contain'
+                  />
+                </div>
               ) : (
                 <div className='flex h-24 w-24 items-center justify-center rounded-xl bg-[var(--text-color-variable)]/10 sm:h-28 sm:w-28 lg:h-32 lg:w-32'>
                   <div className='text-2xl font-bold text-[var(--text-color-variable)] sm:text-3xl lg:text-4xl'>
