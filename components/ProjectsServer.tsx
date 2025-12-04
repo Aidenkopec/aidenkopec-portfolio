@@ -1,4 +1,4 @@
-import { unstable_cacheTag as cacheTag } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { Suspense } from 'react';
 
 import { projects } from '../constants';
