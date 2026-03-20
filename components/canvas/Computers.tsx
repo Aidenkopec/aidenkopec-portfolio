@@ -24,9 +24,6 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
   const computer = useGLTF('/models/desktop-pc/scene.gltf');
   const { theme } = useTheme();
 
-  // Default to obsidian theme if theme is not yet loaded
-  const currentTheme: Theme = (theme as Theme) || 'obsidian';
-
   // Define theme-specific colors matching CSS theme variables
   const themeColors: Record<
     Theme,
@@ -112,6 +109,10 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
       frameColor: '#0b1f19', // black-100
     },
   };
+
+  // Default to obsidian theme if theme is not yet loaded or not a valid custom theme
+  const currentTheme: Theme =
+    theme && theme in themeColors ? (theme as Theme) : 'obsidian';
 
   const colors = themeColors[currentTheme];
 
@@ -346,7 +347,7 @@ const ComputersCanvas: React.FC = () => {
   return (
     <Canvas
       frameloop='always' // Changed to always for consistent rendering and material processing
-      shadows={{ enabled: true, type: THREE.PCFSoftShadowMap }}
+      shadows={{ enabled: true, type: THREE.PCFShadowMap }}
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
       gl={{
