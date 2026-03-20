@@ -148,11 +148,11 @@ const experiences: Experience[] = [
     iconBg: '#E6DEDD',
     date: 'January 2024 - Present',
     points: [
-      'Design <strong>40+ custom reports and 10 live dashboards</strong> eliminating manual data compilation and uncovering significant inventory discrepancies.',
-      'Spearhead <strong>real-time budget tracking</strong> and profitability analysis platform for executive decision-making.',
-      'Developed <strong>real-time inventory tracking system</strong> with Apple MapKit, displaying exact product locations worldwide through interactive maps.',
-      'Engineer BullMQ-based task orchestration system automating data synchronization, system integrations, and business workflows, achieving <strong>20x</strong> performance improvement.',
-      'Built comprehensive quality tracking and process compliance system that monitors operational standards across all departments.',
+      'Architected a <strong>secure SSH tunneled database connection layer</strong> enabling the core API to execute real time MySQL queries against a remote workflow management system, permanently unblocking critical data silos.',
+      'Spearheaded the delivery of <strong>6 major internal business applications</strong>, engineering the complete architecture for a live project budget tracker and building the complex frontend logic for a Bill of Materials costing system.',
+      'Delivered <strong>full stack enterprise integrations</strong> to expose legacy ERP data across <strong>9 core business areas</strong>, establishing the foundational database layers and user interfaces for ongoing production visibility.',
+      'Designed and deployed <strong>15+ live dashboards and 40+ custom reports</strong>, overhauling the legacy reporting infrastructure into a highly searchable unified UI for executive decision making.',
+      'Engineered a <strong>scalable BullMQ and Redis background processing engine</strong> with isolated worker threads, executing automated enterprise workflows with sub 500ms average latency and a 99.9% operational success rate.'
     ],
   },
   {
