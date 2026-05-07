@@ -156,14 +156,13 @@ const experiences: Experience[] = [
     ],
   },
   {
-    title: 'IT Support Specialist',
+    title: 'Technology Consultant',
     company_name: 'One Piece IT',
     icon: opit,
     iconBg: '#383E56',
     date: 'May 2023 - December 2023',
     points: [
-      'Developed <strong>Windows and Linux shell scripts</strong> for <strong>system automation</strong>, streamlining processes and reducing manual work.',
-      'Configured network architecture and server infrastructure, building foundational expertise in system administration.',
+      'Developed <strong>Bash and PowerShell automation</strong> across client server and network environments, replacing repetitive system administration tasks with reusable, efficient scripts.',
     ],
   },
   {
@@ -173,9 +172,7 @@ const experiences: Experience[] = [
     iconBg: '#383E56',
     date: 'April 2022 - December 2022',
     points: [
-      '<strong>Managed team of 5 developers</strong> over <strong>6-month capstone project</strong> creating quote-to-cash platform for Oil and Gas sector.',
-      'Developed full-stack solution using <strong>React, TypeScript, Node.js, and PostgreSQL</strong> while coordinating cross-functional team efforts.',
-      'Facilitated requirements gathering and client communication, translating business needs into actionable development tasks.',
+      'Shipped user-facing flows and backend services across <strong>React, TypeScript, Node.js, and PostgreSQL</strong> for a production quote-to-cash platform, while serving as the technical liaison between a <strong>5-person development team</strong> and the engineering organization.',
     ],
   },
 ];
