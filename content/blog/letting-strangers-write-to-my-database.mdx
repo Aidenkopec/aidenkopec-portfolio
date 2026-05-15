@@ -1,0 +1,463 @@
+---
+title: 'Letting Strangers Write to My Production Database (On Purpose)'
+description: "I built iDoTogether, a real wedding-planning SaaS with live billing. This is the honest teardown of the three problems that were genuinely hard: the security model behind guests writing straight to the database, Stripe webhooks that fire twice, and the schema decision the whole product rests on."
+date: '2026-05-15'
+tags: ['SaaS', 'Architecture', 'Next.js', 'Stripe', 'PostgreSQL']
+featured: true
+published: true
+author:
+  name: 'Aiden Kopec'
+excerpt: "A real shipped SaaS, taken apart. The correctness work that never makes it into a launch screenshot: secure tokens, idempotent billing, and a schema built to hold."
+coverImage: '/blog/i-do-together.webp'
+category: 'Engineering'
+---
+
+# Letting Strangers Write to My Production Database (On Purpose)
+
+Letting unauthenticated strangers write to your production database is a terrible idea.
+
+Unless it's the core feature of your product.
+
+I built [iDoTogether](https://idotogether.com), a wedding planning platform, and that exact sentence describes its most important feature. Guests with no account, no login, and no password type their own data straight into a couple's live database. By design.
+
+Most "I built a SaaS" posts stop at the landing page. Nice hero, a pricing table, a screenshot, done. That's the easy 20%. This post is the other 80%: letting strangers write to your database without it being a disaster, surviving payment webhooks that fire twice, and the schema decision made on day three that quietly determines whether the whole product works.
+
+Three problems that actually took thought. Let's take them apart.
+
+## The Why
+
+Here's the thing nobody tells you about planning a wedding: it's a logistics project disguised as a celebration.
+
+One person, usually one half of the couple, becomes what I'd call the "human hub." They hold the master Google Sheet. They chase 80 relatives for mailing addresses over text. They reconcile the caterer's headcount against the RSVPs against the seating chart, by hand, three times, because every one of those numbers keeps changing. They are, functionally, an unpaid project manager with no tooling.
+
+The existing platforms don't fix this. The Knot and Zola look like wedding software, but if you look at the business model, they're lead-generation marketplaces. They make money selling your contact info to vendors and showing you ads. The planning tools are a thin layer of bait on top. They are not designed to manage complex, changing data, because managing your data was never the point.
+
+So the thesis behind iDoTogether is boring on purpose: **data over design**. Don't build another pretty website builder. Build the project management engine. Think Linear, but for the couple instead of the engineering team. The product's whole job is to take the spreadsheet, the text threads, and the mental load, and turn them into one system that doesn't lose anything.
+
+And this isn't a demo or a portfolio toy. iDoTogether is live, with real couples planning real weddings on it right now. That changes what "hard" means. The hard problems here aren't visual, they're correctness problems, because every decision below ships to someone whose actual wedding depends on it not breaking.
+
+## The Architecture
+
+The stack is deliberately modern and deliberately small. Fewer moving parts means fewer things to be wrong at 2am.
+
+- **Next.js 16 / React 19**, App Router. Server Actions are the entire API layer. There is no REST controller folder, no separate API service. A mutation is a typed async function with `"use server"` at the top.
+- **PostgreSQL via Drizzle ORM.** Drizzle gives me SQL-shaped, fully typed queries, and a schema that is the single source of truth for types across the whole app.
+- **Supabase** for Auth and Postgres hosting.
+- **Stripe** for billing.
+- **Tailwind 4 + shadcn/ui** for the interface, deployed on **Vercel**.
+
+The one architectural idea worth calling out is what I think of as the **two-zone design system**. The app has two completely different kinds of user, and pretending otherwise is how wedding software gets bad.
+
+There's the **Cockpit**: the couple's dashboard. Data-dense, keyboard-friendly, fast. It can look like a developer tool because the people using it want control.
+
+And there's the **Front Door**: the page a guest sees when they get their personal link. That one has to be warm, single-column, mobile-first, and so simple that a 70-year-old relative can finish it on a phone without thinking. Zero learning curve.
+
+Two kinds of user, two different doors, one shared engine underneath:
+
+```
+     Couple (logged in)              Guest (no account)
+              │                               │
+              │ JWT session cookie            │ magic-link token in the URL
+              ▼                               ▼
+  ┌───────────┬───────────┐       ┌───────────┬───────────┐
+  │      THE COCKPIT      │       │    THE FRONT DOOR     │
+  │      (dashboard)      │       │ guest/[slug]/[token]  │
+  │      dense, fast      │       │  warm, mobile-first   │
+  └───────────┬───────────┘       └───────────┬───────────┘
+              │                               │
+              └───────────────┬───────────────┘
+                              │
+                              ▼
+                Server Actions ("use server")
+            typed mutations, the entire API layer
+                              │
+                              ▼
+           Drizzle ORM  ──▶  PostgreSQL (Supabase)
+```
+
+Same codebase, two opposite UX contracts. I enforce the split structurally with App Router route groups, so the two zones can't accidentally leak styles or layout into each other:
+
+```
+app/
+  (dashboard)/        # The Cockpit. Authenticated, sidebar, dense.
+  (marketing)/        # Public landing. Forced light mode.
+  (tools)/            # Free SEO calculators.
+  guest/[slug]/[token]/   # The Front Door. Public, token-gated.
+```
+
+One deployment detail, because it bites people: on serverless, every function invocation can open its own database connection, and Postgres connection limits are not large. The Drizzle client is configured for that reality.
+
+```typescript
+const client = postgres(connectionString, {
+  max: 1,          // one connection per serverless invocation
+  prepare: false,  // pgBouncer-friendly: no prepared statements
+})
+```
+
+`max: 1` keeps a single cold function from hoarding the pool. `prepare: false` is required when you sit behind a transaction-mode pooler. Two lines, but skipping them means the app works perfectly in development and then falls over the first time real traffic hits it.
+
+Now the three hard parts.
+
+## Hard Part 1: Letting Strangers Write to Your Database
+
+The core feature of iDoTogether is the personal link. The couple sends each household a URL, the guest opens it, and the guest types their own mailing address, meal choice, dietary restrictions, and song request directly into the couple's database. No guest account. No login. No password reset email to a confused uncle.
+
+Stop and look at that sentence again. **An unauthenticated stranger performs writes against production data.** That is the feature. So the entire security model is one question: what is the credential, and how do you make it un-guessable?
+
+The credential is the URL itself. Specifically, a token embedded in it. So the token is doing the job a password would normally do, which means it has to be generated like one.
+
+### Generating the token
+
+The instinct a lot of people have here is `Math.random()`. That's a real vulnerability. `Math.random()` is not cryptographically secure. Its output is predictable enough that, given a few sample tokens, an attacker can narrow the space. When the token *is* the auth, predictable means compromised.
+
+So the generator uses Node's native `crypto` module, and one more idea on top: a human-readable alphabet.
+
+```typescript
+import { randomBytes } from "crypto"
+
+// Crockford Base32: no I, L, O, 0, 1 to avoid "is that a one or an ell"
+const ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"
+
+export function generateMagicToken(length = 12): string {
+  const chars = []
+  const bytes = randomBytes(length)
+
+  for (let i = 0; i < length; i++) {
+    const index = bytes[i] % ALPHABET.length
+    chars.push(ALPHABET[index])
+  }
+
+  const raw = chars.join("")
+  return `${raw.slice(0, 4)}-${raw.slice(4, 8)}-${raw.slice(8, 12)}`
+}
+```
+
+Two decisions in those few lines.
+
+`randomBytes` pulls from the OS cryptographic source. That's the non-negotiable part.
+
+The Crockford Base32 alphabet is the part that's easy to skip and shouldn't be. I dropped `I`, `L`, `O`, `0`, and `1`. Those are the characters humans confuse when they read a code aloud or type it off a paper invitation. A token is only useful if a person can transcribe it without a support ticket. Twelve characters from a 32-symbol alphabet is about 60 bits of entropy, formatted as `XXXX-XXXX-XXXX` so it scans like a product key instead of a wall of noise.
+
+### Two tokens collide. Now what?
+
+60 bits is enormous. A collision is astronomically unlikely. But "astronomically unlikely" is not "impossible," and if it ever happens, the failure mode is one household seeing another household's guest list. That's not a bug you discover later. So you design for it now.
+
+The defense has two layers, and the important one is the database.
+
+The `magic_token` column has a `UNIQUE` constraint. That constraint is the actual source of truth. The application code does not get to "decide" a token is unique by checking first, because between the check and the insert, someone else can take it. The database is the only thing that can make that guarantee atomically.
+
+So the application's job is just to react when the database says no:
+
+```typescript
+let attempts = 0
+
+// Retry logic for the astronomically rare case of a token collision
+while (attempts < 3) {
+  try {
+    const token = generateMagicToken()
+
+    const result = await db.transaction(async (tx) => {
+      const [newHousehold] = await tx
+        .insert(households)
+        .values({ weddingId: data.weddingId, name: data.name, magicToken: token, status: "draft" })
+        .returning({ id: households.id })
+
+      // batch-insert the household's guests in the same transaction
+      return newHousehold
+    })
+
+    return { success: true, householdId: result.id }
+  } catch (error: unknown) {
+    // Postgres 23505 = unique_violation. The token already exists.
+    if (error && typeof error === "object" && "code" in error && error.code === "23505") {
+      attempts++
+      continue
+    }
+    throw error  // anything else: don't swallow it
+  }
+}
+
+throw new Error("Failed to generate unique magic token.")
+```
+
+The detail I want to point at is the error handling. It catches Postgres error code `23505`, the `unique_violation`, *specifically*. On a collision, it generates a fresh token and retries, up to three times. Any other error rethrows immediately.
+
+That specificity is the whole point. A lazy `catch` that retries on *any* error would happily mask a dropped connection or a constraint violation on a different column as a "token collision," loop three times, and throw a misleading message. Catching exactly the one error code you know how to recover from, and refusing to guess about the rest, is the difference between resilient and just quiet.
+
+The household insert and the guest inserts also share one transaction. A household with no guests, or guests with no household, is a corrupt state. The transaction makes "all of it, or none of it" the only two outcomes.
+
+### Verifying the token on the way in
+
+Generating the token well is half the job. The other half is what happens when a guest submits the form. The submit handler can't trust anything the browser sends it. The payload arrives with a `householdId`, a `magicToken`, and an array of guest updates, and a malicious caller could put anything in any of those fields.
+
+So `submitRsvp` authorizes in two steps before it writes a single row.
+
+Step one: the token has to match its household. Not "is this token valid" but "is this token valid *for this exact household*." One query, both conditions:
+
+```typescript
+const household = await db.query.households.findFirst({
+  where: and(
+    eq(households.id, householdId),
+    eq(households.magicToken, magicToken),
+  ),
+  columns: { id: true },
+})
+
+if (!household) {
+  return { success: false as const, error: "Unauthorized: Invalid token" }
+}
+```
+
+If someone takes their own valid token and pairs it with a different household's ID, the `AND` returns nothing, and the request dies right there.
+
+Step two is the one that's easy to forget. The request contains a list of guest IDs to update. Even with a valid token for household A, a caller could slip in a guest ID that belongs to household B. So every guest ID in the payload gets checked against the household:
+
+```typescript
+const guestIds = guestUpdates.map((g) => g.guestId)
+const validGuests = await db
+  .select({ id: guests.id })
+  .from(guests)
+  .where(and(eq(guests.householdId, householdId), inArray(guests.id, guestIds)))
+
+if (validGuests.length !== guestIds.length) {
+  return { success: false as const, error: "Unauthorized: Invalid guest IDs" }
+}
+```
+
+The check is a count comparison. Ask the database how many of those guest IDs *actually* belong to this household. If the number that comes back doesn't equal the number that went in, at least one ID was foreign, and the whole submission is rejected. It's a batch authorization check, one query, no loop.
+
+Input is also run through a Zod schema first, so IDs are confirmed to be UUID-shaped and the guest array is confirmed non-empty before any of this runs. And the actual writes, every guest update plus the household's address and timestamp, all happen inside one transaction. A guest who fills out half the form and loses signal leaves no half-written state behind.
+
+That's the pattern: the token gets you in the door, but the server independently re-verifies that every single thing you're touching is yours.
+
+> **The takeaway:** when a URL is the credential, generate it like a password (real entropy, never `Math.random()`) and re-verify every write against it server-side. The link gets a guest in the door. It does not get to decide what's behind it.
+
+## Hard Part 2: Stripe, Idempotency, and Money You Have to Give Back
+
+iDoTogether runs a freemium model. Free tier caps you at 50 guests. The Unlimited tier is a one-time $99 payment for lifetime unlimited access.
+
+Billing is where "it works on my machine" stops being good enough, because the failure modes cost real money and real trust. Two of them are worth walking through.
+
+### The webhook fires twice
+
+When a Stripe payment completes, Stripe calls your webhook to tell you. The thing you have to internalize is that Stripe guarantees *at-least-once* delivery, not *exactly-once*. Network blips, timeouts, retries: the same `checkout.session.completed` event can hit your endpoint two, three times. This is normal and expected.
+
+If your handler naively inserts a payment row and grants access every time it runs, a double-delivered event means a double-charged customer, or a duplicate record that corrupts every report you build on top of it.
+
+Before any of that, though, the handler does the thing that's load-bearing for security: it verifies the event is actually from Stripe.
+
+```typescript
+const body = await req.text()  // raw body, not parsed JSON
+const signature = req.headers.get("stripe-signature")
+
+let event: Stripe.Event
+try {
+  event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+} catch (err) {
+  return NextResponse.json({ error: "Webhook Error" }, { status: 400 })
+}
+```
+
+`constructEvent` checks an HMAC signature against your webhook secret. Two non-obvious details: you must read the **raw request body**, not parsed-then-restringified JSON, because re-serializing changes the bytes and breaks the signature. And this check runs *before any database access*, so a forged request never reaches your data layer. Without this, anyone who finds your webhook URL can POST themselves a lifetime account.
+
+Then, idempotency. The fix is simple once you frame it correctly: pick a key that's stable across redeliveries, and check it before you act. Stripe's checkout session ID is exactly that, one per real purchase, identical on every redelivery of the same event.
+
+```typescript
+const existingPayment = await db
+  .select({ id: payments.id })
+  .from(payments)
+  .where(eq(payments.stripeCheckoutSessionId, session.id))
+  .limit(1)
+
+if (existingPayment.length > 0) {
+  return  // already processed this exact session; do nothing
+}
+```
+
+First delivery: no row, proceed. Second delivery: the row exists, return immediately. The grant happens exactly once no matter how many times the event arrives.
+
+And when the handler does proceed, the access grant and the payment record go into one transaction, using `onConflictDoUpdate` on the plan row so the plan is upserted rather than blindly inserted. Belt and suspenders: even if two redeliveries somehow raced past the check, the database constraints still hold the line.
+
+### The harder direction: refunds
+
+Granting access is the happy path. The path people skip is the one where money goes *back*.
+
+If someone pays $99, gets lifetime unlimited, adds 200 guests, and then requests a refund, the refund is not just a Stripe operation. If all you do is move the money, that user keeps unlimited access they no longer paid for. The entitlement and the payment have to stay in sync in *both* directions.
+
+So the webhook handles `charge.refunded`, and it's symmetric with the grant:
+
+```typescript
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  const paymentIntentId = charge.payment_intent as string
+  if (!paymentIntentId) return
+
+  const payment = await db
+    .select({ weddingId: payments.weddingId })
+    .from(payments)
+    .where(eq(payments.stripePaymentIntentId, paymentIntentId))
+    .limit(1)
+
+  if (payment.length === 0) return
+
+  const { weddingId } = payment[0]
+
+  await db.transaction(async (tx) => {
+    // Revoke the entitlement
+    await tx
+      .update(weddingPlans)
+      .set({ currentTier: "FREE", hasLifetimeAccess: false, updatedAt: new Date() })
+      .where(eq(weddingPlans.weddingId, weddingId))
+
+    // Mark the payment refunded
+    await tx
+      .update(payments)
+      .set({ status: "refunded" })
+      .where(eq(payments.stripePaymentIntentId, paymentIntentId))
+  })
+}
+```
+
+The refund event arrives, the handler traces it back to the wedding through the payment intent, and in one atomic transaction it flips the tier back to `FREE`, sets `hasLifetimeAccess` to false, and marks the payment `refunded`. Access is revoked the moment the refund settles.
+
+The other half of that revocation living somewhere else entirely: the guest limit isn't enforced by a flag the UI checks. It's a server-side preflight that runs before any household creation or CSV import:
+
+```typescript
+export async function canAddGuests(weddingId: string, guestCountToAdd: number) {
+  const [unlimited, currentCount] = await Promise.all([
+    hasUnlimitedGuests(weddingId),
+    getCurrentGuestCount(weddingId),
+  ])
+
+  const limit = unlimited ? GUEST_LIMITS.UNLIMITED : GUEST_LIMITS.FREE
+  const canAdd = currentCount + guestCountToAdd <= limit
+  return { canAdd, currentCount, limit, remaining: Math.max(0, limit - currentCount) }
+}
+```
+
+So the moment a refund flips `hasLifetimeAccess` to false, the *next* attempt to add a guest re-reads the plan, sees the FREE limit, and enforces it. The refund handler and the limit check never call each other. They just both read the same row of truth. That decoupling is deliberate: entitlement state lives in one place, and every code path that cares asks that one place.
+
+### One more: don't create duplicate customers
+
+A smaller race, same shape. When a user checks out, you need a Stripe customer ID. If two requests for the same user land at the same instant, a naive check-then-create makes *two* Stripe customers for one person.
+
+That is not a cosmetic bug. It is a business problem with a long tail. Their payment history, receipts, and refunds are now split across two records, permanently. The day that customer emails support asking where a charge went, someone has to figure out which of two Stripe customers holds which half of the truth. Duplicate customers are a support tax you pay on every future interaction with that user, forever.
+
+The fix is to let the database settle the race instead of the application:
+
+```typescript
+await db
+  .insert(stripeCustomers)
+  .values({ userId, stripeCustomerId: customer.id, email })
+  .onConflictDoNothing({ target: stripeCustomers.userId })
+
+// Re-read: a concurrent request may have won the insert
+const stored = await db
+  .select({ stripeCustomerId: stripeCustomers.stripeCustomerId })
+  .from(stripeCustomers)
+  .where(eq(stripeCustomers.userId, userId))
+  .limit(1)
+
+return stored[0].stripeCustomerId
+```
+
+`onConflictDoNothing` on the `userId` unique constraint means the loser of the race doesn't error and doesn't create a second customer. The re-read is the part people miss: whoever lost the insert still has to return the *winner's* customer ID, so you read the row back out instead of trusting the ID you just tried to write. The payoff is one user, one Stripe customer, one clean billing history, and no support ticket six months from now that takes an hour to untangle.
+
+The honest summary of this whole section: I'm not using distributed locks or a queue. I'm leaning on Stripe's delivery guarantees, database unique constraints, and transactions. For a product at this stage that's the right amount of machinery, not too little. If volume grew, the first thing I'd harden is replacing the select-then-insert idempotency check with a hard unique constraint and `onConflict` directly on the payments table. More on that below.
+
+> **The takeaway:** payment webhooks are delivered at-least-once, so every handler must be idempotent, and every grant of access needs a matching revoke. "It charged the card" is not the finish line. The money has to move correctly in both directions.
+
+## Hard Part 3: The Schema Decision That Makes the Product Work
+
+The personal-link feature from Hard Part 1 feels like a feature. It's actually a schema decision wearing a feature costume. And it's the decision I'd point a senior engineer at first.
+
+The naive model is one flat `guests` table. A guest has a name, an email, an RSVP status, an address. Simple.
+
+It also makes the core feature impossible.
+
+Think about how invitations actually work. You don't invite 120 individuals. You invite the Patel family (four people, one envelope, one mailing address). You invite Aunt Carol and her plus-one (and the plus-one has no name yet). The unit of invitation is the **household**, not the person.
+
+If guests are flat, "one personal link per family" has nowhere to live. You'd bolt the link onto every guest and then fight to keep four copies in sync, or invent a fake grouping column and reimplement joins by hand.
+
+So iDoTogether splits it. `households` and `guests` are two tables in a normalized, twelve-table schema. The magic token lives on the household. Guests hang off it by foreign key. Here's how the core tables relate:
+
+```
+                        ┌────────────┐
+                        │  weddings  │
+                        └─────┬──────┘
+        ┌──────────────┬──────┴───────┬───────────────┐
+        ▼              ▼              ▼               ▼
+┌───────────────┐ ┌──────────┐ ┌─────────────┐ ┌────────────┐
+│wedding_members│ │households│ │wedding_plans│ │  payments  │
+│ user + role   │ │ holds ONE│ │ tier +      │ │ stripe ids │
+│ OWNER/EDITOR/ │ │ magic_   │ │ access flag │ │ + status   │
+│ VENDOR        │ │ token    │ │             │ │            │
+└───────────────┘ └────┬─────┘ └─────────────┘ └────────────┘
+                       │ one-to-many
+                       ▼
+                 ┌────────────┐
+                 │   guests   │
+                 │ name, RSVP,│
+                 │ meal choice│
+                 └────────────┘
+```
+
+The token sits on `households`. Guests hang underneath it. That one line on the diagram is the whole product.
+
+```typescript
+export const households = pgTable("households", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  weddingId: uuid("wedding_id").references(() => weddings.id).notNull(),
+  name: text("name").notNull(),          // "The Patel Family"
+  magicToken: text("magic_token").unique(),  // ONE token, here
+  // shared mailing address lives on the household, not the person
+  addressLine1: text("address_line_1"),
+  city: text("city"),
+  respondedAt: timestamp("responded_at"),
+})
+
+export const guests = pgTable("guests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  householdId: uuid("household_id").references(() => households.id).notNull(),
+  weddingId: uuid("wedding_id").references(() => weddings.id).notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  isAnonymous: boolean("is_anonymous").default(false),  // unnamed plus-one
+  rsvpStatus: rsvpStatusEnum("rsvp_status").default("pending"),
+  mealChoice: text("meal_choice"),
+})
+
+```
+
+Everything good about the product falls out of this split for free.
+
+One link per family, because the token is on the household. A shared mailing address, because the address is on the household, so a guest enters it once for everyone. Per-person meal and RSVP, because those are on the guest. Unnamed plus-ones, because a guest can exist as `isAnonymous: true` with no name, and the RSVP form lets the household name them later (look back at Hard Part 1: the submit handler flips `isAnonymous` to false the moment a real name comes in). None of that needs special-case code. It's just the shape of the data.
+
+A few other schema notes worth a line each:
+
+**Role-based access** lives in a `wedding_members` join table: a user, a wedding, and a role enum (`OWNER`, `EDITOR`, `VENDOR`). It carries a composite index on `(userId, weddingId)` because "what is this user allowed to do on this wedding" is the single most frequent authorization question in the app, and it should never table-scan.
+
+**The RSVP form config is one JSONB column.** Every couple customizes their RSVP form: which questions to ask, meal options with allergen flags, whether to collect addresses. That config is stored as a typed JSONB blob on the wedding, using Drizzle's `.$type<>()` so it's still fully type-checked in the app. The tradeoff is real and I made it on purpose: I trade SQL-queryability of those fields for the ability to evolve the form's shape without a migration every time. For config that's read as a whole and never queried field-by-field, that's the right trade. If I needed analytics across form configs, it would be the wrong one.
+
+**Some tables are shipped ahead of their UI.** `vendors`, `budget_items`, `timeline_events`, and `tasks` exist in the schema with full relations, before the screens that use them. Schema changes are the expensive, migration-shaped changes. Designing the data model for where the product is going, while only building UI for where it is now, keeps the costly part of the change off the critical path later.
+
+> **The takeaway:** model the real-world unit, not the obvious one. The unit of a wedding invitation is the household, not the person. Get that one decision right and the hard features (one link per family, shared address, unnamed plus-ones) fall out of the schema for free.
+
+## What I'd Do Differently
+
+Self-awareness is part of the work, so here's the honest list.
+
+**The webhook idempotency check is a select-then-insert.** It reads fine and it works at current volume, but there's a theoretical window between the "have I seen this session" select and the insert. The stricter version is a hard unique constraint on `stripeCheckoutSessionId` plus `onConflictDoNothing`, letting the database be the arbiter the same way the magic-token path already does. The pattern is right there in my own codebase. I'd make the billing path match it.
+
+**The JSONB RSVP config will eventually want to be queryable.** The day I want to answer "how many couples enable meal selection," I'll be writing JSON operators instead of a clean `GROUP BY`. That's a predictable future migration, and I knew it when I chose JSONB.
+
+Neither of these is on fire. But knowing exactly where the bodies are buried, and why you chose to bury them there, is most of what "production-ready" actually means.
+
+## Closing
+
+This is the kind of problem I like. Real users, real money, real correctness stakes, and full ownership of the thing from the schema up to the button. The interesting work was never the landing page. It was the boring, invisible 80%: the retry loop, the idempotency check, the symmetric refund handler, the two-table split that quietly makes the whole product possible.
+
+If you're planning a wedding, [iDoTogether](https://idotogether.com) is live and it will save the person holding the spreadsheet a great deal of sanity.
+
+And if you got this far: this is how I think about building things. I'd genuinely love to hear from you, whether you want to talk shop, tell me how you'd have solved any of this differently, or just say hi. You can reach me through the [contact section](/#contact).
+
+— Aiden
