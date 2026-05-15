@@ -72,7 +72,7 @@ const Navbar: React.FC = () => {
               Aiden Kopec &nbsp;
               <span className='hidden opacity-80 transition-opacity duration-300 group-hover:opacity-100 sm:block'>
                 {' '}
-                | Full Stack Developer
+                | Full-Stack Developer
               </span>
             </p>
           </div>

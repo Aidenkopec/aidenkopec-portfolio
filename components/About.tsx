@@ -70,7 +70,7 @@ const About: React.FC = () => {
         variants={fadeIn('up', 'spring', 0.1, 1) as any}
         className='text-secondary mt-4 max-w-3xl text-[17px] leading-[30px]'
       >
-        I&apos;m a Full Stack Developer who transforms complex business
+        I&apos;m a Full-Stack Developer who transforms complex business
         challenges into powerful software solutions. Whether eliminating weeks
         of manual reporting or building platforms that streamline operations, I
         create systems that genuinely improve how people work.
@@ -79,8 +79,8 @@ const About: React.FC = () => {
         At Evans Consoles, I&apos;ve built live dashboards tracking critical
         business metrics and developed a dynamic budgeting system providing
         real-time profitability analysis for decision-making. My toolkit centers
-        around Next.js, Vue, Node.js, TypeScript, and EdgeDB - technologies I use
-        daily to build solutions that scale.
+        around Next.js, Vue, Node.js, TypeScript, and PostgreSQL - technologies I
+        use daily to build solutions that scale.
         <br />
         <br />
         Beyond work, I&apos;m driven by curiosity to explore emerging
