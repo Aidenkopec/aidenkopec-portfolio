@@ -1,9 +1,9 @@
 // Technology icons - Static imports for Next.js optimization
 import aws from '../public/technologies/aws.png';
 import docker from '../public/technologies/docker.png';
-import edgedb from '../public/technologies/edgedb.jpg';
 import nodejs from '../public/technologies/nodejs.png';
 import postgres from '../public/technologies/postgresql.png';
+import python from '../public/technologies/python.png';
 import react from '../public/technologies/reactjs.png';
 import tailwind from '../public/technologies/tailwind.png';
 import typescript from '../public/technologies/typescript.png';
@@ -21,11 +21,9 @@ import opit from '../public/companies/opit.png';
 // Project images - Static imports
 import digitaldreamscapes from '../public/projects/digital-dreamscapes.png';
 import freqtrade from '../public/projects/freqtrade-logo.png';
-import iwinparlays from '../public/projects/i-win-parlays.png';
-import idotogether from '../public/projects/idotogether.png';
+import idotogether from '../public/projects/idotogether.webp';
 import n8n from '../public/projects/n8n.png';
 import pdconstruction from '../public/projects/pd-construction.png';
-import relfeild from '../public/projects/relfeild.png';
 import solvexdigital from '../public/projects/solvex-digital.svg';
 import summalink from '../public/projects/summalink.png';
 import teevision from '../public/projects/tee-vision.png';
@@ -101,16 +99,16 @@ export const navLinks: NavLink[] = [
 
 const services: Service[] = [
   {
-    title: 'Full Stack Developer',
+    title: 'Full-Stack Engineer',
     icon: fullStackDeveloper,
   },
   {
-    title: 'Frontend Developer',
-    icon: frontendDeveloper,
+    title: 'Backend Engineer',
+    icon: backendAutomationErp,
   },
   {
-    title: 'Backend Automation & ERP',
-    icon: backendAutomationErp,
+    title: 'Systems & API Design',
+    icon: frontendDeveloper,
   },
   {
     title: 'DevOps & Infrastructure',
@@ -133,7 +131,7 @@ const technologies: Technology[] = [
 
   // Databases
   { name: 'PostgreSQL', icon: postgres },
-  { name: 'EdgeDB', icon: edgedb },
+  { name: 'Python', icon: python },
 
   // DevOps
   { name: 'AWS', icon: aws },
@@ -142,17 +140,17 @@ const technologies: Technology[] = [
 
 const experiences: Experience[] = [
   {
-    title: 'Full Stack Developer',
+    title: 'Full-Stack Developer',
     company_name: 'Evans Consoles',
     icon: evans,
     iconBg: '#E6DEDD',
     date: 'January 2024 - Present',
     points: [
-      'Architected a <strong>secure SSH tunneled database connection layer</strong> enabling the core API to execute real time MySQL queries against a remote workflow management system, permanently unblocking critical data silos.',
-      'Spearheaded the delivery of <strong>6 major internal business applications</strong>, engineering the complete architecture for a live project budget tracker and delivering the full stack implementation of a Bill of Materials costing system.',
-      'Delivered <strong>full stack enterprise integrations</strong> to expose legacy ERP data across <strong>9 core business areas</strong>, establishing the foundational database layers and user interfaces for ongoing production visibility.',
-      'Designed and deployed <strong>15+ live dashboards and 40+ custom reports</strong>, overhauling the legacy reporting infrastructure into a highly searchable unified UI for executive decision making.',
-      'Engineered a <strong>scalable BullMQ and Redis background processing engine</strong> with isolated worker threads, executing automated enterprise workflows with sub 500ms average latency and a 99.9% operational success rate.'
+      'Engineered an <strong>SSH-tunneled, pooled Sequelize client</strong> giving the core Node API live access to a remote ProcessMaker MySQL workflow database, hardened with TCP keepalives, automatic reconnection, and exponential backoff with jitter.',
+      'Designed and shipped a <strong>Project Budget Tracker</strong> replacing a shared Excel workbook with a live multi-user tracker featuring shared editing, full audit history, and direct ERP integration.',
+      'Delivered <strong>ERP integrations across 9 business domains</strong>, including a <strong>Bill of Materials costing system</strong>, establishing database layers and UIs exposing legacy data for production visibility.',
+      'Consolidated a standalone reporting application into the core platform, retiring a parallel codebase while modernizing <strong>40+ reports</strong> and <strong>15+ live dashboards</strong> into a fast, searchable UI used by <strong>300+ staff</strong>.',
+      'Replaced manual identity and ERP data sync for <strong>400 staff</strong> with a <strong>BullMQ and Redis worker engine</strong> running 10 sandboxed processors for LDAP joiner/leaver provisioning, ERP project ingestion, MySQL-to-PostgreSQL replication, and scheduled PDF reporting with graceful SIGTERM/SIGINT shutdown and 7-day job retention.',
     ],
   },
   {
@@ -194,10 +192,10 @@ const testimonials: Testimonial[] = [
   },
   {
     testimonial:
-      'Aiden is a hardworking and detail-oriented software developer who consistently delivers high-quality work. His ability to collaborate effectively with team members and communicate technical concepts clearly is a valuable asset.',
-    name: 'Adrian Rhodes',
-    designation: 'Software Developer',
-    company: 'SAIT',
+      'Aiden built our website from scratch and nailed exactly what we were looking for. Professional, fast, and easy to work with. Would recommend him without hesitation.',
+    name: 'Paxton Cote',
+    designation: 'CEO',
+    company: 'PD Construction',
   },
 ];
 
@@ -205,7 +203,7 @@ const projects: Project[] = [
   {
     name: 'Solvex Digital',
     description:
-      'Custom software agency I founded, building AI-powered web applications and automation solutions for business clients. Specializes in full-stack development with React, Next.js, and EdgeDB, creating systems that automate workflows and solve operational challenges.',
+      'Custom software agency I founded, building AI-powered web applications and automation solutions for business clients. Specializes in full-stack development with React, Next.js, and PostgreSQL, creating systems that automate workflows and solve operational challenges.',
     image: solvexdigital,
     link: 'https://solvexdigital.com',
     isGitHub: false,
@@ -229,27 +227,27 @@ const projects: Project[] = [
   {
     name: 'I Do Together',
     description:
-      'Wedding planning platform that centralizes guest management, RSVP tracking, and event coordination. Built with real-time updates allowing couples to manage invitations, track attendance, and communicate with guests from a single dashboard.',
+      'Full-stack wedding planning SaaS spanning 5+ planning modules (guests & RSVP, vendors, budgets, event timelines, tasks) with role-based collaboration. Features a Stripe-integrated billing system across 9 webhook types with idempotent writes and refund-triggered access revocation, a passwordless magic-link RSVP system, and a normalized PostgreSQL schema in Drizzle ORM backed by Supabase Auth.',
     link: 'https://www.idotogether.com',
     image: idotogether,
     isGitHub: false,
   },
-  {
-    name: 'I Win Parlays',
-    description:
-      'Sports betting analytics platform using AI to analyze odds and calculate probabilities. Generates parlay recommendations with transparent win/loss reasoning and statistical analysis to help users make informed betting decisions.',
-    link: 'https://www.iwinparlays.com',
-    image: iwinparlays,
-    isGitHub: false,
-  },
-  {
-    name: 'Relfeild',
-    description:
-      'Oilfield contractor directory platform connecting companies with service providers. Features verified reviews, service hour tracking, and contact management to help companies find and vet contractors for projects.',
-    link: 'https://oil-gas-ochre.vercel.app',
-    image: relfeild,
-    isGitHub: false,
-  },
+  // {
+  //   name: 'I Win Parlays',
+  //   description:
+  //     'Sports betting analytics platform using AI to analyze odds and calculate probabilities. Generates parlay recommendations with transparent win/loss reasoning and statistical analysis to help users make informed betting decisions.',
+  //   link: 'https://www.iwinparlays.com',
+  //   image: iwinparlays,
+  //   isGitHub: false,
+  // },
+  // {
+  //   name: 'Relfeild',
+  //   description:
+  //     'Oilfield contractor directory platform connecting companies with service providers. Features verified reviews, service hour tracking, and contact management to help companies find and vet contractors for projects.',
+  //   link: 'https://oil-gas-ochre.vercel.app',
+  //   image: relfeild,
+  //   isGitHub: false,
+  // },
   {
     name: 'Digital Dream Scapes',
     description:
@@ -258,13 +256,13 @@ const projects: Project[] = [
     isGitHub: false,
     image: digitaldreamscapes,
   },
-  {
-    name: 'Pivot Tools',
-    description:
-      'Corporate website built for Pivot Tools, an oilfield equipment rental company. Showcases available equipment, services, and contact information to generate leads and streamline the rental inquiry process.',
-    link: null,
-    isGitHub: false,
-  },
+  // {
+  //   name: 'Pivot Tools',
+  //   description:
+  //     'Corporate website built for Pivot Tools, an oilfield equipment rental company. Showcases available equipment, services, and contact information to generate leads and streamline the rental inquiry process.',
+  //   link: null,
+  //   isGitHub: false,
+  // },
   {
     name: 'Sparta Tech Coatings',
     description:

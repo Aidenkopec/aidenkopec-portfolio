@@ -22,12 +22,12 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://aidenkopec.com'),
-  title: 'Aiden Kopec - Full Stack Software Developer Portfolio',
+  title: 'Aiden Kopec - Full-Stack Software Developer Portfolio',
   description:
-    'Aiden Kopec is a Full Stack Software Developer specializing in scalable web apps, AI tools, and backend automations. Delivering $2M+ in business impact with expertise in Next.js, Vue.js, TypeScript, Node.js, EdgeDB, and modern technologies for efficiency and growth.',
+    'Aiden Kopec is a Full-Stack Software Developer specializing in scalable web apps, AI tools, and backend automations. Delivering $2M+ in business impact with expertise in Next.js, Vue.js, TypeScript, Node.js, EdgeDB, and modern technologies for efficiency and growth.',
   keywords: [
     'Aiden Kopec',
-    'full stack developer',
+    'full-stack developer',
     'software engineer',
     'web development',
     'AI tools',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Aiden Kopec' }],
   robots: 'index, follow',
   openGraph: {
-    title: 'Aiden Kopec - Full Stack Software Developer Portfolio',
+    title: 'Aiden Kopec - Full-Stack Software Developer Portfolio',
     description:
       "Discover Aiden Kopec's portfolio: Building scalable web apps, AI tools, and backend automations with Next.js, Vue.js, TypeScript, Node.js, and EdgeDB. $2M+ in business impact.",
     url: 'https://aidenkopec.com',
@@ -61,9 +61,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Aiden Kopec - Full Stack Software Developer Portfolio',
+    title: 'Aiden Kopec - Full-Stack Software Developer Portfolio',
     description:
-      'Aiden Kopec: Full Stack Developer creating scalable web apps, AI tools, and automations. Expertise in Next.js, Vue.js, TypeScript, Node.js, EdgeDB.',
+      'Aiden Kopec: Full-Stack Developer creating scalable web apps, AI tools, and automations. Expertise in Next.js, Vue.js, TypeScript, Node.js, EdgeDB.',
     images: ['/assets/logo.png'],
   },
   icons: {
