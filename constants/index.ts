@@ -21,11 +21,9 @@ import opit from '../public/companies/opit.png';
 // Project images - Static imports
 import digitaldreamscapes from '../public/projects/digital-dreamscapes.png';
 import freqtrade from '../public/projects/freqtrade-logo.png';
-import iwinparlays from '../public/projects/i-win-parlays.png';
-import idotogether from '../public/projects/idotogether.png';
+import idotogether from '../public/projects/idotogether.webp';
 import n8n from '../public/projects/n8n.png';
 import pdconstruction from '../public/projects/pd-construction.png';
-import relfeild from '../public/projects/relfeild.png';
 import solvexdigital from '../public/projects/solvex-digital.svg';
 import summalink from '../public/projects/summalink.png';
 import teevision from '../public/projects/tee-vision.png';
@@ -194,10 +192,10 @@ const testimonials: Testimonial[] = [
   },
   {
     testimonial:
-      'Aiden is a hardworking and detail-oriented software developer who consistently delivers high-quality work. His ability to collaborate effectively with team members and communicate technical concepts clearly is a valuable asset.',
-    name: 'Adrian Rhodes',
-    designation: 'Software Developer',
-    company: 'SAIT',
+      'Aiden built our website from scratch and nailed exactly what we were looking for. Professional, fast, and easy to work with. Would recommend him without hesitation.',
+    name: 'Paxton Cote',
+    designation: 'CEO',
+    company: 'PD Construction',
   },
 ];
 
@@ -234,22 +232,22 @@ const projects: Project[] = [
     image: idotogether,
     isGitHub: false,
   },
-  {
-    name: 'I Win Parlays',
-    description:
-      'Sports betting analytics platform using AI to analyze odds and calculate probabilities. Generates parlay recommendations with transparent win/loss reasoning and statistical analysis to help users make informed betting decisions.',
-    link: 'https://www.iwinparlays.com',
-    image: iwinparlays,
-    isGitHub: false,
-  },
-  {
-    name: 'Relfeild',
-    description:
-      'Oilfield contractor directory platform connecting companies with service providers. Features verified reviews, service hour tracking, and contact management to help companies find and vet contractors for projects.',
-    link: 'https://oil-gas-ochre.vercel.app',
-    image: relfeild,
-    isGitHub: false,
-  },
+  // {
+  //   name: 'I Win Parlays',
+  //   description:
+  //     'Sports betting analytics platform using AI to analyze odds and calculate probabilities. Generates parlay recommendations with transparent win/loss reasoning and statistical analysis to help users make informed betting decisions.',
+  //   link: 'https://www.iwinparlays.com',
+  //   image: iwinparlays,
+  //   isGitHub: false,
+  // },
+  // {
+  //   name: 'Relfeild',
+  //   description:
+  //     'Oilfield contractor directory platform connecting companies with service providers. Features verified reviews, service hour tracking, and contact management to help companies find and vet contractors for projects.',
+  //   link: 'https://oil-gas-ochre.vercel.app',
+  //   image: relfeild,
+  //   isGitHub: false,
+  // },
   {
     name: 'Digital Dream Scapes',
     description:
@@ -258,13 +256,13 @@ const projects: Project[] = [
     isGitHub: false,
     image: digitaldreamscapes,
   },
-  {
-    name: 'Pivot Tools',
-    description:
-      'Corporate website built for Pivot Tools, an oilfield equipment rental company. Showcases available equipment, services, and contact information to generate leads and streamline the rental inquiry process.',
-    link: null,
-    isGitHub: false,
-  },
+  // {
+  //   name: 'Pivot Tools',
+  //   description:
+  //     'Corporate website built for Pivot Tools, an oilfield equipment rental company. Showcases available equipment, services, and contact information to generate leads and streamline the rental inquiry process.',
+  //   link: null,
+  //   isGitHub: false,
+  // },
   {
     name: 'Sparta Tech Coatings',
     description:
