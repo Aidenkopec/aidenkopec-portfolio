@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { cacheLife, cacheTag } from 'next/cache';
+import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 
 import 'server-only';
@@ -322,57 +322,62 @@ function getContributionLevel(count: number): number {
 // One cached fan out for the whole section, so both halves of the dashboard
 // share a single snapshot instead of each doing its own four request fan out.
 //
-// Returns null rather than throwing: an exception escaping a 'use cache' scope
-// during prerender fails the build outright, which would mean a GitHub outage
-// at build time takes the whole site down. The short revalidate is what keeps a
-// failed snapshot from sticking around, since the cache stores null too.
-async function fetchGitHubSnapshot(year: string): Promise<GitHubData | null> {
-  'use cache';
-  cacheLife({ stale: 300, revalidate: 900, expire: 3600 });
-  cacheTag('github-data');
+// Deliberately unstable_cache rather than the newer 'use cache' directive.
+// 'use cache' requires the cacheComponents flag, which also removes support for
+// dynamicParams and would turn every nonexistent blog URL into a soft 200 (see
+// app/blog/[slug]/page.tsx). unstable_cache also persists across deployments and
+// serverless instances, which 'use cache' does not: its key includes the build
+// id and it falls back to per instance memory.
+//
+// Returns null rather than throwing so a GitHub outage degrades the section
+// instead of failing the render. The revalidate window is what keeps a failed
+// snapshot from sticking around, since null is cached too.
+const fetchGitHubSnapshot = unstable_cache(
+  async (year: string): Promise<GitHubData | null> => {
+    try {
+      const [userData, repositories, commits, commitCalendar] =
+        await Promise.all([
+          fetchUserData(),
+          fetchRepositories(),
+          fetchRecentCommits(),
+          fetchContributionCalendar(year),
+        ]);
 
-  try {
-    const [userData, repositories, commits, commitCalendar] = await Promise.all(
-      [
-        fetchUserData(),
-        fetchRepositories(),
-        fetchRecentCommits(),
-        fetchContributionCalendar(year),
-      ],
-    );
+      if (!userData || repositories.length === 0) {
+        console.error('GitHub snapshot missing essential data (user or repos)');
+        return null;
+      }
 
-    if (!userData || repositories.length === 0) {
-      console.error('GitHub snapshot missing essential data (user or repos)');
+      const totalStars = repositories.reduce(
+        (sum, repo) => sum + repo.stargazers_count,
+        0,
+      );
+      const totalForks = repositories.reduce(
+        (sum, repo) => sum + repo.forks_count,
+        0,
+      );
+      const createdAt = new Date(userData.created_at || '2022-01-10');
+      const contributionYears =
+        new Date().getFullYear() - createdAt.getFullYear();
+
+      return {
+        user: userData,
+        commits: commits.slice(0, 5),
+        commitCalendar,
+        stats: {
+          totalStars,
+          totalForks,
+          contributionYears,
+        },
+      };
+    } catch (error) {
+      console.error('GitHub snapshot failed:', error);
       return null;
     }
-
-    const totalStars = repositories.reduce(
-      (sum, repo) => sum + repo.stargazers_count,
-      0,
-    );
-    const totalForks = repositories.reduce(
-      (sum, repo) => sum + repo.forks_count,
-      0,
-    );
-    const createdAt = new Date(userData.created_at || '2022-01-10');
-    const contributionYears =
-      new Date().getFullYear() - createdAt.getFullYear();
-
-    return {
-      user: userData,
-      commits: commits.slice(0, 5),
-      commitCalendar,
-      stats: {
-        totalStars,
-        totalForks,
-        contributionYears,
-      },
-    };
-  } catch (error) {
-    console.error('GitHub snapshot failed:', error);
-    return null;
-  }
-}
+  },
+  ['github-snapshot'],
+  { tags: ['github-data'], revalidate: 900 },
+);
 
 // Main entry point, callable from Server Components. React.cache deduplicates
 // the two dashboard sections within a single render.

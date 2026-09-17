@@ -12,6 +12,11 @@ interface TagPageProps {
   params: Promise<{ tag: string }>;
 }
 
+// 404s unknown tags at routing. Without it they answer 200 with not-found
+// content, because notFound() runs inside the Suspense boundary below and lands
+// after the response has already started. Same fix as app/blog/[slug]/page.tsx.
+export const dynamicParams = false;
+
 // Generate static params for all tags
 export async function generateStaticParams() {
   const tags = await getAllBlogTags();

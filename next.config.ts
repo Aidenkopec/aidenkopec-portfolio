@@ -37,9 +37,6 @@ const csp = [
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-  experimental: {
-    useCache: true,
-  },
   images: {
     minimumCacheTTL: 86400, // 24 hours
 
