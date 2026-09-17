@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# aidenkopec.com
 
-## Getting Started
+My portfolio and blog. Full-stack work: scalable web apps, AI tools, and backend
+automations.
 
-First, run the development server:
+**Live:** [aidenkopec.com](https://aidenkopec.com)
+
+<!-- Screenshot: add docs/screenshot.png and uncomment.
+![The aidenkopec.com hero section](docs/screenshot.png)
+-->
+
+## Architecture
+
+Next.js 16 on the App Router, server components by default. The blog reads MDX files
+straight off disk from `content/blog/`, parsing YAML frontmatter and generating a table of
+contents and reading time per post (`lib/blog.ts`). The GitHub section pulls profile,
+repositories and the contribution calendar through a mix of REST and GraphQL, cached with
+`React.cache` and ISR (`lib/github-service.ts`). The contact form posts to `/api/contact`,
+which renders React Email templates from `components/emails/` and sends them via Resend.
+The 3D scenes — stars, globe, the workstation on the hero — are React Three Fiber and live
+in `components/canvas/`, lazy loaded so they stay out of the critical path. Styling is
+Tailwind CSS v4 driven by CSS custom properties, which is what makes the four colour themes
+swap at runtime.
+
+## Local setup
 
 ```bash
+git clone https://github.com/Aidenkopec/aidenkopec-portfolio.git
+cd aidenkopec-portfolio
+npm install
+cp .env.example .env.local   # then fill in the keys
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The site runs without any environment variables set — the contact form and the GitHub
+section just degrade rather than fail. See `.env.example` for what each key unlocks.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script                 | Does                       |
+| ---------------------- | -------------------------- |
+| `npm run dev`          | Dev server with Turbopack  |
+| `npm run build`        | Production build           |
+| `npm start`            | Serve the production build |
+| `npm run lint`         | ESLint                     |
+| `npm run lint:fix`     | ESLint with autofix        |
+| `npm run format`       | Prettier, writes           |
+| `npm run format:check` | Prettier, checks only      |
 
-## Learn More
+## Writing a post
 
-To learn more about Next.js, take a look at the following resources:
+Drop an `.mdx` file in `content/blog/`. The filename is the slug. Frontmatter takes
+`title`, `description`, `date`, `tags`, `category`, `excerpt`, `coverImage`, `author`,
+`featured` and `published`. Posts are published unless you set `published: false`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Licence
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT, see [LICENSE](LICENSE). The audio under `public/music/` is third-party and carries its
+own terms — see [CREDITS.md](CREDITS.md).

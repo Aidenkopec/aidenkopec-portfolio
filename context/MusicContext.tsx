@@ -15,6 +15,25 @@ interface Track {
   src: string;
 }
 
+// Artists are pending: see CREDITS.md. Do not invent names here.
+const playlist: Track[] = [
+  {
+    title: 'Deep Space',
+    artist: 'Unknown artist',
+    src: '/music/deep-space.mp3',
+  },
+  {
+    title: 'Synthwave Nights',
+    artist: 'Unknown artist',
+    src: '/music/synthwave-nights.mp3',
+  },
+  {
+    title: 'Digital Dreams',
+    artist: 'Unknown artist',
+    src: '/music/digital-dreams.mp3',
+  },
+];
+
 interface MusicContextType {
   // State
   isPlaying: boolean;
@@ -104,24 +123,6 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const playlist: Track[] = [
-    {
-      title: 'Deep Space',
-      artist: 'Ambient Artist',
-      src: '/music/deep-space.mp3',
-    },
-    {
-      title: 'Synthwave Nights',
-      artist: 'Synth Artist',
-      src: '/music/synthwave-nights.mp3',
-    },
-    {
-      title: 'Digital Dreams',
-      artist: 'Electronic Artist',
-      src: '/music/digital-dreams.mp3',
-    },
-  ];
-
   // Persist volume changes (only after hydration)
   useEffect(() => {
     if (isHydrated) {
@@ -182,7 +183,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         });
       }, 100);
     }
-  }, [currentTrack, isPlaying, playlist.length]);
+  }, [currentTrack, isPlaying]);
 
   const previousTrack = useCallback((): void => {
     const prevIndex =
@@ -197,7 +198,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         });
       }, 100);
     }
-  }, [currentTrack, isPlaying, playlist.length]);
+  }, [currentTrack, isPlaying]);
 
   const selectTrack = (index: number): void => {
     setCurrentTrack(index);

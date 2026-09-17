@@ -85,7 +85,7 @@ export default function NotFound() {
         >
           Need help? Feel free to{' '}
           <Link
-            href='/contact'
+            href='/#contact'
             className='underline transition-colors duration-200 hover:text-white'
           >
             contact me

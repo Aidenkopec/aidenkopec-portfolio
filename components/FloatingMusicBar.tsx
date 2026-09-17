@@ -100,7 +100,7 @@ const FloatingMusicBar: React.FC = () => {
   // Get track info, but use defaults if not hydrated yet
   const trackInfo: TrackInfo = isHydrated
     ? getTrackInfo()
-    : { title: 'Deep Space', artist: 'Ambient Artist' };
+    : { title: 'Deep Space', artist: 'Unknown artist' };
 
   // Check if text overflows and needs scrolling
   useEffect(() => {

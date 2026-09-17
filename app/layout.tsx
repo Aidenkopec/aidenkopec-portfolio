@@ -49,14 +49,6 @@ export const metadata: Metadata = {
       "Discover Aiden Kopec's portfolio: Building scalable web apps, AI tools, and backend automations with Next.js, Vue.js, TypeScript, Node.js, and EdgeDB. $2M+ in business impact.",
     url: 'https://aidenkopec.com',
     siteName: 'Aiden Kopec Portfolio',
-    images: [
-      {
-        url: '/logo.png',
-        width: 1200,
-        height: 630,
-        alt: 'Aiden Kopec Portfolio Preview',
-      },
-    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -65,7 +57,6 @@ export const metadata: Metadata = {
     title: 'Aiden Kopec - Full-Stack Software Developer Portfolio',
     description:
       'Aiden Kopec: Full-Stack Developer creating scalable web apps, AI tools, and automations. Expertise in Next.js, Vue.js, TypeScript, Node.js, EdgeDB.',
-    images: ['/assets/logo.png'],
   },
   icons: {
     icon: '/favicon.ico',

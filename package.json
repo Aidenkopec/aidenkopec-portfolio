@@ -1,7 +1,15 @@
 {
-  "name": "nextjs",
+  "name": "aidenkopec-portfolio",
   "version": "0.1.0",
   "private": true,
+  "description": "Portfolio site for Aiden Kopec: scalable web apps, AI tools, and backend automations.",
+  "author": "Aiden Kopec",
+  "license": "MIT",
+  "homepage": "https://aidenkopec.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aidenkopec/aidenkopec-portfolio.git"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
