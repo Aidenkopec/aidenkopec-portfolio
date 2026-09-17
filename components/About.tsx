@@ -25,9 +25,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
   >
     <motion.div
       variants={fadeIn('right', 'spring', index * 0.5, 0.75) as any}
-      className='green-pink-gradient shadow-card w-full rounded-[20px] p-[1px]'
+      className='green-pink-gradient w-full rounded-[20px] p-[1px] shadow-card'
     >
-      <div className='bg-tertiary flex min-h-[280px] flex-col items-center justify-evenly rounded-[20px] px-6 py-5 sm:px-12'>
+      <div className='flex min-h-[280px] flex-col items-center justify-evenly rounded-[20px] bg-tertiary px-6 py-5 sm:px-12'>
         <Image
           src={icon}
           alt={`${title} service icon`}
@@ -36,7 +36,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
           className='object-contain'
         />
 
-        <h3 className='text-secondary text-center text-[18px] leading-tight font-bold sm:text-[20px]'>
+        <h3 className='text-center text-[18px] leading-tight font-bold text-secondary sm:text-[20px]'>
           {title.split(' ').length > 3 ? (
             <>
               {title
@@ -68,7 +68,7 @@ const About: React.FC = () => {
 
       <motion.p
         variants={fadeIn('up', 'spring', 0.1, 1) as any}
-        className='text-secondary mt-4 max-w-3xl text-[17px] leading-[30px]'
+        className='mt-4 max-w-3xl text-[17px] leading-[30px] text-secondary'
       >
         I&apos;m a Full-Stack Developer who transforms complex business
         challenges into powerful software solutions. Whether eliminating weeks
@@ -79,8 +79,8 @@ const About: React.FC = () => {
         At Evans Consoles, I&apos;ve built live dashboards tracking critical
         business metrics and developed a dynamic budgeting system providing
         real-time profitability analysis for decision-making. My toolkit centers
-        around Next.js, Vue, Node.js, TypeScript, and PostgreSQL - technologies I
-        use daily to build solutions that scale.
+        around Next.js, Vue, Node.js, TypeScript, and PostgreSQL - technologies
+        I use daily to build solutions that scale.
         <br />
         <br />
         Beyond work, I&apos;m driven by curiosity to explore emerging

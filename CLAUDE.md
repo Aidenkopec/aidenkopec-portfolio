@@ -9,6 +9,7 @@ Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-s
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
 Before implementing:
+
 - State your assumptions explicitly. If uncertain, ask.
 - If multiple interpretations exist, present them - don't pick silently.
 - If a simpler approach exists, say so. Push back when warranted.
@@ -31,12 +32,14 @@ Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, sim
 **Touch only what you must. Clean up only your own mess.**
 
 When editing existing code:
+
 - Don't "improve" adjacent code, comments, or formatting.
 - Don't refactor things that aren't broken.
 - Match existing style, even if you'd do it differently.
 - If you notice unrelated dead code, mention it - don't delete it.
 
 When your changes create orphans:
+
 - Remove imports/variables/functions that YOUR changes made unused.
 - Don't remove pre-existing dead code unless asked.
 
@@ -47,11 +50,13 @@ The test: Every changed line should trace directly to the user's request.
 **Define success criteria. Loop until verified.**
 
 Transform tasks into verifiable goals:
+
 - "Add validation" → "Write tests for invalid inputs, then make them pass"
 - "Fix the bug" → "Write a test that reproduces it, then make it pass"
 - "Refactor X" → "Ensure tests pass before and after"
 
 For multi-step tasks, state a brief plan:
+
 ```
 1. [Step] → verify: [check]
 2. [Step] → verify: [check]
@@ -114,6 +119,7 @@ npm run format:check
 ### Key Features
 
 #### Blog System
+
 - Blog posts stored as MDX files in `content/blog/` directory
 - Frontmatter format includes: title, description, date, tags, featured, published, author, excerpt, coverImage, category
 - Automatic table of contents generation from markdown headings
@@ -122,12 +128,14 @@ npm run format:check
 - Featured post highlighting
 
 #### APIs
+
 - **`/api/contact`** - Contact form endpoint with Resend email integration (sends to user and admin)
 - **`/api/recent-blogs`** - Returns 3 most recent blog posts
 - **`/api/blog`** - Blog post listing
 - **`/api/github`** - GitHub user data, repositories, contribution calendar (with GraphQL support)
 
 #### GitHub Integration (`lib/github-service.ts`)
+
 - Fetches user profile, repositories, and recent commits
 - Supports GraphQL queries for contribution calendar (with fallback to REST API)
 - Next.js cache deduplication with React.cache()
@@ -136,6 +144,7 @@ npm run format:check
 - Limits display to 6 repos and 25 commits for performance
 
 #### Email System (Resend)
+
 - Uses React Email components for templating
 - Contact form sends two emails:
   1. User acknowledgment email
@@ -143,11 +152,13 @@ npm run format:check
 - Requires `RESEND_API_KEY` environment variable
 
 ### 3D Components
+
 - **Three.js Integration** via `@react-three/fiber` and `@react-three/drei`
 - Components: Stars, Earth, Computers, Ball, WavyLines
 - Used on hero section and throughout the site for visual appeal
 
 ### Styling
+
 - **Tailwind CSS v4** with plugins:
   - `@tailwindcss/typography` - for prose styling
   - `prettier-plugin-tailwindcss` - for class sorting
@@ -155,6 +166,7 @@ npm run format:check
 - **Motion libraries** - `framer-motion` and `motion` for animations
 
 ### Configuration Files
+
 - **`next.config.ts`** - Next.js config with:
   - MDX page support
   - Image optimization (WebP, AVIF, 24-hour cache)
@@ -165,12 +177,14 @@ npm run format:check
 ## Environment Variables
 
 Required for full functionality:
+
 - `RESEND_API_KEY` - Email service (contact form)
 - `GITHUB_TOKEN` - Optional, enables authenticated GitHub API requests with higher rate limits
 
 ## Important Implementation Details
 
 ### Blog Post Parsing (`lib/blog.ts`)
+
 - MDX files must have YAML frontmatter enclosed in `---` separators
 - Simple YAML parser (handles strings, booleans, and arrays)
 - Posts default to published=true unless explicitly set
@@ -178,12 +192,14 @@ Required for full functionality:
 - File format: `content/blog/[slug].mdx`
 
 ### GitHub Caching Strategy
+
 - Uses React.cache() for request deduplication within a single render
 - ISR revalidation set to 3600 seconds (1 hour)
 - Automatically falls back to public API data if authenticated requests fail
 - Contribution calendar supports filtering by year or "last" (365 days)
 
 ### Next.js App Router
+
 - Uses Server Components by default
 - `server-only` directive used in `github-service.ts` to prevent client-side access
 - Client Components explicitly marked with `'use client'` directive

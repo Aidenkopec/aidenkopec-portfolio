@@ -30,10 +30,7 @@ export async function POST(request: NextRequest) {
     // Validate form content
     const validation = validateContactFormContent(name, email, message);
     if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
     // Send acknowledgment email to user

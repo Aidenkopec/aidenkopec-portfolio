@@ -36,7 +36,7 @@ const Hero: React.FC = () => {
       <ComputersCanvas />
       <div className='absolute bottom-32 flex w-full items-center justify-center sm:bottom-10 md:hidden'>
         <a href='#about'>
-          <div className='border-secondary relative flex h-[64px] w-[35px] items-start justify-center rounded-3xl border-4 p-2'>
+          <div className='relative flex h-[64px] w-[35px] items-start justify-center rounded-3xl border-4 border-secondary p-2'>
             <motion.div
               animate={{
                 y: [0, 24, 0],

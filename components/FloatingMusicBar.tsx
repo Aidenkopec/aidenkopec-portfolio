@@ -145,7 +145,7 @@ const FloatingMusicBar: React.FC = () => {
             className='pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl'
             title='Show music controls'
           >
-            <Icons.music className='text-secondary h-5 w-5' />
+            <Icons.music className='h-5 w-5 text-secondary' />
           </motion.button>
         </div>
       </div>
@@ -170,7 +170,7 @@ const FloatingMusicBar: React.FC = () => {
                 className='flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 transition-all duration-300 ease-out hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30'
                 onClick={handleShowMusicBar}
               >
-                <Icons.music className='text-secondary h-3.5 w-3.5' />
+                <Icons.music className='h-3.5 w-3.5 text-secondary' />
               </div>
 
               <button
@@ -179,9 +179,9 @@ const FloatingMusicBar: React.FC = () => {
                 style={{ minWidth: '36px', minHeight: '36px' }}
               >
                 {isPlaying ? (
-                  <Icons.pause className='text-secondary h-3.5 w-3.5' />
+                  <Icons.pause className='h-3.5 w-3.5 text-secondary' />
                 ) : (
-                  <Icons.play className='text-secondary h-3.5 w-3.5' />
+                  <Icons.play className='h-3.5 w-3.5 text-secondary' />
                 )}
               </button>
             </div>
@@ -208,7 +208,7 @@ const FloatingMusicBar: React.FC = () => {
           >
             <div className='flex items-center gap-1.5 rounded-full border border-gray-800/50 bg-black/80 px-2.5 py-1.5 shadow-lg backdrop-blur-md transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl sm:gap-2 sm:px-3 sm:py-1.5'>
               <div className='flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 transition-all duration-300 ease-out hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30 sm:h-8 sm:w-8'>
-                <Icons.music className='text-secondary h-3.5 w-3.5 sm:h-4 sm:w-4' />
+                <Icons.music className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
               </div>
 
               <div className='group flex w-20 min-w-0 cursor-pointer flex-col sm:w-24'>
@@ -220,7 +220,7 @@ const FloatingMusicBar: React.FC = () => {
                     {trackInfo.title}
                   </span>
                   <div
-                    className={`text-secondary text-xs leading-none font-medium whitespace-nowrap transition-colors duration-200 group-hover:text-purple-400 ${shouldScrollTitle ? 'animate-scroll inline-block' : 'block'}`}
+                    className={`text-xs leading-none font-medium whitespace-nowrap text-secondary transition-colors duration-200 group-hover:text-purple-400 ${shouldScrollTitle ? 'animate-scroll inline-block' : 'block'}`}
                   >
                     {trackInfo.title}
                     {shouldScrollTitle && (
@@ -254,7 +254,7 @@ const FloatingMusicBar: React.FC = () => {
                   style={{ minWidth: '28px', minHeight: '28px' }}
                   title='Previous Track'
                 >
-                  <Icons.skipPrevious className='text-secondary h-3 w-3 sm:h-3.5 sm:w-3.5' />
+                  <Icons.skipPrevious className='h-3 w-3 text-secondary sm:h-3.5 sm:w-3.5' />
                 </button>
 
                 <button
@@ -264,9 +264,9 @@ const FloatingMusicBar: React.FC = () => {
                   title={isPlaying ? 'Pause' : 'Play'}
                 >
                   {isPlaying ? (
-                    <Icons.pause className='text-secondary h-3.5 w-3.5 sm:h-4 sm:w-4' />
+                    <Icons.pause className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
                   ) : (
-                    <Icons.play className='text-secondary h-3.5 w-3.5 sm:h-4 sm:w-4' />
+                    <Icons.play className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
                   )}
                 </button>
 
@@ -276,7 +276,7 @@ const FloatingMusicBar: React.FC = () => {
                   style={{ minWidth: '28px', minHeight: '28px' }}
                   title='Next Track'
                 >
-                  <Icons.skipNext className='text-secondary h-3 w-3 sm:h-3.5 sm:w-3.5' />
+                  <Icons.skipNext className='h-3 w-3 text-secondary sm:h-3.5 sm:w-3.5' />
                 </button>
               </div>
 

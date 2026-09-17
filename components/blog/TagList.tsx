@@ -28,7 +28,7 @@ export function TagList({
       transition={{ duration: 0.6 }}
       className={`${className}`}
     >
-      <h3 className='text-secondary mb-4 flex items-center gap-2 text-xl font-bold'>
+      <h3 className='mb-4 flex items-center gap-2 text-xl font-bold text-secondary'>
         <Tag className='h-5 w-5 text-[var(--text-color-variable)]' />
         {title}
       </h3>
@@ -43,10 +43,10 @@ export function TagList({
           >
             <Link
               href={`/blog/tag/${tag.slug}`}
-              className='bg-black-100 text-secondary hover:text-secondary hover:bg-tertiary inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-2 text-sm transition-all duration-200 hover:border-[var(--text-color-variable)]/20'
+              className='inline-flex items-center gap-2 rounded-full border border-transparent bg-black-100 px-3 py-2 text-sm text-secondary transition-all duration-200 hover:border-[var(--text-color-variable)]/20 hover:bg-tertiary hover:text-secondary'
             >
               <span>{tag.name}</span>
-              <span className='bg-tertiary rounded-full px-2 py-0.5 text-xs'>
+              <span className='rounded-full bg-tertiary px-2 py-0.5 text-xs'>
                 {tag.count}
               </span>
             </Link>

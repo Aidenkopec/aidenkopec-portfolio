@@ -64,7 +64,7 @@ const BlogNavbar: React.FC = () => {
           <div className='relative flex items-center gap-2'>
             {/* Logo animation dot */}
             <div className='h-2 w-2 animate-pulse rounded-full bg-[var(--text-color-variable)]' />
-            <p className='text-secondary flex cursor-pointer text-[18px] font-bold transition-colors duration-300 group-hover:text-[var(--text-color-variable)]'>
+            <p className='flex cursor-pointer text-[18px] font-bold text-secondary transition-colors duration-300 group-hover:text-[var(--text-color-variable)]'>
               Aiden Kopec &nbsp;
               <span className='hidden opacity-80 transition-opacity duration-300 group-hover:opacity-100 sm:block'>
                 {' '}
@@ -81,7 +81,7 @@ const BlogNavbar: React.FC = () => {
               <li key={nav.id} className='group relative'>
                 <Link
                   href={nav.href}
-                  className='text-secondary relative block cursor-pointer overflow-hidden rounded-lg px-4 py-2 transition-all duration-300 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
+                  className='relative block cursor-pointer overflow-hidden rounded-lg px-4 py-2 text-secondary transition-all duration-300 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
                 >
                   {/* Animated underline */}
                   <div className='absolute bottom-0 left-0 h-0.5 w-0 bg-[var(--text-color-variable)] transition-all duration-300 group-hover:w-full' />
@@ -207,7 +207,7 @@ const BlogNavbar: React.FC = () => {
                 >
                   <Link
                     href={nav.href}
-                    className='text-secondary relative block w-full cursor-pointer overflow-hidden rounded-lg px-4 py-3 transition-all duration-300 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
+                    className='relative block w-full cursor-pointer overflow-hidden rounded-lg px-4 py-3 text-secondary transition-all duration-300 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
                     onClick={() => setToggle(false)}
                   >
                     {/* Slide-in animation background */}

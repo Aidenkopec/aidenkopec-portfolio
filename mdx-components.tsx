@@ -87,7 +87,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       );
     },
     p: ({ children }) => (
-      <p className='text-secondary mb-4 leading-relaxed'>{children}</p>
+      <p className='mb-4 leading-relaxed text-secondary'>{children}</p>
     ),
     a: ({ href, children }) => (
       <Link
@@ -98,32 +98,32 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </Link>
     ),
     blockquote: ({ children }) => (
-      <blockquote className='text-secondary bg-black-100 my-6 rounded-r-lg border-l-4 border-[var(--text-color-variable)] p-4 pl-4 italic'>
+      <blockquote className='my-6 rounded-r-lg border-l-4 border-[var(--text-color-variable)] bg-black-100 p-4 pl-4 text-secondary italic'>
         {children}
       </blockquote>
     ),
     code: ({ children }) => (
-      <code className='bg-black-100 rounded px-2 py-1 font-mono text-sm text-[var(--text-color-variable)]'>
+      <code className='rounded bg-black-100 px-2 py-1 font-mono text-sm text-[var(--text-color-variable)]'>
         {children}
       </code>
     ),
     pre: ({ children }) => (
-      <pre className='bg-black-100 border-tertiary my-6 overflow-x-auto rounded-lg border p-4'>
+      <pre className='my-6 overflow-x-auto rounded-lg border border-tertiary bg-black-100 p-4'>
         {children}
       </pre>
     ),
     ul: ({ children }) => (
-      <ul className='text-secondary mb-4 list-inside list-disc space-y-2'>
+      <ul className='mb-4 list-inside list-disc space-y-2 text-secondary'>
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className='text-secondary mb-4 list-inside list-decimal space-y-2'>
+      <ol className='mb-4 list-inside list-decimal space-y-2 text-secondary'>
         {children}
       </ol>
     ),
     li: ({ children }) => (
-      <li className='text-secondary leading-relaxed'>{children}</li>
+      <li className='leading-relaxed text-secondary'>{children}</li>
     ),
     img: ({ src, alt, width, height, ...props }) => {
       const { ref, ...restProps } = props;
@@ -138,21 +138,21 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         />
       );
     },
-    hr: () => <hr className='border-tertiary my-8' />,
+    hr: () => <hr className='my-8 border-tertiary' />,
     table: ({ children }) => (
       <div className='my-6 overflow-x-auto'>
-        <table className='border-tertiary w-full border-collapse rounded-lg border'>
+        <table className='w-full border-collapse rounded-lg border border-tertiary'>
           {children}
         </table>
       </div>
     ),
     th: ({ children }) => (
-      <th className='border-tertiary bg-black-100 border px-4 py-2 text-left font-semibold text-white'>
+      <th className='border border-tertiary bg-black-100 px-4 py-2 text-left font-semibold text-white'>
         {children}
       </th>
     ),
     td: ({ children }) => (
-      <td className='border-tertiary text-secondary border px-4 py-2'>
+      <td className='border border-tertiary px-4 py-2 text-secondary'>
         {children}
       </td>
     ),

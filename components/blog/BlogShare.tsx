@@ -100,7 +100,7 @@ export function BlogShare({ slug, title, className }: BlogShareProps) {
 
   return (
     <div className={cn('w-full', className)}>
-      <h3 className='text-secondary mb-4 text-center text-lg font-semibold lg:text-left'>
+      <h3 className='mb-4 text-center text-lg font-semibold text-secondary lg:text-left'>
         Share this article
       </h3>
       <div className='flex flex-wrap justify-center gap-3 lg:justify-start'>
@@ -111,8 +111,8 @@ export function BlogShare({ slug, title, className }: BlogShareProps) {
             target='_blank'
             rel='noopener noreferrer'
             className={cn(
-              'border-black-200 flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200',
-              'hover:bg-black-100 hover:scale-105 hover:border-[var(--text-color-variable)]',
+              'flex h-12 w-12 items-center justify-center rounded-full border border-black-200 transition-all duration-200',
+              'hover:scale-105 hover:border-[var(--text-color-variable)] hover:bg-black-100',
               'active:scale-95',
               link.color,
             )}
@@ -125,8 +125,8 @@ export function BlogShare({ slug, title, className }: BlogShareProps) {
         <button
           onClick={handleCopyLink}
           className={cn(
-            'border-black-200 flex h-12 items-center gap-2 rounded-full border px-4 transition-all duration-200',
-            'hover:bg-black-100 hover:scale-105 hover:border-[var(--text-color-variable)]',
+            'flex h-12 items-center gap-2 rounded-full border border-black-200 px-4 transition-all duration-200',
+            'hover:scale-105 hover:border-[var(--text-color-variable)] hover:bg-black-100',
             'active:scale-95',
             'text-secondary hover:text-[var(--text-color-variable)]',
           )}

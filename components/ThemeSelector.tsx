@@ -57,13 +57,13 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       ref={selectorRef}
       className={`absolute top-full ${isMobile ? 'left-0' : 'right-0'} mt-2 ${
         isMobile ? 'w-72' : 'w-80'
-      } bg-black-100 border-tertiary z-[9999] rounded-xl border p-4 shadow-2xl`}
+      } z-[9999] rounded-xl border border-tertiary bg-black-100 p-4 shadow-2xl`}
     >
       <div className='mb-4 flex items-center justify-between'>
-        <h3 className='text-secondary text-lg font-semibold'>Choose Theme</h3>
+        <h3 className='text-lg font-semibold text-secondary'>Choose Theme</h3>
         <button
           onClick={onClose}
-          className='text-secondary hover:text-secondary text-xl transition-colors'
+          className='text-xl text-secondary transition-colors hover:text-secondary'
         >
           ×
         </button>
@@ -90,7 +90,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
             >
               <div className='flex items-center justify-between'>
                 <div className='flex-1'>
-                  <h4 className='text-secondary mb-2 text-sm font-medium'>
+                  <h4 className='mb-2 text-sm font-medium text-secondary'>
                     {themeData.name}
                   </h4>
                   <div className='flex items-center gap-2'>
@@ -137,8 +137,8 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
         })}
       </div>
 
-      <div className='border-tertiary mt-4 border-t pt-3'>
-        <p className='text-secondary text-center text-xs'>
+      <div className='mt-4 border-t border-tertiary pt-3'>
+        <p className='text-center text-xs text-secondary'>
           Themes are automatically saved
         </p>
       </div>

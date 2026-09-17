@@ -91,7 +91,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
               </div>
             ) : (
               <>
-                <h4 className='text-secondary truncate text-sm font-medium'>
+                <h4 className='truncate text-sm font-medium text-secondary'>
                   {playlist[currentTrack]?.title || 'No Track'}
                 </h4>
                 <p className='text-xs text-gray-400'>
@@ -119,7 +119,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
             <button
               onClick={togglePlay}
-              className='text-secondary rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-2 transition-all duration-300 hover:from-purple-600 hover:to-pink-600'
+              className='rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-2 text-secondary transition-all duration-300 hover:from-purple-600 hover:to-pink-600'
               title={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? (
@@ -203,7 +203,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
                   onClick={() => handleTrackSelect(index)}
                   className={`w-full rounded px-2 py-1 text-left text-xs transition-colors ${
                     currentTrack === index
-                      ? 'text-secondary bg-purple-600'
+                      ? 'bg-purple-600 text-secondary'
                       : 'text-gray-300 hover:bg-gray-700'
                   }`}
                 >

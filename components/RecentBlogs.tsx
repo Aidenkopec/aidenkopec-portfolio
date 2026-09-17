@@ -22,7 +22,7 @@ const RecentBlogsLoading = () => (
   <div className='flex min-h-[300px] w-full items-center justify-center'>
     <div className='text-center'>
       <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[var(--text-color-variable)]'></div>
-      <p className='text-secondary text-lg'>Loading Recent Blog Posts...</p>
+      <p className='text-lg text-secondary'>Loading Recent Blog Posts...</p>
     </div>
   </div>
 );
@@ -62,7 +62,7 @@ const RecentBlogsDescription: React.FC = () => {
     <div className='flex w-full'>
       <motion.p
         variants={fadeIn('up', 'spring', 0.1, 1) as any}
-        className='text-secondary mt-3 max-w-3xl text-[17px] leading-[30px]'
+        className='mt-3 max-w-3xl text-[17px] leading-[30px] text-secondary'
       >
         Dive into my thoughts on software development, AI tools, and emerging
         technologies. From practical tutorials to industry insights, these posts
@@ -79,13 +79,10 @@ const RecentBlogsSectionHeader: React.FC = () => {
   return (
     <motion.div variants={textVariant() as any} className='mt-16'>
       <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <h3 className='text-secondary text-[24px] font-bold'>
+        <h3 className='text-[24px] font-bold text-secondary'>
           Featured Articles
         </h3>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Link
             href='/blog'
             className={`group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg`}
@@ -122,9 +119,9 @@ const RecentBlogs: React.FC = () => {
         if (!response.ok) {
           throw new Error('Failed to fetch recent blog posts');
         }
-        
+
         const data: RecentBlogsResponse = await response.json();
-        
+
         if (data.success) {
           setPosts(data.recentPosts);
         } else {

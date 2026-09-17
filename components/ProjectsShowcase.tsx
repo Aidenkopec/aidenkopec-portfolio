@@ -258,12 +258,12 @@ const ProjectDetail: React.FC<{
             </p>
           )}
 
-          <p className='text-secondary mt-3 text-[15px] leading-[26px]'>
+          <p className='mt-3 text-[15px] leading-[26px] text-secondary'>
             {project.description}
           </p>
 
           {project.tier === 'client' && (
-            <p className='text-secondary/70 mt-3 text-[13px] leading-[21px]'>
+            <p className='mt-3 text-[13px] leading-[21px] text-secondary/70'>
               Built and delivered through Solvex Digital, the agency I founded.
               The site is live. The source stays private.
             </p>
@@ -278,7 +278,7 @@ const ProjectDetail: React.FC<{
                     <span className='block text-[22px] leading-none font-bold text-[var(--text-color-variable)]'>
                       {metric.value}
                     </span>
-                    <span className='text-secondary mt-1.5 block text-[11px] leading-[15px] tracking-wide uppercase'>
+                    <span className='mt-1.5 block text-[11px] leading-[15px] tracking-wide text-secondary uppercase'>
                       {metric.label}
                     </span>
                   </dd>
@@ -315,7 +315,7 @@ const ProjectStrip: React.FC<{
     {projects.map((project, index) => (
       <article
         key={project.slug}
-        className='bg-tertiary border-black-100 flex w-[85%] shrink-0 snap-center flex-col overflow-hidden rounded-xl border sm:w-[60%]'
+        className='flex w-[85%] shrink-0 snap-center flex-col overflow-hidden rounded-xl border border-black-100 bg-tertiary sm:w-[60%]'
       >
         <div className='relative aspect-[16/10] w-full border-b border-[var(--black-100)]'>
           <Image
@@ -333,7 +333,7 @@ const ProjectStrip: React.FC<{
           <h3 className='mt-3 text-[18px] font-bold text-[var(--white-100)]'>
             {project.name}
           </h3>
-          <p className='text-secondary mt-2 text-[14px] leading-[23px]'>
+          <p className='mt-2 text-[14px] leading-[23px] text-secondary'>
             {project.blurb}
           </p>
           <StackChips stack={project.stack} className='mt-4' />
@@ -591,7 +591,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
             <div className='min-w-0'>
               <div className='flex items-center gap-3'>
                 <TierBadge tier={active.tier} />
-                <span className='text-secondary/60 text-[12px] tabular-nums'>
+                <span className='text-[12px] text-secondary/60 tabular-nums'>
                   {activeIndex + 1} / {count}
                 </span>
               </div>
@@ -599,7 +599,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
               <h3 className='mt-3 text-[22px] font-bold text-[var(--white-100)] sm:text-[26px]'>
                 {active.name}
               </h3>
-              <p className='text-secondary mt-1.5 text-[15px] leading-[24px]'>
+              <p className='mt-1.5 text-[15px] leading-[24px] text-secondary'>
                 {active.blurb}
               </p>
 

@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
           <div className='relative flex items-center gap-2'>
             {/* Logo animation dot */}
             <div className='h-2 w-2 animate-pulse rounded-full bg-[var(--text-color-variable)]' />
-            <p className='text-secondary flex cursor-pointer text-[18px] font-bold transition-colors duration-300 group-hover:text-[var(--text-color-variable)]'>
+            <p className='flex cursor-pointer text-[18px] font-bold text-secondary transition-colors duration-300 group-hover:text-[var(--text-color-variable)]'>
               Aiden Kopec &nbsp;
               <span className='hidden opacity-80 transition-opacity duration-300 group-hover:opacity-100 sm:block'>
                 {' '}

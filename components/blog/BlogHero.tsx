@@ -104,7 +104,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className='text-secondary mx-auto mb-8 max-w-xl text-xl leading-relaxed lg:mx-0'
+              className='mx-auto mb-8 max-w-xl text-xl leading-relaxed text-secondary lg:mx-0'
             >
               Latest insights, trends, and tips from a full-stack developer to
               help you build amazing applications and grow your skills.
@@ -122,7 +122,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
                 href='#featured'
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className='text-secondary group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-[var(--text-color-variable)]/20 bg-gradient-to-r from-[var(--text-color-variable)] to-[var(--gradient-start)] px-6 py-3 text-sm font-medium shadow-lg transition-all hover:from-[var(--text-color-variable)]/90 hover:to-[var(--gradient-start)]/90 hover:shadow-[var(--text-color-variable)]/25 sm:text-base md:px-8 md:py-4'
+                className='group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-[var(--text-color-variable)]/20 bg-gradient-to-r from-[var(--text-color-variable)] to-[var(--gradient-start)] px-6 py-3 text-sm font-medium text-secondary shadow-lg transition-all hover:from-[var(--text-color-variable)]/90 hover:to-[var(--gradient-start)]/90 hover:shadow-[var(--text-color-variable)]/25 sm:text-base md:px-8 md:py-4'
               >
                 <span className='absolute inset-0 h-full w-full bg-gradient-to-r from-white/10 to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></span>
                 <span className='relative z-10 flex items-center'>
@@ -136,7 +136,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
                 href='#blog-content'
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className='bg-tertiary border-black-100 inline-flex items-center justify-center rounded-full border px-6 py-3 text-sm font-medium text-[var(--text-color-variable)] shadow-sm transition-all hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5 hover:shadow-md sm:text-base md:px-8 md:py-4'
+                className='inline-flex items-center justify-center rounded-full border border-black-100 bg-tertiary px-6 py-3 text-sm font-medium text-[var(--text-color-variable)] shadow-sm transition-all hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5 hover:shadow-md sm:text-base md:px-8 md:py-4'
               >
                 <span className='flex items-center'>
                   <Filter className='mr-2 h-4 w-4' />
@@ -154,7 +154,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
             className='mx-auto w-full max-w-md lg:max-w-lg'
           >
             <motion.div
-              className='bg-tertiary border-black-100 relative overflow-hidden rounded-xl border shadow-xl'
+              className='relative overflow-hidden rounded-xl border border-black-100 bg-tertiary shadow-xl'
               whileHover={{
                 scale: 1.02,
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
@@ -168,13 +168,13 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
               }}
             >
               {/* Card Header */}
-              <div className='border-black-100 border-b bg-gradient-to-r from-[var(--text-color-variable)]/10 to-[var(--text-color-variable)]/5 px-6 py-4'>
+              <div className='border-b border-black-100 bg-gradient-to-r from-[var(--text-color-variable)]/10 to-[var(--text-color-variable)]/5 px-6 py-4'>
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center space-x-3'>
                     <div className='flex h-8 w-8 items-center justify-center rounded-full bg-[var(--text-color-variable)]/10'>
                       <BookOpen className='h-4 w-4 text-[var(--text-color-variable)]' />
                     </div>
-                    <h3 className='text-secondary font-semibold'>
+                    <h3 className='font-semibold text-secondary'>
                       Latest Articles
                     </h3>
                   </div>
@@ -190,13 +190,13 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
               <div className='px-6 pt-4'>
                 <div className='relative mb-4'>
                   <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3'>
-                    <Search className='text-secondary h-4 w-4' />
+                    <Search className='h-4 w-4 text-secondary' />
                   </div>
                   <input
                     type='text'
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className='bg-black-100 border-black-100 text-secondary placeholder-secondary w-full rounded-lg border py-2.5 pr-4 pl-10 text-sm transition-all focus:border-transparent focus:ring-2 focus:ring-[var(--text-color-variable)] focus:outline-none'
+                    className='w-full rounded-lg border border-black-100 bg-black-100 py-2.5 pr-4 pl-10 text-sm text-secondary placeholder-secondary transition-all focus:border-transparent focus:ring-2 focus:ring-[var(--text-color-variable)] focus:outline-none'
                     placeholder='Search articles...'
                   />
                 </div>
@@ -206,7 +206,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
               <div className='px-4 pb-6'>
                 {/* No results message */}
                 {searchTerm.trim() && filteredPosts.length === 0 && (
-                  <div className='text-secondary p-4 text-center'>
+                  <div className='p-4 text-center text-secondary'>
                     No posts found matching &quot;{searchTerm}&quot;
                   </div>
                 )}
@@ -226,12 +226,12 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
                         }}
                       >
                         <div className='flex items-center justify-between'>
-                          <h4 className='text-secondary line-clamp-1 text-sm font-medium transition-colors group-hover:text-[var(--text-color-variable)]'>
+                          <h4 className='line-clamp-1 text-sm font-medium text-secondary transition-colors group-hover:text-[var(--text-color-variable)]'>
                             {post.title}
                           </h4>
 
                           <motion.div
-                            className='bg-black-100 flex h-6 w-6 items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100'
+                            className='flex h-6 w-6 items-center justify-center rounded-full bg-black-100 opacity-0 transition-opacity group-hover:opacity-100'
                             animate={{ x: [0, 5, 0] }}
                             transition={{
                               repeat: Infinity,

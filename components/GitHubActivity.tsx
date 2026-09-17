@@ -14,7 +14,7 @@ const GitHubStatsSkeleton = () => (
   <div className='mt-8 mb-12 flex flex-wrap justify-center gap-4'>
     {[...Array(4)].map((_, i) => (
       <div key={i} className='min-w-[160px] flex-1'>
-        <div className='bg-tertiary border-tertiary rounded-xl border p-4'>
+        <div className='rounded-xl border border-tertiary bg-tertiary p-4'>
           <div className='mb-2 flex items-center justify-between'>
             <div className='h-6 w-6 animate-pulse rounded bg-gray-600'></div>
             <div className='h-6 w-6 animate-pulse rounded bg-gray-600'></div>
@@ -28,7 +28,7 @@ const GitHubStatsSkeleton = () => (
 
 const GitHubDashboardSkeleton = () => (
   <div className='mb-12 grid grid-cols-1 gap-8'>
-    <div className='bg-tertiary border-tertiary w-full rounded-xl border p-4'>
+    <div className='w-full rounded-xl border border-tertiary bg-tertiary p-4'>
       <div className='mb-4 h-6 w-48 animate-pulse rounded bg-gray-600'></div>
       <div className='h-32 animate-pulse rounded bg-gray-600'></div>
     </div>
@@ -36,7 +36,7 @@ const GitHubDashboardSkeleton = () => (
       {[...Array(2)].map((_, i) => (
         <div
           key={i}
-          className='bg-tertiary border-tertiary flex-1 rounded-xl border p-4'
+          className='flex-1 rounded-xl border border-tertiary bg-tertiary p-4'
         >
           <div className='mb-4 h-6 w-32 animate-pulse rounded bg-gray-600'></div>
           <div className='space-y-3'>

@@ -57,25 +57,25 @@ function TagPageSkeleton() {
     <div className='mx-auto max-w-6xl'>
       {/* Header Skeleton */}
       <div className='mb-12'>
-        <div className='bg-black-100 mb-6 h-4 w-24 rounded'></div>
-        <div className='bg-black-100 mb-4 h-8 w-64 rounded'></div>
-        <div className='bg-black-100 h-4 w-96 rounded'></div>
+        <div className='mb-6 h-4 w-24 rounded bg-black-100'></div>
+        <div className='mb-4 h-8 w-64 rounded bg-black-100'></div>
+        <div className='h-4 w-96 rounded bg-black-100'></div>
       </div>
 
       {/* Posts Skeleton */}
       <div className='grid gap-8 md:gap-12'>
         {[...Array(3)].map((_, i) => (
-          <div key={i} className='bg-tertiary animate-pulse rounded-lg p-6'>
-            <div className='bg-black-100 mb-4 h-6 w-3/4 rounded'></div>
-            <div className='bg-black-100 mb-2 h-4 rounded'></div>
-            <div className='bg-black-100 mb-4 h-4 w-2/3 rounded'></div>
+          <div key={i} className='animate-pulse rounded-lg bg-tertiary p-6'>
+            <div className='mb-4 h-6 w-3/4 rounded bg-black-100'></div>
+            <div className='mb-2 h-4 rounded bg-black-100'></div>
+            <div className='mb-4 h-4 w-2/3 rounded bg-black-100'></div>
             <div className='mb-4 flex gap-2'>
-              <div className='bg-black-100 h-6 w-16 rounded-full'></div>
-              <div className='bg-black-100 h-6 w-20 rounded-full'></div>
+              <div className='h-6 w-16 rounded-full bg-black-100'></div>
+              <div className='h-6 w-20 rounded-full bg-black-100'></div>
             </div>
             <div className='flex justify-between'>
-              <div className='bg-black-100 h-4 w-32 rounded'></div>
-              <div className='bg-black-100 h-4 w-24 rounded'></div>
+              <div className='h-4 w-32 rounded bg-black-100'></div>
+              <div className='h-4 w-24 rounded bg-black-100'></div>
             </div>
           </div>
         ))}
@@ -103,7 +103,7 @@ async function TagPageContent({ tag }: { tag: string }) {
         {/* Back to Blog */}
         <Link
           href='/blog'
-          className='text-secondary mb-6 inline-flex items-center gap-2 text-sm transition-colors hover:text-[var(--text-color-variable)]'
+          className='mb-6 inline-flex items-center gap-2 text-sm text-secondary transition-colors hover:text-[var(--text-color-variable)]'
         >
           <ArrowLeft className='h-4 w-4' />
           Back to Blog
@@ -120,7 +120,7 @@ async function TagPageContent({ tag }: { tag: string }) {
           </h1>
         </div>
 
-        <p className='text-secondary text-lg'>
+        <p className='text-lg text-secondary'>
           {posts.length} post{posts.length !== 1 ? 's' : ''} found
         </p>
       </header>
@@ -138,7 +138,7 @@ async function TagPageContent({ tag }: { tag: string }) {
       <div className='mt-16 text-center'>
         <Link
           href='/blog'
-          className='text-secondary inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
+          className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium text-secondary transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
         >
           <ArrowLeft className='h-4 w-4' />
           View All Posts
