@@ -9,7 +9,7 @@ import {
 } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useTheme } from 'next-themes';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useSyncExternalStore } from 'react';
 import * as THREE from 'three';
 
 import CanvasLoader from '../Loader';
@@ -218,7 +218,6 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
     }
   }, [
     computer.scene,
-    currentTheme,
     colors.deskColor,
     colors.frameColor,
     colors.hardwareAccent,
@@ -325,24 +324,20 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
   );
 };
 
+const MOBILE_QUERY = '(max-width: 500px)';
+
+const subscribeToMobileQuery = (onChange: () => void) => {
+  const mediaQuery = window.matchMedia(MOBILE_QUERY);
+  mediaQuery.addEventListener('change', onChange);
+  return () => mediaQuery.removeEventListener('change', onChange);
+};
+
 const ComputersCanvas: React.FC = () => {
-  const [isMobile, setIsMobile] = useState<boolean>(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 500px)');
-
-    setIsMobile(mediaQuery.matches);
-
-    const handleMediaQueryChange = (event: MediaQueryListEvent) => {
-      setIsMobile(event.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleMediaQueryChange);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleMediaQueryChange);
-    };
-  }, []);
+  const isMobile = useSyncExternalStore(
+    subscribeToMobileQuery,
+    () => window.matchMedia(MOBILE_QUERY).matches,
+    () => false,
+  );
 
   return (
     <Canvas

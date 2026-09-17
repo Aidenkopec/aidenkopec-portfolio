@@ -173,7 +173,7 @@ const Contact: React.FC = () => {
       >
         <motion.div
           variants={slideIn('left', 'tween', 0.2, 1) as any}
-          className='bg-black-100 flex-[0.75] rounded-2xl p-8'
+          className='flex-[0.75] rounded-2xl bg-black-100 p-8'
         >
           {!submitSuccess ? (
             // Show Form
@@ -187,7 +187,7 @@ const Contact: React.FC = () => {
                 className='mt-12 flex flex-col gap-8'
               >
                 <label className='flex flex-col'>
-                  <span className='text-secondary mb-4 font-medium'>
+                  <span className='mb-4 font-medium text-secondary'>
                     Your Name
                   </span>
                   <input
@@ -196,11 +196,11 @@ const Contact: React.FC = () => {
                     value={form.name}
                     onChange={handleChange}
                     placeholder="What's your name?"
-                    className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
+                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary'
                   />
                 </label>
                 <label className='flex flex-col'>
-                  <span className='text-secondary mb-4 font-medium'>
+                  <span className='mb-4 font-medium text-secondary'>
                     Your email
                   </span>
                   <input
@@ -209,11 +209,11 @@ const Contact: React.FC = () => {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="What's your email address?"
-                    className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
+                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary'
                   />
                 </label>
                 <label className='flex flex-col'>
-                  <span className='text-secondary mb-4 font-medium'>
+                  <span className='mb-4 font-medium text-secondary'>
                     Your Message
                   </span>
                   <textarea
@@ -222,13 +222,13 @@ const Contact: React.FC = () => {
                     value={form.message}
                     onChange={handleChange}
                     placeholder='Please type your message'
-                    className='bg-tertiary placeholder:text-secondary text-secondary rounded-lg border-none px-6 py-4 font-medium outline-none'
+                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary'
                   />
                 </label>
 
                 <button
                   type='submit'
-                  className='bg-tertiary text-secondary shadow-primary hover:bg-tertiary/90 w-fit rounded-xl px-8 py-3 font-bold shadow-md transition-colors outline-none disabled:opacity-50'
+                  className='w-fit rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-primary transition-colors outline-none hover:bg-tertiary/90 disabled:opacity-50'
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send'}
@@ -246,7 +246,7 @@ const Contact: React.FC = () => {
                       <div className='flex-shrink-0'>
                         <div className='flex h-8 w-8 items-center justify-center rounded-full bg-red-400'>
                           <svg
-                            className='text-secondary h-5 w-5'
+                            className='h-5 w-5 text-secondary'
                             fill='none'
                             stroke='currentColor'
                             viewBox='0 0 24 24'
@@ -264,7 +264,7 @@ const Contact: React.FC = () => {
                         <h3 className='text-lg font-medium text-red-400'>
                           Oops! Something went wrong
                         </h3>
-                        <p className='text-secondary mt-1'>{errorMessage}</p>
+                        <p className='mt-1 text-secondary'>{errorMessage}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -281,7 +281,7 @@ const Contact: React.FC = () => {
             >
               <div className='mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-green-400'>
                 <svg
-                  className='text-secondary h-10 w-10'
+                  className='h-10 w-10 text-secondary'
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'
@@ -298,26 +298,26 @@ const Contact: React.FC = () => {
               <h2 className='mb-4 text-4xl font-bold text-green-400'>
                 Message Sent!
               </h2>
-              <p className='text-secondary mb-2 text-xl'>
+              <p className='mb-2 text-xl text-secondary'>
                 Thank you,{' '}
-                <span className='text-secondary font-semibold'>
+                <span className='font-semibold text-secondary'>
                   {form.name}
                 </span>
                 !
               </p>
-              <p className='text-secondary mb-8 max-w-md text-lg'>
+              <p className='mb-8 max-w-md text-lg text-secondary'>
                 I&apos;ve received your message and will get back to you as soon
                 as possible.
               </p>
 
               <button
                 onClick={resetForm}
-                className='bg-tertiary text-secondary shadow-primary hover:bg-tertiary/90 mb-4 rounded-xl px-8 py-3 font-bold shadow-md transition-colors outline-none'
+                className='mb-4 rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-primary transition-colors outline-none hover:bg-tertiary/90'
               >
                 Send Another Message
               </button>
 
-              <p className='text-secondary/70 text-sm'>
+              <p className='text-sm text-secondary/70'>
                 This form will reset automatically in 10 seconds
               </p>
             </motion.div>

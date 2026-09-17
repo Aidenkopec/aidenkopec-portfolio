@@ -2,6 +2,7 @@
 import React, {
   createContext,
   useContext,
+  useCallback,
   useState,
   useRef,
   useEffect,
@@ -69,7 +70,10 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Load localStorage values after hydration
+  // Load localStorage values after hydration. Reading these during render would
+  // make the first client render disagree with the server markup, so the stored
+  // values are deliberately applied in an effect once hydration has finished.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // Load saved values from localStorage
@@ -98,6 +102,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
       setIsHydrated(true);
     }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const playlist: Track[] = [
     {
@@ -150,7 +155,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     }
   }, [floatingBarMode, isHydrated]);
 
-  const togglePlay = (): void => {
+  const togglePlay = useCallback((): void => {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -163,9 +168,9 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         setIsPlaying(false);
       });
     }
-  };
+  }, [isPlaying]);
 
-  const nextTrack = (): void => {
+  const nextTrack = useCallback((): void => {
     const nextIndex = (currentTrack + 1) % playlist.length;
     setCurrentTrack(nextIndex);
     if (isPlaying && audioRef.current) {
@@ -177,9 +182,9 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         });
       }, 100);
     }
-  };
+  }, [currentTrack, isPlaying, playlist.length]);
 
-  const previousTrack = (): void => {
+  const previousTrack = useCallback((): void => {
     const prevIndex =
       currentTrack === 0 ? playlist.length - 1 : currentTrack - 1;
     setCurrentTrack(prevIndex);
@@ -192,7 +197,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         });
       }, 100);
     }
-  };
+  }, [currentTrack, isPlaying, playlist.length]);
 
   const selectTrack = (index: number): void => {
     setCurrentTrack(index);
@@ -247,7 +252,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [isPlaying, currentTrack]);
+  }, [togglePlay, nextTrack, previousTrack]);
 
   const value: MusicContextType = {
     // State

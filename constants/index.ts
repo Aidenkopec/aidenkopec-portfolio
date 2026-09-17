@@ -10,7 +10,6 @@ import react from '../public/technologies/reactjs.png';
 import tailwind from '../public/technologies/tailwind.png';
 import typescript from '../public/technologies/typescript.png';
 import vue from '../public/technologies/vue-three.png';
-
 import bullmq from '../public/technologies/bullmq.png';
 import nextjs from '../public/technologies/nextjs.png';
 import redis from '../public/technologies/redis.png';

@@ -7,6 +7,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { BlogCategories } from '@/components/blog/BlogCategories';
 import { BlogHero } from '@/components/blog/BlogHero';
+import BlogNavbar from '@/components/blog/BlogNavbar';
 import { BlogPagination } from '@/components/blog/BlogPagination';
 import { useBlogSearch } from '@/hooks/useBlogSearch';
 import { BlogPost } from '@/lib/types';
@@ -17,18 +18,18 @@ function BlogSkeleton() {
       {[...Array(3)].map((_, i) => (
         <div
           key={i}
-          className='bg-black-100/20 border-tertiary/20 animate-pulse rounded-lg border p-6 backdrop-blur-sm'
+          className='animate-pulse rounded-lg border border-tertiary/20 bg-black-100/20 p-6 backdrop-blur-sm'
         >
-          <div className='bg-tertiary mb-4 h-6 w-3/4 rounded'></div>
-          <div className='bg-tertiary mb-2 h-4 rounded'></div>
-          <div className='bg-tertiary mb-4 h-4 w-2/3 rounded'></div>
+          <div className='mb-4 h-6 w-3/4 rounded bg-tertiary'></div>
+          <div className='mb-2 h-4 rounded bg-tertiary'></div>
+          <div className='mb-4 h-4 w-2/3 rounded bg-tertiary'></div>
           <div className='mb-4 flex gap-2'>
-            <div className='bg-tertiary h-6 w-16 rounded-full'></div>
-            <div className='bg-tertiary h-6 w-20 rounded-full'></div>
+            <div className='h-6 w-16 rounded-full bg-tertiary'></div>
+            <div className='h-6 w-20 rounded-full bg-tertiary'></div>
           </div>
           <div className='flex justify-between'>
-            <div className='bg-tertiary h-4 w-32 rounded'></div>
-            <div className='bg-tertiary h-4 w-24 rounded'></div>
+            <div className='h-4 w-32 rounded bg-tertiary'></div>
+            <div className='h-4 w-24 rounded bg-tertiary'></div>
           </div>
         </div>
       ))}
@@ -181,10 +182,10 @@ function BlogContent() {
                 <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--text-color-variable)]/10'>
                   <Search className='h-8 w-8 text-[var(--text-color-variable)]' />
                 </div>
-                <h3 className='text-secondary mb-2 text-xl font-semibold'>
+                <h3 className='mb-2 text-xl font-semibold text-secondary'>
                   {isFiltered ? 'No articles found' : 'No blog posts yet'}
                 </h3>
-                <p className='text-secondary mb-6'>
+                <p className='mb-6 text-secondary'>
                   {isFiltered
                     ? 'Try adjusting your search or filter criteria'
                     : 'Stay tuned for upcoming posts about software development, AI tools, and more!'}
@@ -195,7 +196,7 @@ function BlogContent() {
                       setSearchTerm('');
                       setSelectedCategory(null);
                     }}
-                    className='text-secondary inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-4 py-2 transition-colors hover:bg-[var(--text-color-variable)]/90'
+                    className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-4 py-2 text-secondary transition-colors hover:bg-[var(--text-color-variable)]/90'
                   >
                     Clear filters
                   </button>
@@ -208,8 +209,6 @@ function BlogContent() {
     </>
   );
 }
-
-import BlogNavbar from '@/components/blog/BlogNavbar';
 
 export default function BlogPage() {
   return (

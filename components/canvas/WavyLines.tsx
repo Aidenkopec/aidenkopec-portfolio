@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
+import { useIsHydrated } from '../../hooks/useIsHydrated';
+
 type WavyLinesProps = {
   className?: string;
   waveCount?: number;
@@ -70,13 +72,11 @@ function generateWavePath(
 }
 
 function WavyLines({ className = '', waveCount }: WavyLinesProps) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsHydrated();
   const [screenSize, setScreenSize] = useState<ScreenSize>('desktop');
   const [themeColors, setThemeColors] = useState(getThemeColors());
 
   useEffect(() => {
-    setMounted(true);
-
     const handleResize = () => {
       setScreenSize(getScreenSize());
     };

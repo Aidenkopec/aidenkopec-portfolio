@@ -2,6 +2,7 @@
 import { useTheme } from 'next-themes';
 import React, { useEffect, useRef, useState } from 'react';
 
+import { useIsHydrated } from '../hooks/useIsHydrated';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';
 import { getThemePreviewColors, themes } from '../styles';
 
@@ -17,10 +18,10 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   isMobile = false,
 }) => {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsHydrated();
   const [activeTab, setActiveTab] = useState<'themes' | 'music'>('themes');
   const menuRef = useRef<HTMLDivElement>(null);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const isFullScreen = isMobile && isOpen;
 
   const {
     volume,
@@ -34,19 +35,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     selectTrack,
     isPlaying,
   } = useMusicPlayer();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Auto-detect if we need fullscreen mode on mobile
-  useEffect(() => {
-    if (isMobile && isOpen) {
-      setIsFullScreen(true);
-    } else {
-      setIsFullScreen(false);
-    }
-  }, [isMobile, isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -128,17 +116,17 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
         <div className='fixed inset-0 z-[9999] flex items-start justify-center pt-20 sm:pt-24'>
           <div
             ref={menuRef}
-            className='bg-black-100 border-tertiary animate-slideDown sm:animate-scaleIn flex h-[500px] w-[90%] max-w-md flex-col overflow-hidden rounded-2xl border shadow-2xl sm:w-[90%]'
+            className='animate-slideDown sm:animate-scaleIn flex h-[500px] w-[90%] max-w-md flex-col overflow-hidden rounded-2xl border border-tertiary bg-black-100 shadow-2xl sm:w-[90%]'
           >
             {/* Header */}
-            <div className='border-tertiary flex-shrink-0 border-b p-4'>
+            <div className='flex-shrink-0 border-b border-tertiary p-4'>
               <div className='mb-3 flex items-center justify-between'>
-                <h3 className='text-secondary text-lg font-semibold'>
+                <h3 className='text-lg font-semibold text-secondary'>
                   Customizations
                 </h3>
                 <button
                   onClick={onClose}
-                  className='text-secondary hover:text-secondary hover:bg-tertiary rounded-lg p-1 text-2xl leading-none transition-all'
+                  className='rounded-lg p-1 text-2xl leading-none text-secondary transition-all hover:bg-tertiary hover:text-secondary'
                   aria-label='Close menu'
                 >
                   ×
@@ -146,12 +134,12 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
               </div>
 
               {/* Tab Navigation */}
-              <div className='bg-tertiary flex space-x-1 rounded-lg p-1'>
+              <div className='flex space-x-1 rounded-lg bg-tertiary p-1'>
                 <button
                   onClick={() => setActiveTab('themes')}
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                     activeTab === 'themes'
-                      ? 'text-secondary bg-[var(--text-color-variable)] shadow-lg'
+                      ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
                       : 'text-secondary hover:text-secondary'
                   }`}
                 >
@@ -161,7 +149,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   onClick={() => setActiveTab('music')}
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                     activeTab === 'music'
-                      ? 'text-secondary bg-[var(--text-color-variable)] shadow-lg'
+                      ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
                       : 'text-secondary hover:text-secondary'
                   }`}
                 >
@@ -195,7 +183,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       >
                         <div className='flex items-center justify-between'>
                           <div className='flex-1'>
-                            <h4 className='text-secondary mb-2 text-sm font-medium'>
+                            <h4 className='mb-2 text-sm font-medium text-secondary'>
                               {themeData.name}
                             </h4>
                             <div className='flex items-center gap-2'>
@@ -246,8 +234,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 /* Music Tab */
                 <div className='space-y-4 p-4'>
                   {/* Music Dock Controls */}
-                  <div className='bg-tertiary space-y-3 rounded-lg p-3'>
-                    <h4 className='text-secondary text-sm font-medium'>
+                  <div className='space-y-3 rounded-lg bg-tertiary p-3'>
+                    <h4 className='text-sm font-medium text-secondary'>
                       Music Dock
                     </h4>
 
@@ -283,7 +271,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                             onClick={() => setFloatingBarMode('mini')}
                             className={`rounded-md px-3 py-1 text-xs transition-colors ${
                               floatingBarMode === 'mini'
-                                ? 'text-secondary bg-[var(--text-color-variable)]'
+                                ? 'bg-[var(--text-color-variable)] text-secondary'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                           >
@@ -293,7 +281,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                             onClick={() => setFloatingBarMode('standard')}
                             className={`rounded-md px-3 py-1 text-xs transition-colors ${
                               floatingBarMode === 'standard'
-                                ? 'text-secondary bg-[var(--text-color-variable)]'
+                                ? 'bg-[var(--text-color-variable)] text-secondary'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                           >
@@ -310,8 +298,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   </div>
 
                   {/* Volume Control */}
-                  <div className='bg-tertiary rounded-lg p-3'>
-                    <h4 className='text-secondary mb-3 text-sm font-medium'>
+                  <div className='rounded-lg bg-tertiary p-3'>
+                    <h4 className='mb-3 text-sm font-medium text-secondary'>
                       Volume
                     </h4>
                     <div className='flex items-center space-x-3'>
@@ -345,8 +333,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   </div>
 
                   {/* Playlist - Fixed Height with Scroll */}
-                  <div className='bg-tertiary rounded-lg p-3'>
-                    <h4 className='text-secondary mb-3 text-sm font-medium'>
+                  <div className='rounded-lg bg-tertiary p-3'>
+                    <h4 className='mb-3 text-sm font-medium text-secondary'>
                       Playlist
                     </h4>
                     <div className='h-32 space-y-2 overflow-y-auto'>
@@ -356,8 +344,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                           onClick={() => selectTrack(index)}
                           className={`w-full rounded-md p-2 text-left text-sm transition-colors ${
                             currentTrack === index
-                              ? 'text-secondary bg-[var(--text-color-variable)]'
-                              : 'hover:text-secondary text-gray-300 hover:bg-gray-700'
+                              ? 'bg-[var(--text-color-variable)] text-secondary'
+                              : 'text-gray-300 hover:bg-gray-700 hover:text-secondary'
                           }`}
                         >
                           <div className='flex items-center justify-between'>
@@ -372,7 +360,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                             {currentTrack === index && isPlaying && (
                               <div className='ml-2 flex-shrink-0'>
                                 <svg
-                                  className='text-secondary h-4 w-4 animate-pulse'
+                                  className='h-4 w-4 animate-pulse text-secondary'
                                   fill='currentColor'
                                   viewBox='0 0 20 20'
                                 >
@@ -387,8 +375,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   </div>
 
                   {/* Music Controls Info */}
-                  <div className='bg-tertiary rounded-lg p-3'>
-                    <h4 className='text-secondary mb-2 text-sm font-medium'>
+                  <div className='rounded-lg bg-tertiary p-3'>
+                    <h4 className='mb-2 text-sm font-medium text-secondary'>
                       Controls
                     </h4>
                     <div className='space-y-1 text-xs text-gray-400'>
@@ -419,8 +407,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             </div>
 
             {/* Footer */}
-            <div className='border-tertiary flex-shrink-0 border-t p-3'>
-              <p className='text-secondary text-center text-xs'>
+            <div className='flex-shrink-0 border-t border-tertiary p-3'>
+              <p className='text-center text-xs text-secondary'>
                 {activeTab === 'themes'
                   ? 'Themes are automatically saved'
                   : 'Music dock settings persist across sessions'}
@@ -436,29 +424,29 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   return (
     <div
       ref={menuRef}
-      className='bg-black-100 border-tertiary absolute top-full right-0 z-[9999] mt-2 w-96 overflow-hidden rounded-xl border shadow-2xl'
+      className='absolute top-full right-0 z-[9999] mt-2 w-96 overflow-hidden rounded-xl border border-tertiary bg-black-100 shadow-2xl'
     >
       {/* Original desktop menu content remains the same */}
       {/* Header with tabs */}
-      <div className='border-tertiary border-b p-4'>
+      <div className='border-b border-tertiary p-4'>
         <div className='mb-3 flex items-center justify-between'>
-          <h3 className='text-secondary text-lg font-semibold'>
+          <h3 className='text-lg font-semibold text-secondary'>
             Customizations
           </h3>
           <button
             onClick={onClose}
-            className='text-secondary hover:text-secondary text-xl transition-colors'
+            className='text-xl text-secondary transition-colors hover:text-secondary'
           >
             ×
           </button>
         </div>
 
-        <div className='bg-tertiary flex space-x-1 rounded-lg p-1'>
+        <div className='flex space-x-1 rounded-lg bg-tertiary p-1'>
           <button
             onClick={() => setActiveTab('themes')}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
               activeTab === 'themes'
-                ? 'text-secondary bg-[var(--text-color-variable)] shadow-lg'
+                ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
                 : 'text-secondary hover:text-secondary'
             }`}
           >
@@ -468,7 +456,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             onClick={() => setActiveTab('music')}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
               activeTab === 'music'
-                ? 'text-secondary bg-[var(--text-color-variable)] shadow-lg'
+                ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
                 : 'text-secondary hover:text-secondary'
             }`}
           >
@@ -501,7 +489,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 >
                   <div className='flex items-center justify-between'>
                     <div className='flex-1'>
-                      <h4 className='text-secondary mb-2 text-sm font-medium'>
+                      <h4 className='mb-2 text-sm font-medium text-secondary'>
                         {themeData.name}
                       </h4>
                       <div className='flex items-center gap-2'>
@@ -550,8 +538,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
           /* Music Tab for Desktop */
           <div className='space-y-4 p-4'>
             {/* Music Dock Controls */}
-            <div className='bg-tertiary space-y-3 rounded-lg p-3'>
-              <h4 className='text-secondary text-sm font-medium'>Music Dock</h4>
+            <div className='space-y-3 rounded-lg bg-tertiary p-3'>
+              <h4 className='text-sm font-medium text-secondary'>Music Dock</h4>
 
               {/* Visibility Toggle */}
               <div className='flex items-center justify-between'>
@@ -583,7 +571,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       onClick={() => setFloatingBarMode('mini')}
                       className={`rounded-md px-3 py-1 text-xs transition-colors ${
                         floatingBarMode === 'mini'
-                          ? 'text-secondary bg-[var(--text-color-variable)]'
+                          ? 'bg-[var(--text-color-variable)] text-secondary'
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
@@ -593,7 +581,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       onClick={() => setFloatingBarMode('standard')}
                       className={`rounded-md px-3 py-1 text-xs transition-colors ${
                         floatingBarMode === 'standard'
-                          ? 'text-secondary bg-[var(--text-color-variable)]'
+                          ? 'bg-[var(--text-color-variable)] text-secondary'
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
@@ -610,8 +598,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             </div>
 
             {/* Volume Control */}
-            <div className='bg-tertiary rounded-lg p-3'>
-              <h4 className='text-secondary mb-3 text-sm font-medium'>
+            <div className='rounded-lg bg-tertiary p-3'>
+              <h4 className='mb-3 text-sm font-medium text-secondary'>
                 Volume
               </h4>
               <div className='flex items-center space-x-3'>
@@ -645,8 +633,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             </div>
 
             {/* Playlist */}
-            <div className='bg-tertiary rounded-lg p-3'>
-              <h4 className='text-secondary mb-3 text-sm font-medium'>
+            <div className='rounded-lg bg-tertiary p-3'>
+              <h4 className='mb-3 text-sm font-medium text-secondary'>
                 Playlist
               </h4>
               <div className='max-h-32 space-y-2 overflow-y-auto'>
@@ -656,8 +644,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     onClick={() => selectTrack(index)}
                     className={`w-full rounded-md p-2 text-left text-sm transition-colors ${
                       currentTrack === index
-                        ? 'text-secondary bg-[var(--text-color-variable)]'
-                        : 'hover:text-secondary text-gray-300 hover:bg-gray-700'
+                        ? 'bg-[var(--text-color-variable)] text-secondary'
+                        : 'text-gray-300 hover:bg-gray-700 hover:text-secondary'
                     }`}
                   >
                     <div className='flex items-center justify-between'>
@@ -672,7 +660,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       {currentTrack === index && isPlaying && (
                         <div className='ml-2 flex-shrink-0'>
                           <svg
-                            className='text-secondary h-4 w-4 animate-pulse'
+                            className='h-4 w-4 animate-pulse text-secondary'
                             fill='currentColor'
                             viewBox='0 0 20 20'
                           >
@@ -687,8 +675,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             </div>
 
             {/* Music Controls Info */}
-            <div className='bg-tertiary rounded-lg p-3'>
-              <h4 className='text-secondary mb-2 text-sm font-medium'>
+            <div className='rounded-lg bg-tertiary p-3'>
+              <h4 className='mb-2 text-sm font-medium text-secondary'>
                 Controls
               </h4>
               <div className='space-y-1 text-xs text-gray-400'>
@@ -715,8 +703,8 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
       </div>
 
       {/* Footer */}
-      <div className='border-tertiary border-t p-3'>
-        <p className='text-secondary text-center text-xs'>
+      <div className='border-t border-tertiary p-3'>
+        <p className='text-center text-xs text-secondary'>
           {activeTab === 'themes'
             ? 'Themes are automatically saved'
             : 'Music dock settings persist across sessions'}

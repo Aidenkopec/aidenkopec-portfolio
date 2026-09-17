@@ -54,9 +54,9 @@ const StatCard: React.FC<StatCardProps> = ({
     variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
     className='min-w-[160px] flex-1'
   >
-    <div className='bg-tertiary border-tertiary transform-gpu rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
+    <div className='transform-gpu rounded-xl border border-tertiary bg-tertiary p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
       <div className='mb-2 flex items-center justify-between'>
-        <div className='text-secondary text-xl font-bold'>
+        <div className='text-xl font-bold text-secondary'>
           {loading ? (
             <div className='h-6 w-6 animate-pulse rounded bg-gray-600'></div>
           ) : (
@@ -69,7 +69,7 @@ const StatCard: React.FC<StatCardProps> = ({
           </div>
         )}
       </div>
-      <p className='text-secondary text-xs font-medium'>{title}</p>
+      <p className='text-xs font-medium text-secondary'>{title}</p>
     </div>
   </motion.div>
 );
@@ -146,8 +146,8 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 
   if (loading) {
     return (
-      <div className='bg-tertiary border-tertiary rounded-xl border p-4'>
-        <h4 className='text-secondary mb-4 text-[16px] font-semibold'>
+      <div className='rounded-xl border border-tertiary bg-tertiary p-4'>
+        <h4 className='mb-4 text-[16px] font-semibold text-secondary'>
           Contribution Activity
         </h4>
         <div className='flex items-center justify-center p-4'>
@@ -202,11 +202,11 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 
   return (
     <div
-      className='bg-tertiary border-tertiary rounded-xl border p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
+      className='rounded-xl border border-tertiary bg-tertiary p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
       style={{ position: 'relative', overflow: 'visible' }}
     >
       <div className='mb-4 flex items-center justify-between'>
-        <h4 className='text-secondary text-[16px] font-semibold'>
+        <h4 className='text-[16px] font-semibold text-secondary'>
           {total} contributions in{' '}
           {selectedYear === 'last' ? 'the last year' : selectedYear}
         </h4>
@@ -215,7 +215,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
         <div className='relative' ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className='bg-black-100 border-tertiary text-secondary flex items-center justify-between gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
+            className='flex items-center justify-between gap-1.5 rounded-md border border-tertiary bg-black-100 px-2.5 py-1.5 text-xs font-medium text-secondary transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
           >
             <span className='flex items-center gap-1.5 text-[11px] sm:text-sm'>
               📅 {selectedYear === 'last' ? 'Last year' : selectedYear}
@@ -228,13 +228,13 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
           </button>
 
           {dropdownOpen && (
-            <div className='bg-black-100 border-tertiary absolute top-full right-0 z-20 mt-1.5 min-w-[120px] overflow-hidden rounded-md border shadow-lg shadow-black/30 sm:min-w-[140px]'>
+            <div className='absolute top-full right-0 z-20 mt-1.5 min-w-[120px] overflow-hidden rounded-md border border-tertiary bg-black-100 shadow-lg shadow-black/30 sm:min-w-[140px]'>
               <div className='py-0.5'>
                 {availableYears.map((year) => (
                   <button
                     key={year}
                     onClick={() => handleYearChange(year.toString())}
-                    className={`text-secondary hover:text-secondary w-full px-3 py-2 text-left text-xs font-medium transition-colors duration-150 hover:bg-[var(--text-color-variable)]/10 sm:px-4 sm:py-2.5 sm:text-sm ${
+                    className={`w-full px-3 py-2 text-left text-xs font-medium text-secondary transition-colors duration-150 hover:bg-[var(--text-color-variable)]/10 hover:text-secondary sm:px-4 sm:py-2.5 sm:text-sm ${
                       selectedYear === year.toString()
                         ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                         : ''
@@ -270,7 +270,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
               className='mx-auto min-w-fit py-6'
               style={{ width: 'max-content' }}
             >
-              <div className='text-secondary mb-2 flex justify-start pl-6 text-xs'>
+              <div className='mb-2 flex justify-start pl-6 text-xs text-secondary'>
                 {monthLabels.map(({ label, span }, i) => (
                   <div
                     key={i}
@@ -288,7 +288,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
               {/* Day Labels */}
               <div className='mb-3 flex'>
                 {/* Day of week labels */}
-                <div className='text-secondary mr-2 flex flex-col justify-start gap-[2px] pt-1 text-xs'>
+                <div className='mr-2 flex flex-col justify-start gap-[2px] pt-1 text-xs text-secondary'>
                   <div className='h-3 text-[10px] leading-3'></div>
                   <div className='h-3 text-[10px] leading-3'>Mon</div>
                   <div className='h-3 text-[10px] leading-3'></div>
@@ -397,7 +397,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
               </div>
 
               {/* Enhanced Legend */}
-              <div className='text-secondary mt-4 flex items-center justify-between text-xs'>
+              <div className='mt-4 flex items-center justify-between text-xs text-secondary'>
                 <div className='text-[11px] opacity-75'>
                   Contribution levels
                 </div>
@@ -433,7 +433,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
           </div>
         </div>
       ) : (
-        <div className='text-secondary py-4 text-center text-sm'>
+        <div className='py-4 text-center text-sm text-secondary'>
           No contribution data available
         </div>
       )}
@@ -448,8 +448,8 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
             transform: 'translate(-50%, -100%)',
           }}
         >
-          <div className='text-secondary rounded-lg border border-gray-600 bg-gray-900 px-3 py-2 text-xs whitespace-nowrap shadow-2xl'>
-            <div className='text-secondary font-medium'>{tooltip.content}</div>
+          <div className='rounded-lg border border-gray-600 bg-gray-900 px-3 py-2 text-xs whitespace-nowrap text-secondary shadow-2xl'>
+            <div className='font-medium text-secondary'>{tooltip.content}</div>
             <div className='text-[11px] text-gray-300'>{tooltip.date}</div>
             {/* Arrow */}
             <div className='absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-900'></div>
@@ -601,8 +601,8 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
         variants={fadeIn('up', 'spring', 0.4, 0.75) as any}
         className='w-full'
       >
-        <div className='bg-tertiary border-tertiary transform-gpu rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
-          <h4 className='text-secondary mb-4 text-[16px] font-semibold'>
+        <div className='transform-gpu rounded-xl border border-tertiary bg-tertiary p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
+          <h4 className='mb-4 text-[16px] font-semibold text-secondary'>
             Open Source Activity
           </h4>
 
@@ -612,17 +612,17 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
                 <motion.div
                   key={`${commit.sha || commit.date}-${index}`}
                   variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
-                  className='bg-black-100 border-tertiary rounded-lg border p-3 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
+                  className='rounded-lg border border-tertiary bg-black-100 p-3 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
                 >
                   <div className='mb-1 flex items-center gap-3'>
-                    <span className='text-secondary truncate text-sm font-medium'>
+                    <span className='truncate text-sm font-medium text-secondary'>
                       {formatCommitMessage(commit.message, 50)}
                     </span>
-                    <span className='bg-tertiary rounded px-2 py-1 font-mono text-xs text-[var(--text-color-variable)]'>
+                    <span className='rounded bg-tertiary px-2 py-1 font-mono text-xs text-[var(--text-color-variable)]'>
                       {commit.sha.substring(0, 7)}
                     </span>
                   </div>
-                  <div className='text-secondary flex items-center gap-4 text-xs'>
+                  <div className='flex items-center gap-4 text-xs text-secondary'>
                     <span className='flex items-center gap-1'>
                       📁 {commit.repo}
                     </span>
@@ -634,7 +634,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
               ))}
             </div>
           ) : (
-            <div className='text-secondary py-4 text-center text-sm'>
+            <div className='py-4 text-center text-sm text-secondary'>
               No recent public commits - see contribution graph above for full
               activity
             </div>

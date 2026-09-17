@@ -18,8 +18,10 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
     '#a5b4fc',
     '#c4b5fd',
   ];
-  const getRandomColor = () => {
-    return colors[Math.floor(Math.random() * colors.length)];
+  // Picked from the cell coordinates rather than Math.random so the hover
+  // colour is stable across renders and safe to compute during render.
+  const getCellColor = (row: number, col: number) => {
+    return colors[(row * 7 + col * 3) % colors.length];
   };
 
   return (
@@ -41,7 +43,7 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
           {cols.map((_, j) => (
             <motion.div
               whileHover={{
-                backgroundColor: `${getRandomColor()}`,
+                backgroundColor: getCellColor(i, j),
                 transition: { duration: 0 },
               }}
               animate={{

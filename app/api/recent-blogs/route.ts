@@ -5,21 +5,21 @@ import { getRecentBlogPosts } from '@/lib/blog';
 export async function GET() {
   try {
     const recentPosts = await getRecentBlogPosts(3);
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       recentPosts,
-      success: true 
+      success: true,
     });
   } catch (error) {
     console.error('Error fetching recent blog posts:', error);
-    
+
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to fetch recent blog posts',
         recentPosts: [],
-        success: false 
+        success: false,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

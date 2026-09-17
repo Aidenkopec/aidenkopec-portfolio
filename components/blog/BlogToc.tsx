@@ -58,7 +58,7 @@ export function BlogToc({
 
   return (
     <div className={cn('w-full', className)}>
-      <h3 className='text-secondary mb-4 text-lg font-semibold'>
+      <h3 className='mb-4 text-lg font-semibold text-secondary'>
         Table of Contents
       </h3>
 

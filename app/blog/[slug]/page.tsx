@@ -74,24 +74,24 @@ function BlogPostSkeleton() {
     <div className='mx-auto max-w-4xl animate-pulse'>
       {/* Header Skeleton */}
       <div className='mb-12'>
-        <div className='bg-black-100 mb-6 h-4 w-24 rounded'></div>
-        <div className='bg-black-100 mb-6 h-12 rounded'></div>
-        <div className='bg-black-100 mb-8 h-6 w-3/4 rounded'></div>
+        <div className='mb-6 h-4 w-24 rounded bg-black-100'></div>
+        <div className='mb-6 h-12 rounded bg-black-100'></div>
+        <div className='mb-8 h-6 w-3/4 rounded bg-black-100'></div>
         <div className='mb-8 flex gap-4'>
-          <div className='bg-black-100 h-4 w-32 rounded'></div>
-          <div className='bg-black-100 h-4 w-24 rounded'></div>
+          <div className='h-4 w-32 rounded bg-black-100'></div>
+          <div className='h-4 w-24 rounded bg-black-100'></div>
         </div>
         <div className='flex gap-2'>
-          <div className='bg-black-100 h-6 w-16 rounded-full'></div>
-          <div className='bg-black-100 h-6 w-20 rounded-full'></div>
-          <div className='bg-black-100 h-6 w-18 rounded-full'></div>
+          <div className='h-6 w-16 rounded-full bg-black-100'></div>
+          <div className='h-6 w-20 rounded-full bg-black-100'></div>
+          <div className='h-6 w-18 rounded-full bg-black-100'></div>
         </div>
       </div>
 
       {/* Content Skeleton */}
       <div className='space-y-4'>
         {[...Array(8)].map((_, i) => (
-          <div key={i} className='bg-black-100 h-4 w-full rounded'></div>
+          <div key={i} className='h-4 w-full rounded bg-black-100'></div>
         ))}
       </div>
     </div>

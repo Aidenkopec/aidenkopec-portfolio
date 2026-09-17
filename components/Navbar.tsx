@@ -32,11 +32,15 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (!toggle) {
+  // Closing the mobile dropdown takes the customization menu with it. The
+  // Customizations button below closes the dropdown on its own while keeping
+  // the menu open, so it calls setToggle directly instead.
+  const setMobileMenuOpen = (open: boolean) => {
+    setToggle(open);
+    if (!open) {
       setCustomizationMenuMobile(false);
     }
-  }, [toggle]);
+  };
 
   return (
     <nav
@@ -68,7 +72,7 @@ const Navbar: React.FC = () => {
           <div className='relative flex items-center gap-2'>
             {/* Logo animation dot */}
             <div className='h-2 w-2 animate-pulse rounded-full bg-[var(--text-color-variable)]' />
-            <p className='text-secondary flex cursor-pointer text-[18px] font-bold transition-colors duration-300 group-hover:text-[var(--text-color-variable)]'>
+            <p className='flex cursor-pointer text-[18px] font-bold text-secondary transition-colors duration-300 group-hover:text-[var(--text-color-variable)]'>
               Aiden Kopec &nbsp;
               <span className='hidden opacity-80 transition-opacity duration-300 group-hover:opacity-100 sm:block'>
                 {' '}
@@ -160,7 +164,7 @@ const Navbar: React.FC = () => {
                 ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                 : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
             }`}
-            onClick={() => setToggle(!toggle)}
+            onClick={() => setMobileMenuOpen(!toggle)}
           >
             {/* Animated background */}
             <div
@@ -229,7 +233,7 @@ const Navbar: React.FC = () => {
                         : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
                     }`}
                     onClick={() => {
-                      setToggle(!toggle);
+                      setMobileMenuOpen(!toggle);
                       setActive(nav.title);
                     }}
                   >

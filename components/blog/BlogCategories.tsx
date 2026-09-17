@@ -36,11 +36,11 @@ export function BlogCategories({
               <Filter className='h-4 w-4 text-[var(--text-color-variable)] sm:h-5 sm:w-5' />
             </div>
             <div className='flex flex-col'>
-              <h3 className='text-secondary text-xl leading-tight font-bold sm:text-2xl'>
+              <h3 className='text-xl leading-tight font-bold text-secondary sm:text-2xl'>
                 Browse Categories
               </h3>
               {/* Mobile Results Counter - inline with title */}
-              <div className='text-secondary/70 mt-0.5 text-xs sm:hidden'>
+              <div className='mt-0.5 text-xs text-secondary/70 sm:hidden'>
                 {selectedCategory ? (
                   <span>
                     {resultCount} of {totalCount} articles
@@ -53,7 +53,7 @@ export function BlogCategories({
           </div>
 
           {/* Desktop Results Counter */}
-          <div className='text-secondary hidden text-sm sm:block'>
+          <div className='hidden text-sm text-secondary sm:block'>
             {selectedCategory ? (
               <span>
                 {resultCount} of {totalCount} articles
@@ -72,7 +72,7 @@ export function BlogCategories({
           onClick={() => onCategorySelect(null)}
           className={`flex h-11 items-center justify-center rounded-2xl border-2 px-4 py-2.5 text-sm font-semibold transition-all duration-300 sm:inline-flex sm:h-12 sm:w-auto sm:rounded-full sm:px-5 ${
             selectedCategory === null
-              ? 'text-secondary border-[var(--text-color-variable)] bg-[var(--text-color-variable)] shadow-[var(--text-color-variable)]/30 shadow-xl'
+              ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-secondary shadow-[var(--text-color-variable)]/30 shadow-xl'
               : 'border-black-100/50 bg-tertiary/80 text-secondary backdrop-blur-sm hover:border-[var(--text-color-variable)]/40 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
           }`}
           whileHover={{ scale: 1.02, y: -1 }}
@@ -91,7 +91,7 @@ export function BlogCategories({
             transition={{ delay: index * 0.08, type: 'spring', stiffness: 300 }}
             className={`relative flex h-11 items-center justify-center rounded-2xl border-2 px-4 py-2.5 text-sm font-semibold transition-all duration-300 sm:inline-flex sm:h-12 sm:w-auto sm:rounded-full sm:px-5 ${
               selectedCategory === category
-                ? 'text-secondary border-[var(--text-color-variable)] bg-[var(--text-color-variable)] shadow-[var(--text-color-variable)]/30 shadow-xl'
+                ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-secondary shadow-[var(--text-color-variable)]/30 shadow-xl'
                 : 'border-black-100/50 bg-tertiary/80 text-secondary backdrop-blur-sm hover:border-[var(--text-color-variable)]/40 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
             }`}
             whileHover={{ scale: 1.02, y: -1 }}

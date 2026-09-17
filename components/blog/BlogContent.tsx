@@ -25,7 +25,7 @@ export function BlogContent({
       {/* Mobile Table of Contents - Displayed above content on mobile */}
       {headings.length > 0 && (
         <div className='mb-8 lg:hidden'>
-          <div className='bg-tertiary border-black-200 rounded-lg border p-6'>
+          <div className='rounded-lg border border-black-200 bg-tertiary p-6'>
             <BlogToc headings={headings} isMobile={true} />
           </div>
         </div>
@@ -43,7 +43,7 @@ export function BlogContent({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className='bg-tertiary border-black-200 rounded-lg border p-6'
+                  className='rounded-lg border border-black-200 bg-tertiary p-6'
                 >
                   <BlogShare slug={slug} title={title} />
                 </motion.div>
@@ -57,7 +57,7 @@ export function BlogContent({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className={`prose prose-lg prose-invert bg-tertiary border-black-200 max-w-none rounded-xl border p-8 ${
+          className={`prose prose-lg prose-invert max-w-none rounded-xl border border-black-200 bg-tertiary p-8 ${
             headings.length > 0 ? 'lg:col-span-8' : 'lg:col-span-12'
           }`}
         >
@@ -72,7 +72,7 @@ export function BlogContent({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className='bg-tertiary border-black-200 rounded-lg border p-6'
+            className='rounded-lg border border-black-200 bg-tertiary p-6'
           >
             <BlogShare slug={slug} title={title} />
           </motion.div>

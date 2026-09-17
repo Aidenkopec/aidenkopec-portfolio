@@ -267,10 +267,20 @@ const Ring: React.FC<RingProps> = ({
     });
   }, [textures]);
 
-  const spin = useRef(cursorRef.current);
+  // Seeded from the live cursor on the first frame rather than during render,
+  // so the ring starts where the cursor already is instead of easing in from 0.
+  const spin = useRef(0);
+  const spinSeeded = useRef(false);
 
   useFrame((_, delta) => {
     const wanted = cursorRef.current + dragOffset.current;
+
+    if (!spinSeeded.current) {
+      spinSeeded.current = true;
+      spin.current = wanted;
+      return;
+    }
+
     const ease = 1 - Math.pow(0.0015, delta);
     spin.current = THREE.MathUtils.lerp(spin.current, wanted, ease);
   });

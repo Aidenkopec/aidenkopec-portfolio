@@ -31,14 +31,14 @@ export function BlogCard({
       >
         <Link href={`/blog/${post.slug}`}>
           <motion.div
-            className='bg-tertiary border-black-100 flex min-h-[300px] flex-col overflow-hidden rounded-xl border shadow-sm transition-all duration-300 hover:border-[var(--text-color-variable)]/30 hover:shadow-xl lg:flex-row'
+            className='flex min-h-[300px] flex-col overflow-hidden rounded-xl border border-black-100 bg-tertiary shadow-sm transition-all duration-300 hover:border-[var(--text-color-variable)]/30 hover:shadow-xl lg:flex-row'
             whileHover={{
               y: -5,
               transition: { duration: 0.3 },
             }}
           >
             {/* Thumbnail Container for Single Featured */}
-            <div className='bg-black-100/20 flex items-center justify-center p-4 sm:p-6 lg:w-1/2 lg:p-8'>
+            <div className='flex items-center justify-center bg-black-100/20 p-4 sm:p-6 lg:w-1/2 lg:p-8'>
               {post.coverImage ? (
                 <div className='relative h-32 w-full sm:h-40 lg:h-48'>
                   <Image
@@ -71,14 +71,14 @@ export function BlogCard({
                 )}
 
                 <motion.h2
-                  className='text-secondary mb-2 line-clamp-3 text-xl font-semibold transition-colors duration-200 group-hover:text-[var(--text-color-variable)] sm:mb-3 sm:text-2xl lg:text-3xl xl:text-4xl'
+                  className='mb-2 line-clamp-3 text-xl font-semibold text-secondary transition-colors duration-200 group-hover:text-[var(--text-color-variable)] sm:mb-3 sm:text-2xl lg:text-3xl xl:text-4xl'
                   whileHover={{ x: 2 }}
                   transition={{ duration: 0.2 }}
                 >
                   {post.title}
                 </motion.h2>
 
-                <p className='text-secondary mb-4 line-clamp-4 text-sm leading-relaxed sm:mb-5 sm:line-clamp-5 sm:text-base lg:mb-6 lg:text-lg'>
+                <p className='mb-4 line-clamp-4 text-sm leading-relaxed text-secondary sm:mb-5 sm:line-clamp-5 sm:text-base lg:mb-6 lg:text-lg'>
                   {post.description}
                 </p>
 
@@ -102,7 +102,7 @@ export function BlogCard({
 
               {/* Footer */}
               <div className='mt-auto'>
-                <div className='text-secondary flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:text-sm'>
+                <div className='flex flex-col gap-2 text-xs text-secondary sm:flex-row sm:items-center sm:justify-between sm:text-sm'>
                   <div className='flex items-center gap-3 sm:gap-4'>
                     <motion.div
                       className='flex items-center gap-1'
@@ -154,7 +154,7 @@ export function BlogCard({
     >
       <Link href={`/blog/${post.slug}`}>
         <motion.div
-          className='bg-tertiary border-black-100 flex h-full flex-col overflow-hidden rounded-xl border shadow-sm transition-all duration-300 hover:border-[var(--text-color-variable)]/30 hover:shadow-xl'
+          className='flex h-full flex-col overflow-hidden rounded-xl border border-black-100 bg-tertiary shadow-sm transition-all duration-300 hover:border-[var(--text-color-variable)]/30 hover:shadow-xl'
           whileHover={{
             y: -5,
             transition: { duration: 0.3 },
@@ -183,7 +183,7 @@ export function BlogCard({
                 <motion.span
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className='text-secondary inline-flex items-center rounded-full bg-[var(--text-color-variable)] px-2 py-0.5 text-xs font-medium shadow-lg sm:px-2.5 sm:py-1 lg:px-3'
+                  className='inline-flex items-center rounded-full bg-[var(--text-color-variable)] px-2 py-0.5 text-xs font-medium text-secondary shadow-lg sm:px-2.5 sm:py-1 lg:px-3'
                   whileHover={{ scale: 1.05 }}
                 >
                   {post.tags[0]}
@@ -197,7 +197,7 @@ export function BlogCard({
             <div>
               {/* Title */}
               <motion.h2
-                className='text-secondary mb-2 line-clamp-2 text-lg font-semibold transition-colors duration-200 group-hover:text-[var(--text-color-variable)] sm:mb-3 sm:text-xl lg:text-xl'
+                className='mb-2 line-clamp-2 text-lg font-semibold text-secondary transition-colors duration-200 group-hover:text-[var(--text-color-variable)] sm:mb-3 sm:text-xl lg:text-xl'
                 whileHover={{ x: 2 }}
                 transition={{ duration: 0.2 }}
               >
@@ -205,7 +205,7 @@ export function BlogCard({
               </motion.h2>
 
               {/* Description */}
-              <p className='text-secondary mb-3 line-clamp-2 text-sm leading-relaxed sm:mb-4 sm:line-clamp-3 sm:text-base lg:text-base'>
+              <p className='mb-3 line-clamp-2 text-sm leading-relaxed text-secondary sm:mb-4 sm:line-clamp-3 sm:text-base lg:text-base'>
                 {post.description}
               </p>
 
@@ -230,7 +230,7 @@ export function BlogCard({
             {/* Footer */}
             <div className='mt-auto'>
               {/* Meta Information */}
-              <div className='text-secondary flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:text-sm'>
+              <div className='flex flex-col gap-2 text-xs text-secondary sm:flex-row sm:items-center sm:justify-between sm:text-sm'>
                 <div className='flex items-center gap-2 sm:gap-3'>
                   <motion.div
                     className='flex items-center gap-1'
