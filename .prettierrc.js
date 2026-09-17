@@ -19,7 +19,7 @@ module.exports = {
   plugins: ['prettier-plugin-tailwindcss'],
 
   // Tailwind CSS class sorting
-  tailwindConfig: './tailwind.config.js',
+  tailwindStylesheet: './app/globals.css',
   tailwindFunctions: ['clsx', 'cn', 'cva'],
 
   // File patterns
