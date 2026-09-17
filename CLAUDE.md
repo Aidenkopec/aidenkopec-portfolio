@@ -108,7 +108,6 @@ npm run format:check
   - **`blog/`** - Blog-related UI components (BlogCard, BlogContent, BlogNavigation, etc.)
   - **`emails/`** - React Email components for transactional emails
   - **`ui/`** - Reusable UI components and animations
-  - **`magicui/`** - MagicUI component library utilities
 - **`lib/`** - Utility functions and services
   - **`blog.ts`** - Blog post management (parsing MDX, fetching posts, filtering)
   - **`github-service.ts`** - GitHub API integration with caching
@@ -210,7 +209,7 @@ Required for full functionality:
 
 - **Server vs Client Components**: Projects and RecentBlogs use split architecture (Server + Client components)
 - **Email Templates**: React Email components for contact form (UserAcknowledgment, ContactNotification)
-- **Utility Components**: Marquee, confetti, background boxes under `components/magicui/` and `components/ui/`
+- **Utility Components**: Button and background boxes under `components/ui/`
 - **3D Canvas**: Separate components for each canvas element to allow lazy loading
 
 ## Performance Considerations

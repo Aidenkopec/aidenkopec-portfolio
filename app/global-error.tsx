@@ -82,7 +82,10 @@ export default function GlobalError({
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => (window.location.href = '/')}
+                // Hard navigation, not a router push: the React tree is
+                // already broken here, and replace keeps the crashed page out
+                // of history.
+                onClick={() => window.location.replace('/')}
                 className='rounded-lg border-2 border-white px-10 py-4 text-lg font-bold text-white transition-all duration-200 hover:bg-white hover:text-slate-900'
               >
                 Fresh Start

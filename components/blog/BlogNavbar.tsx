@@ -27,11 +27,15 @@ const BlogNavbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (!toggle) {
+  // Closing the mobile dropdown takes the customization menu with it. The
+  // Customizations button below closes the dropdown on its own while keeping
+  // the menu open, so it calls setToggle directly instead.
+  const setMobileMenuOpen = (open: boolean) => {
+    setToggle(open);
+    if (!open) {
       setCustomizationMenuMobile(false);
     }
-  }, [toggle]);
+  };
 
   const blogNavLinks = [
     { id: 'home', title: 'Home', href: '/' },
@@ -143,7 +147,7 @@ const BlogNavbar: React.FC = () => {
                 ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                 : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
             }`}
-            onClick={() => setToggle(!toggle)}
+            onClick={() => setMobileMenuOpen(!toggle)}
           >
             {/* Animated background */}
             <div
@@ -208,7 +212,7 @@ const BlogNavbar: React.FC = () => {
                   <Link
                     href={nav.href}
                     className='relative block w-full cursor-pointer overflow-hidden rounded-lg px-4 py-3 text-secondary transition-all duration-300 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
-                    onClick={() => setToggle(false)}
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     {/* Slide-in animation background */}
                     <div className='absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-[var(--text-color-variable)]/10 to-transparent transition-transform duration-300 group-hover:translate-x-0' />

@@ -7,6 +7,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { BlogCategories } from '@/components/blog/BlogCategories';
 import { BlogHero } from '@/components/blog/BlogHero';
+import BlogNavbar from '@/components/blog/BlogNavbar';
 import { BlogPagination } from '@/components/blog/BlogPagination';
 import { useBlogSearch } from '@/hooks/useBlogSearch';
 import { BlogPost } from '@/lib/types';
@@ -208,8 +209,6 @@ function BlogContent() {
     </>
   );
 }
-
-import BlogNavbar from '@/components/blog/BlogNavbar';
 
 export default function BlogPage() {
   return (

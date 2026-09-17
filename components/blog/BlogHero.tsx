@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen, Filter, Search, Tag } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { BlogPost } from '@/lib/types';
 
@@ -16,32 +16,26 @@ interface BlogHeroProps {
 
 export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
 
   // Filter posts based on search term
-  useEffect(() => {
-    const latestPosts = recentPosts.slice(0, 3);
-
+  const filteredPosts = useMemo<BlogPost[]>(() => {
     if (!searchTerm.trim()) {
-      setFilteredPosts(latestPosts);
-      return;
+      return recentPosts.slice(0, 3);
     }
 
-    const filtered = recentPosts.filter(
+    return recentPosts.filter(
       (post) =>
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.tags.some((tag) =>
           tag.toLowerCase().includes(searchTerm.toLowerCase()),
         ),
     );
+  }, [searchTerm, recentPosts]);
 
-    setFilteredPosts(filtered);
-
-    // Call parent search handler
-    if (onSearch) {
-      onSearch(searchTerm);
-    }
-  }, [searchTerm, recentPosts, onSearch]);
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
+    onSearch?.(term);
+  };
 
   const isSearchActive = searchTerm.trim().length > 0;
 
@@ -195,7 +189,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
                   <input
                     type='text'
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => handleSearchChange(e.target.value)}
                     className='w-full rounded-lg border border-black-100 bg-black-100 py-2.5 pr-4 pl-10 text-sm text-secondary placeholder-secondary transition-all focus:border-transparent focus:ring-2 focus:ring-[var(--text-color-variable)] focus:outline-none'
                     placeholder='Search articles...'
                   />

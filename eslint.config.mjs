@@ -18,7 +18,7 @@ const eslintConfig = [
       // TypeScript essentials (relaxed)
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', ignoreRestSiblings: true },
       ],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-empty-object-type': 'warn',
@@ -48,7 +48,7 @@ const eslintConfig = [
             'sibling',
             'index',
           ],
-          'newlines-between': 'always',
+          'newlines-between': 'always-and-inside-groups',
         },
       ],
     },

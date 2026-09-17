@@ -2,6 +2,7 @@
 import { useTheme } from 'next-themes';
 import React, { useEffect, useRef, useState } from 'react';
 
+import { useIsHydrated } from '../hooks/useIsHydrated';
 import { useMusicPlayer } from '../hooks/useMusicPlayer';
 import { getThemePreviewColors, themes } from '../styles';
 
@@ -17,10 +18,10 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   isMobile = false,
 }) => {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsHydrated();
   const [activeTab, setActiveTab] = useState<'themes' | 'music'>('themes');
   const menuRef = useRef<HTMLDivElement>(null);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const isFullScreen = isMobile && isOpen;
 
   const {
     volume,
@@ -34,19 +35,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     selectTrack,
     isPlaying,
   } = useMusicPlayer();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Auto-detect if we need fullscreen mode on mobile
-  useEffect(() => {
-    if (isMobile && isOpen) {
-      setIsFullScreen(true);
-    } else {
-      setIsFullScreen(false);
-    }
-  }, [isMobile, isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
