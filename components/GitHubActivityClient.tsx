@@ -5,9 +5,6 @@ import { DateTime } from 'luxon';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Marquee } from './magicui/marquee';
-import ProjectPlaceholder from './ProjectPlaceholder';
-
 import { GITHUB_URL } from '../constants';
 import {
   formatCommitMessage,
@@ -16,28 +13,10 @@ import {
   type GitHubData,
 } from '../lib/github-utils';
 import { github } from '../public/assets';
-import globe from '../public/assets/globe.svg';
 import { styles } from '../styles';
 import { fadeIn, textVariant } from '../utils';
 
 // Types for component props
-interface Project {
-  name: string;
-  description: string;
-  image?: any;
-  link: string | null;
-  isGitHub: boolean;
-}
-
-interface ProjectCardProps {
-  index: number;
-  name: string;
-  description: string;
-  image?: any;
-  link: string | null;
-  isGitHub: boolean;
-}
-
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -62,95 +41,6 @@ interface TooltipData {
   y: number;
   visible: boolean;
 }
-
-// Project Card Component
-const ProjectCard: React.FC<ProjectCardProps> = ({
-  index,
-  name,
-  description,
-  image,
-  link,
-  isGitHub,
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleSourceClick = (): void => {
-    if (link) {
-      window.open(link, '_blank');
-    }
-  };
-
-  return (
-    <motion.div
-      variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
-      className='relative'
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div
-        className={`relative h-[230px] w-full transform-gpu overflow-hidden rounded-xl border border-[var(--black-100)] bg-gradient-to-br from-[var(--tertiary-color)] via-[var(--black-100)] to-[var(--tertiary-color)] p-[1px] transition-all duration-300 ${isHovered ? 'scale-[1.02] shadow-[var(--text-color-variable)]/20 shadow-lg' : ''}`}
-      >
-        {/* Gradient border effect */}
-        <div
-          className={`absolute inset-0 rounded-xl bg-gradient-to-r from-[var(--text-color-variable)]/20 via-transparent to-[var(--text-color-variable)]/20 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-        />
-
-        {/* Main card content */}
-        <div className='relative h-full w-full rounded-xl bg-[var(--tertiary-color)] p-3'>
-          {/* Image section */}
-          <div className='relative mb-3 h-[80px] w-full overflow-hidden rounded-lg'>
-            {image ? (
-              <Image
-                src={image}
-                alt={`${name} project screenshot`}
-                fill
-                className={`object-cover transition-transform duration-500 ${isHovered ? 'scale-105' : ''}`}
-                sizes='(max-width: 768px) 100vw, 240px'
-              />
-            ) : (
-              <ProjectPlaceholder isHovered={isHovered} />
-            )}
-
-            {/* Gradient overlay */}
-            <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
-
-            {/* Icon button - GitHub or Website (only if link exists) */}
-            {link && (
-              <div className='absolute top-2 right-2'>
-                <div
-                  onClick={handleSourceClick}
-                  className='flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/80 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-[var(--text-color-variable)]'
-                >
-                  <Image
-                    src={isGitHub ? github : globe}
-                    alt={isGitHub ? 'source code' : 'visit website'}
-                    width={12}
-                    height={12}
-                    className='object-contain'
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Content section */}
-          <div className='flex h-[calc(100%-104px)] flex-col justify-center'>
-            <div>
-              <h3
-                className={`mb-2 line-clamp-1 text-[16px] font-bold transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--white-100)]'}`}
-              >
-                {name}
-              </h3>
-              <p className='line-clamp-5 text-[12px] leading-[16px] text-[var(--secondary-color)]/80'>
-                {description}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 // GitHub Stats Card Component
 const StatCard: React.FC<StatCardProps> = ({
@@ -581,74 +471,6 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
   );
 };
 
-// Main client components
-export const ProjectCards: React.FC<{ projects: Project[] }> = ({
-  projects,
-}) => {
-  // Dynamically split projects into two rows
-  const midPoint = Math.ceil(projects.length / 2);
-  const firstRow = projects.slice(0, midPoint);
-  const secondRow = projects.slice(midPoint);
-
-  return (
-    <div className='relative w-full overflow-hidden'>
-      {/* Background gradient effects */}
-      <div className='pointer-events-none absolute top-0 left-0 z-10 h-full w-20 bg-gradient-to-r from-[var(--primary-color)] to-transparent' />
-      <div className='pointer-events-none absolute top-0 right-0 z-10 h-full w-20 bg-gradient-to-l from-[var(--primary-color)] to-transparent' />
-
-      <div className='space-y-6'>
-        {/* First Row - Left to Right */}
-        <Marquee
-          pauseOnHover
-          className='cursor-pointer py-2 [--duration:45s] [--gap:1.5rem]'
-        >
-          {firstRow.map((project: Project, index: number) => (
-            <div
-              key={`project-row1-${index}`}
-              className='w-[240px] flex-shrink-0 hover:z-10'
-            >
-              <ProjectCard
-                index={index}
-                name={project.name}
-                description={project.description}
-                image={project.image}
-                link={project.link}
-                isGitHub={project.isGitHub}
-              />
-            </div>
-          ))}
-        </Marquee>
-
-        {/* Second Row - Right to Left */}
-        <Marquee
-          pauseOnHover
-          reverse
-          className='cursor-pointer py-2 [--duration:45s] [--gap:1.5rem]'
-        >
-          {secondRow.map((project: Project, index: number) => (
-            <div
-              key={`project-row2-${index}`}
-              className='w-[240px] flex-shrink-0 hover:z-10'
-            >
-              <ProjectCard
-                index={index + midPoint}
-                name={project.name}
-                description={project.description}
-                image={project.image}
-                link={project.link}
-                isGitHub={project.isGitHub}
-              />
-            </div>
-          ))}
-        </Marquee>
-      </div>
-
-      {/* Subtle ambient glow effect */}
-      <div className='pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-[var(--text-color-variable)]/[0.02] to-transparent' />
-    </div>
-  );
-};
-
 export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
   githubData,
 }) => {
@@ -813,7 +635,8 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
             </div>
           ) : (
             <div className='text-secondary py-4 text-center text-sm'>
-              No recent public commits - see contribution graph above for full activity
+              No recent public commits - see contribution graph above for full
+              activity
             </div>
           )}
         </div>
@@ -822,43 +645,15 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   );
 };
 
-// Animated Header Components for Client-side rendering
-export const ProjectsHeader: React.FC = () => {
+export const GitHubActivityHeader: React.FC = () => {
   return (
     <motion.div variants={textVariant() as any}>
-      <p className={`${styles.sectionSubText}`}>My work & contributions</p>
-      <h2 className={`${styles.sectionHeadText}`}>Projects & Code.</h2>
-    </motion.div>
-  );
-};
-
-export const ProjectsDescription: React.FC = () => {
-  return (
-    <div className='flex w-full'>
-      <motion.p
-        variants={fadeIn('up', 'spring', 0.1, 1) as any}
-        className='text-secondary mt-3 max-w-3xl text-[17px] leading-[30px]'
-      >
-        A collection of projects that showcase problem-solving through
-        development. Whether helping couples coordinate their weddings or
-        building tools for crypto trading, each application represents learning,
-        iteration, and delivering functional solutions. Each one solves a
-        different problem in its own way.
-      </motion.p>
-    </div>
-  );
-};
-
-export const ProjectsSectionHeader: React.FC<{
-  title: string;
-  className?: string;
-  showGitHubLink?: boolean;
-}> = ({ title, className = '', showGitHubLink = false }) => {
-  return (
-    <motion.div variants={textVariant() as any} className={className}>
-      <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <h3 className='text-secondary text-[24px] font-bold'>{title}</h3>
-        {showGitHubLink && <GitHubLink />}
+      <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between'>
+        <div>
+          <p className={`${styles.sectionSubText}`}>Measured, not estimated</p>
+          <h2 className={`${styles.sectionHeadText}`}>GitHub Activity.</h2>
+        </div>
+        <GitHubLink />
       </div>
     </motion.div>
   );
