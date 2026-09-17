@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 
 import { MusicProvider } from '@/context/MusicContext';
 import './globals.css';
@@ -98,6 +99,7 @@ export default function RootLayout({
         >
           <MusicProvider>{children}</MusicProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
