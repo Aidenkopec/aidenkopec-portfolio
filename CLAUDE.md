@@ -207,7 +207,7 @@ Required for full functionality:
 
 ## Component Organization Notes
 
-- **Server vs Client Components**: Projects and RecentBlogs use split architecture (Server + Client components)
+- **Server vs Client Components**: Projects, RecentBlogs and the blog index use a split architecture. The server half reads data (constants or `lib/blog.ts`) and passes it as props to a client island (`ProjectsShowcase`, `RecentBlogsClient`, `BlogIndex`). Never fetch local content over HTTP from a client component. `components/GitHubActivity.tsx` is the reference for the server plus cached data plus client island shape.
 - **Email Templates**: React Email components for contact form (UserAcknowledgment, ContactNotification)
 - **Utility Components**: Button and background boxes under `components/ui/`
 - **3D Canvas**: Separate components for each canvas element to allow lazy loading
@@ -273,3 +273,13 @@ The blog explores practical AI and automation applications:
 - Perfect success stories without context of failures
 - Forced weekly content or artificial deadlines
 - Teaching tone - show and inspire, don't lecture
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

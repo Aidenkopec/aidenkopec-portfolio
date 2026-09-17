@@ -3,6 +3,7 @@ import { ThemeProvider } from 'next-themes';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 
+import { GITHUB_URL } from '@/constants';
 import { MusicProvider } from '@/context/MusicContext';
 import './globals.css';
 
@@ -23,6 +24,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://aidenkopec.com'),
+  alternates: {
+    canonical: '/',
+  },
   title: 'Aiden Kopec - Full-Stack Software Developer Portfolio',
   description:
     'Aiden Kopec is a Full-Stack Software Developer specializing in scalable web apps, AI tools, and backend automations. Delivering $2M+ in business impact with expertise in Next.js, Vue.js, TypeScript, Node.js, EdgeDB, and modern technologies for efficiency and growth.',
@@ -65,6 +69,20 @@ export const metadata: Metadata = {
   },
 };
 
+// Structured data for the knowledge panel on a name search.
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Aiden Kopec',
+  url: 'https://aidenkopec.com',
+  image: 'https://aidenkopec.com/assets/logo.png',
+  jobTitle: 'Full-Stack Software Developer',
+  description:
+    'Full-Stack Software Developer specializing in scalable web apps, AI tools, and backend automations.',
+  // Add a LinkedIn or X profile URL here to strengthen entity matching.
+  sameAs: [GITHUB_URL],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -75,6 +93,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          type='application/ld+json'
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
         <ThemeProvider
           attribute='class'
           themes={['glacierSapphire', 'obsidian', 'cosmicVoyage', 'auroraJade']}

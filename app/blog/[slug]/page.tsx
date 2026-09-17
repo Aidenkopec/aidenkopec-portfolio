@@ -8,6 +8,7 @@ import { BlogHeader } from '@/components/blog/BlogHeader';
 import BlogNavbar from '@/components/blog/BlogNavbar';
 import { BackToBlog, BlogNavigation } from '@/components/blog/BlogNavigation';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
+import { BlogPost } from '@/lib/types';
 import { useMDXComponents } from '@/mdx-components';
 
 interface BlogPostPageProps {
@@ -136,6 +137,29 @@ function BlogPostRenderer({
   );
 }
 
+function blogPostingSchema(post: BlogPost) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    keywords: post.tags,
+    author: {
+      '@type': 'Person',
+      name: post.author?.name || 'Aiden Kopec',
+      url: 'https://aidenkopec.com',
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://aidenkopec.com/blog/${post.slug}`,
+    },
+    ...(post.coverImage && {
+      image: `https://aidenkopec.com${post.coverImage}`,
+    }),
+  };
+}
+
 async function BlogPostContent({ slug }: { slug: string }) {
   const [post, allPosts] = await Promise.all([
     getBlogPostBySlug(slug),
@@ -153,11 +177,19 @@ async function BlogPostContent({ slug }: { slug: string }) {
   const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 
   return (
-    <BlogPostRenderer
-      post={post}
-      previousPost={previousPost}
-      nextPost={nextPost}
-    />
+    <>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(blogPostingSchema(post)),
+        }}
+      />
+      <BlogPostRenderer
+        post={post}
+        previousPost={previousPost}
+        nextPost={nextPost}
+      />
+    </>
   );
 }
 

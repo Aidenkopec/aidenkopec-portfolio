@@ -1,8 +1,7 @@
-import { cacheTag } from 'next/cache';
 import { Suspense } from 'react';
 
 import SectionWrapper from '../hoc/SectionWrapper';
-import { getGitHubData, preloadGitHubData } from '../lib/github-service';
+import { getGitHubData } from '../lib/github-service';
 
 import {
   GitHubActivityHeader,
@@ -53,28 +52,39 @@ const GitHubDashboardSkeleton = () => (
   </div>
 );
 
+// Rendered instead of fabricating zeros when GitHub is unreachable.
+function GitHubUnavailable() {
+  return (
+    <div className='rounded-2xl border border-[var(--black-100)] bg-[var(--tertiary-color)] p-8 text-center'>
+      <p className='text-lg font-semibold text-secondary'>
+        GitHub activity is temporarily unavailable
+      </p>
+      <p className='mt-2 text-sm text-secondary/70'>
+        The data could not be loaded right now. Please check back shortly.
+      </p>
+    </div>
+  );
+}
+
+// Both sections await the same cached snapshot, so a cold render fans out to
+// GitHub once rather than twice and the two halves cannot disagree.
 async function GitHubStatsSection() {
-  'use cache';
-  cacheTag('github-stats');
+  const result = await getGitHubData();
 
-  const githubData = await getGitHubData();
+  if (!result.ok) return <GitHubUnavailable />;
 
-  return <GitHubStats githubData={githubData} />;
+  return <GitHubStats githubData={result.data} />;
 }
 
 async function GitHubDashboardSection() {
-  'use cache';
-  cacheTag('github-dashboard');
+  const result = await getGitHubData();
 
-  const githubData = await getGitHubData();
+  if (!result.ok) return <GitHubUnavailable />;
 
-  return <GitHubDashboard githubData={githubData} />;
+  return <GitHubDashboard githubData={result.data} />;
 }
 
 const GitHubActivity: React.FC = () => {
-  // Preload GitHub data for better performance
-  preloadGitHubData();
-
   return (
     <SectionWrapper idName='github'>
       <GitHubActivityHeader />

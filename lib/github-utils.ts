@@ -89,6 +89,10 @@ export interface GitHubData {
   stats: GitHubStats;
 }
 
+// Callers must distinguish "GitHub is unreachable" from "this account has no
+// activity". The old zeroed fallback rendered the second when it meant the first.
+export type GitHubResult = { ok: true; data: GitHubData } | { ok: false };
+
 // Utility functions that can be used in both client and server components
 
 // Helper function to format commit message

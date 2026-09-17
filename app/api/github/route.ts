@@ -17,9 +17,9 @@ export async function GET(request: Request): Promise<NextResponse> {
     const url = new URL(request.url);
     const year = parseYear(url.searchParams.get('year'));
 
-    const githubData = await getGitHubData(year);
+    const result = await getGitHubData(year);
 
-    if (!githubData.user) {
+    if (!result.ok) {
       return NextResponse.json(
         { error: 'Unable to fetch GitHub data' },
         { status: 500 },
@@ -28,7 +28,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     // Calendar only. Clients read nothing else from this endpoint.
     return NextResponse.json(
-      { commitCalendar: githubData.commitCalendar },
+      { commitCalendar: result.data.commitCalendar },
       {
         headers: {
           'Cache-Control':

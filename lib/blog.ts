@@ -1,5 +1,9 @@
+import 'server-only';
+
 import fs from 'fs';
 import path from 'path';
+
+import { cache } from 'react';
 
 import { BlogPost, BlogMetadata, BlogTag, BlogHeading } from './types';
 
@@ -98,7 +102,7 @@ function parseMDXFile(filePath: string) {
 }
 
 // Get all blog posts
-export async function getAllBlogPosts(): Promise<BlogPost[]> {
+export const getAllBlogPosts = cache(async (): Promise<BlogPost[]> => {
   // Create blog directory if it doesn't exist
   if (!fs.existsSync(BLOG_DIRECTORY)) {
     fs.mkdirSync(BLOG_DIRECTORY, { recursive: true });
@@ -142,7 +146,7 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
   return posts
     .filter((post) => post.published)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-}
+});
 
 // Get a single blog post by slug
 export async function getBlogPostBySlug(

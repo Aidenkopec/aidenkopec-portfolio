@@ -11,7 +11,6 @@ interface BlogHeroProps {
   postsCount: number;
   recentPosts: BlogPost[];
   onSearch?: (term: string) => void;
-  onCategoryFilter?: (category: string) => void;
 }
 
 export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {

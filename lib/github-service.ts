@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { cacheLife, cacheTag } from 'next/cache';
 import { cache } from 'react';
 
 import 'server-only';
@@ -8,6 +9,7 @@ import {
   CommitWeek,
   ContributionCalendar,
   GitHubData,
+  GitHubResult,
   GitHubRepository,
   GitHubUser,
 } from './github-utils';
@@ -17,22 +19,17 @@ const GITHUB_USERNAME = 'Aidenkopec';
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-// Cached fetch helper with Next.js explicit caching
-const githubFetch = cache(async (url: string, options?: RequestInit) => {
+// Uncached transport. React.cache would never hit here because both GraphQL
+// call sites pass a fresh options object, and Next's data cache ignores POST,
+// so caching lives on fetchGitHubSnapshot instead.
+const githubFetch = async (url: string, options?: RequestInit) => {
   const headers: HeadersInit = {
     'User-Agent': 'GitHub-Portfolio-App',
     ...(GITHUB_TOKEN && { Authorization: `token ${GITHUB_TOKEN}` }),
     ...(options?.headers || {}),
   };
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-    next: {
-      revalidate: 3600, // 1 hour cache
-      tags: ['github-data'],
-    },
-  });
+  const response = await fetch(url, { ...options, headers });
 
   if (!response.ok) {
     console.error(
@@ -44,7 +41,7 @@ const githubFetch = cache(async (url: string, options?: RequestInit) => {
   }
 
   return response.json();
-});
+};
 
 // Strips the private account fields the authenticated /user endpoint returns.
 function toPublicUser(data: GitHubUser | null): GitHubUser | null {
@@ -322,64 +319,66 @@ function getContributionLevel(count: number): number {
   return 4;
 }
 
-// Main function to get all GitHub data, callable from Server Components
-export const getGitHubData = cache(
-  async (year: string = 'last'): Promise<GitHubData> => {
-    try {
-      const [userData, repositories, commits, commitCalendar] =
-        await Promise.all([
-          fetchUserData(),
-          fetchRepositories(),
-          fetchRecentCommits(),
-          fetchContributionCalendar(year),
-        ]);
+// One cached fan out for the whole section, so both halves of the dashboard
+// share a single snapshot instead of each doing its own four request fan out.
+//
+// Returns null rather than throwing: an exception escaping a 'use cache' scope
+// during prerender fails the build outright, which would mean a GitHub outage
+// at build time takes the whole site down. The short revalidate is what keeps a
+// failed snapshot from sticking around, since the cache stores null too.
+async function fetchGitHubSnapshot(year: string): Promise<GitHubData | null> {
+  'use cache';
+  cacheLife({ stale: 300, revalidate: 900, expire: 3600 });
+  cacheTag('github-data');
 
-      if (!userData || repositories.length === 0) {
-        throw new Error(
-          'Failed to fetch essential GitHub data (user or repos)',
-        );
-      }
+  try {
+    const [userData, repositories, commits, commitCalendar] = await Promise.all(
+      [
+        fetchUserData(),
+        fetchRepositories(),
+        fetchRecentCommits(),
+        fetchContributionCalendar(year),
+      ],
+    );
 
-      const totalStars = repositories.reduce(
-        (sum, repo) => sum + repo.stargazers_count,
-        0,
-      );
-      const totalForks = repositories.reduce(
-        (sum, repo) => sum + repo.forks_count,
-        0,
-      );
-      const createdAt = new Date(userData.created_at || '2022-01-10');
-      const contributionYears =
-        new Date().getFullYear() - createdAt.getFullYear();
-
-      return {
-        user: userData,
-        commits: commits.slice(0, 5),
-        commitCalendar,
-        stats: {
-          totalStars,
-          totalForks,
-          contributionYears,
-        },
-      };
-    } catch (error) {
-      console.error('Error in getGitHubData:', error);
-      // Return a structured error state or a fallback object
-      return {
-        user: null,
-        commits: [],
-        commitCalendar: { totalContributions: 0, weeks: [] },
-        stats: {
-          totalStars: 0,
-          totalForks: 0,
-          contributionYears: 0,
-        },
-      };
+    if (!userData || repositories.length === 0) {
+      console.error('GitHub snapshot missing essential data (user or repos)');
+      return null;
     }
+
+    const totalStars = repositories.reduce(
+      (sum, repo) => sum + repo.stargazers_count,
+      0,
+    );
+    const totalForks = repositories.reduce(
+      (sum, repo) => sum + repo.forks_count,
+      0,
+    );
+    const createdAt = new Date(userData.created_at || '2022-01-10');
+    const contributionYears =
+      new Date().getFullYear() - createdAt.getFullYear();
+
+    return {
+      user: userData,
+      commits: commits.slice(0, 5),
+      commitCalendar,
+      stats: {
+        totalStars,
+        totalForks,
+        contributionYears,
+      },
+    };
+  } catch (error) {
+    console.error('GitHub snapshot failed:', error);
+    return null;
+  }
+}
+
+// Main entry point, callable from Server Components. React.cache deduplicates
+// the two dashboard sections within a single render.
+export const getGitHubData = cache(
+  async (year: string = 'last'): Promise<GitHubResult> => {
+    const data = await fetchGitHubSnapshot(year);
+    return data ? { ok: true, data } : { ok: false };
   },
 );
-
-// Preload function for early data fetching
-export const preloadGitHubData = (year?: string) => {
-  void getGitHubData(year);
-};
