@@ -38,12 +38,13 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
       date={experience.date}
       iconStyle={{ background: experience.iconBg }}
       icon={
-        <div className='relative h-full w-full p-1'>
+        <div className='relative h-full w-full overflow-hidden rounded-full'>
           <Image
             src={experience.icon}
             alt={`${experience.company_name} logo`}
             fill
-            className='object-contain'
+            sizes='60px'
+            className='object-contain p-[15%]'
           />
         </div>
       }

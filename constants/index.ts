@@ -15,8 +15,10 @@ import redis from '../public/technologies/redis.png';
 
 // Company logos - Static imports
 import evans from '../public/companies/evans-consoles-logo.jpeg';
+import idotogetherlogo from '../public/companies/idotogether-logo.webp';
 import launchcode from '../public/companies/launchcode.png';
-import opit from '../public/companies/opit.png';
+import opit from '../public/companies/opit-logo.png';
+import solvexlogo from '../public/companies/solvex-logo.svg';
 
 // Project images - Static imports
 import digitaldreamscapes from '../public/projects/digital-dreamscapes.png';
@@ -143,24 +145,48 @@ const experiences: Experience[] = [
     title: 'Full-Stack Developer',
     company_name: 'Evans Consoles',
     icon: evans,
-    iconBg: '#E6DEDD',
+    iconBg: '#FFFFFF',
     date: 'January 2024 - Present',
     points: [
-      'Engineered an <strong>SSH-tunneled, pooled Sequelize client</strong> giving the core Node API live access to a remote ProcessMaker MySQL workflow database, hardened with TCP keepalives, automatic reconnection, and exponential backoff with jitter.',
-      'Designed and shipped a <strong>Project Budget Tracker</strong> replacing a shared Excel workbook with a live multi-user tracker featuring shared editing, full audit history, and direct ERP integration.',
-      'Delivered <strong>ERP integrations across 9 business domains</strong>, including a <strong>Bill of Materials costing system</strong>, establishing database layers and UIs exposing legacy data for production visibility.',
-      'Consolidated a standalone reporting application into the core platform, retiring a parallel codebase while modernizing <strong>40+ reports</strong> and <strong>15+ live dashboards</strong> into a fast, searchable UI used by <strong>300+ staff</strong>.',
-      'Replaced manual identity and ERP data sync for <strong>400 staff</strong> with a <strong>BullMQ and Redis worker engine</strong> running 10 sandboxed processors for LDAP joiner/leaver provisioning, ERP project ingestion, MySQL-to-PostgreSQL replication, and scheduled PDF reporting with graceful SIGTERM/SIGINT shutdown and 7-day job retention.',
+      "Consolidated a separate reporting app into the core platform, <strong>retiring a parallel React codebase</strong>, and rebuilt <strong>40+ reports</strong> and <strong>15+ dashboards</strong> in <strong>Vue 3</strong> for <strong>300+ staff</strong>.",
+      "Rebuilt the month-end <strong>Vertical Market Report</strong>, cutting it from weeks of manual assembly to <strong>15 seconds</strong>.",
+      "Built the <strong>Project Budget Tracker</strong>, one of the platform's largest modules, replacing a shared Excel workbook that produced version conflicts, lost files, and hours of re-entry with shared editing, audit history, and ERP integration.",
+      "Built the <strong>Bill of Materials costing</strong> app, turning the modeling software's raw Excel export into the revision-tracked BoM the shop floor builds from.",
+      "Replaced manual identity and ERP data sync with a <strong>BullMQ and Redis worker engine</strong>, moving LDAP joiner and leaver provisioning and <strong>MySQL to PostgreSQL replication</strong> onto an unattended daily cron.",
+      "Integrated <strong>Microsoft Entra</strong> SSO over <strong>OIDC</strong> into another team's PHP ProcessMaker fork and <strong>Angular</strong> suite.",
+      'Review pull requests both ways with the senior developers, and wrote the API docs the other Evans teams build on.',
     ],
   },
   {
-    title: 'Technology Consultant',
+    title: 'Full-Stack Developer',
+    company_name: 'iDoTogether',
+    icon: idotogetherlogo,
+    iconBg: '#FDFBF7',
+    date: 'July 2025 - Present',
+    points: [
+      'Built and operate <strong>iDoTogether</strong>, a wedding planning SaaS on <strong>Next.js</strong>, <strong>Supabase</strong>, and Vercel, live since May 2026 with 400+ users and paying customers, and handle their support and feedback directly.',
+      'Built the guest photo board: guests upload on reception Wi-Fi with browser-side compression and resumable uploads, and a live slideshow runs on <strong>Supabase Realtime</strong>, covered by <strong>Vitest</strong> and rate limited by Vercel WAF.',
+      'Built the <strong>Stripe</strong> billing path with webhook signature verification and two-layer idempotency, so duplicate deliveries are no-ops rather than double charges.',
+    ],
+  },
+  {
+    title: 'Full-Stack Developer (Contract)',
+    company_name: 'Solvex Digital',
+    icon: solvexlogo,
+    iconBg: '#FFFFFF',
+    date: 'November 2024 - August 2026',
+    points: [
+      'Delivered five client sites in <strong>Next.js</strong> on Vercel, scoping each with the client, including a CMS-backed inventory system for an automotive collection.',
+    ],
+  },
+  {
+    title: 'Technology Consultant (Contract)',
     company_name: 'One Piece IT',
     icon: opit,
     iconBg: '#383E56',
     date: 'May 2023 - December 2023',
     points: [
-      'Developed <strong>Bash and PowerShell automation</strong> across client server and network environments, replacing repetitive system administration tasks with reusable, efficient scripts.',
+      'Automated client server and network provisioning in <strong>Bash</strong> and <strong>PowerShell</strong>, replacing repeated manual setup.',
     ],
   },
   {
@@ -170,7 +196,7 @@ const experiences: Experience[] = [
     iconBg: '#383E56',
     date: 'April 2022 - December 2022',
     points: [
-      'Shipped user-facing flows and backend services across <strong>React, TypeScript, Node.js, and PostgreSQL</strong> for a production quote-to-cash platform, while serving as the technical liaison between a <strong>5-person development team</strong> and the engineering organization.',
+      "Led a 5-person team under Launchcode's senior developers to ship a quote-to-cash platform in <strong>React</strong> and <strong>Node.js</strong> for an oil and gas customer.",
     ],
   },
 ];
