@@ -3,71 +3,110 @@ import { Resend } from 'resend';
 
 import UserAcknowledgmentEmail from '../../../components/emails/UserAcknowledgment';
 import ContactNotificationEmail from '../../../components/emails/ContactNotification';
-import {
-  validateContactFormContent,
-  checkRateLimit,
-  getClientIP,
-} from '../../../lib/spam-protection';
+import { contactSchema, firstError } from '../../../lib/contact-schema';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const NOTIFICATION_RECIPIENT = 'aidenkopec@icloud.com';
+
+// Per request, not at module scope: new Resend(undefined) throws during module
+// evaluation, outside the handler's try/catch.
+function getResend(): Resend | null {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  return new Resend(key);
+}
+
+function isHoneypotFilled(body: unknown): boolean {
+  if (typeof body !== 'object' || body === null) return false;
+  const value = (body as Record<string, unknown>).website;
+  return typeof value === 'string' && value.trim().length > 0;
+}
 
 export async function POST(request: NextRequest) {
-  try {
-    const { name, email, message } = await request.json();
+  const correlationId = crypto.randomUUID();
 
-    // Check rate limiting first
-    const clientIP = getClientIP(request);
-    const rateLimitCheck = checkRateLimit(clientIP);
-    if (!rateLimitCheck.allowed) {
+  try {
+    const resend = getResend();
+    if (!resend) {
+      console.error(`[contact:${correlationId}] RESEND_API_KEY is not set`);
       return NextResponse.json(
-        {
-          error: `Too many submissions. Please try again in ${rateLimitCheck.retryAfter} seconds.`,
-        },
-        { status: 429 },
+        { error: 'The contact form is unavailable right now.' },
+        { status: 503 },
       );
     }
 
-    // Validate form content
-    const validation = validateContactFormContent(name, email, message);
-    if (!validation.valid) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+    const body = await request.json().catch(() => null);
+    const parsed = contactSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: firstError(parsed.error) },
+        { status: 400 },
+      );
+    }
+    const { name, email, message } = parsed.data;
+
+    // Read from the raw body: the schema strips unknown keys rather than
+    // rejecting them. Returns 200 so an automated submitter cannot detect the
+    // check, which makes the log line the only signal if it misfires.
+    if (isHoneypotFilled(body)) {
+      console.warn(
+        `[contact:${correlationId}] honeypot filled, dropping submission from ${email}`,
+      );
+      return NextResponse.json({ message: 'Message sent successfully' });
     }
 
-    // Send acknowledgment email to user
-    const userEmailResponse = await resend.emails.send({
-      from: 'Aiden Kopec <noreply@aidenkopec.com>',
-      to: [email],
-      subject: 'Thank you for reaching out!',
-      react: UserAcknowledgmentEmail({ userName: name }),
-    });
-
-    // Send notification email to you
-    const notificationEmailResponse = await resend.emails.send({
+    // Serial, notification first, so a failed notification never ships an
+    // acknowledgment. send() resolves { data, error } on API and network
+    // failure but rejects if the React template throws, so check both.
+    const notification = await resend.emails.send({
       from: 'Portfolio Contact <noreply@aidenkopec.com>',
-      to: ['aidenkopec@icloud.com'],
+      to: [NOTIFICATION_RECIPIENT],
       subject: `New contact form submission from ${name}`,
       react: ContactNotificationEmail({
         userName: name,
         userEmail: email,
-        message: message,
+        message,
       }),
     });
 
-    return NextResponse.json({
-      message: 'Emails sent successfully',
-      userEmailId: userEmailResponse.data?.id,
-      notificationEmailId: notificationEmailResponse.data?.id,
-    });
+    if (notification.error) {
+      console.error(
+        `[contact:${correlationId}] notification send failed:`,
+        notification.error,
+      );
+      return NextResponse.json(
+        { error: 'Failed to send your message. Please try again.' },
+        { status: 502 },
+      );
+    }
+
+    // Best effort: the message is already delivered, so a failure here must not
+    // tell the visitor it was lost.
+    const acknowledgment = await resend.emails
+      .send({
+        from: 'Aiden Kopec <noreply@aidenkopec.com>',
+        to: [email],
+        subject: 'Thank you for reaching out!',
+        react: UserAcknowledgmentEmail({ userName: name }),
+      })
+      .catch((error: unknown) => ({ data: null, error }));
+
+    if (acknowledgment.error) {
+      console.warn(
+        `[contact:${correlationId}] acknowledgment send failed (non fatal):`,
+        acknowledgment.error,
+      );
+    }
+
+    return NextResponse.json({ message: 'Message sent successfully' });
   } catch (error) {
-    console.error('Detailed error sending emails:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      error,
-    });
+    console.error(`[contact:${correlationId}] unhandled error:`, error);
     return NextResponse.json(
       {
-        error: 'Failed to send emails',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        error: 'Something went wrong. Please try again.',
+        correlationId,
+        ...(process.env.NODE_ENV === 'development' && {
+          details: error instanceof Error ? error.message : 'Unknown error',
+        }),
       },
       { status: 500 },
     );

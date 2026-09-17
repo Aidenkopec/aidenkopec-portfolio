@@ -46,6 +46,24 @@ const githubFetch = cache(async (url: string, options?: RequestInit) => {
   return response.json();
 });
 
+// Strips the private account fields the authenticated /user endpoint returns.
+function toPublicUser(data: GitHubUser | null): GitHubUser | null {
+  if (!data) return null;
+  return {
+    login: data.login,
+    avatar_url: data.avatar_url,
+    html_url: data.html_url,
+    name: data.name,
+    company: data.company,
+    location: data.location,
+    bio: data.bio,
+    public_repos: data.public_repos,
+    followers: data.followers,
+    following: data.following,
+    created_at: data.created_at,
+  };
+}
+
 // GitHub service functions with React.cache for deduplication
 const fetchUserData = cache(async (): Promise<GitHubUser | null> => {
   let url = GITHUB_TOKEN
@@ -54,14 +72,14 @@ const fetchUserData = cache(async (): Promise<GitHubUser | null> => {
   const data = await githubFetch(url);
   if (!data && GITHUB_TOKEN) {
     url = `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}`;
-    return await githubFetch(url);
+    return toPublicUser(await githubFetch(url));
   }
-  return data;
+  return toPublicUser(data);
 });
 
 const fetchRepositories = cache(async (): Promise<GitHubRepository[]> => {
   const url = GITHUB_TOKEN
-    ? `${GITHUB_API_BASE}/user/repos?visibility=all&affiliation=owner&sort=updated&per_page=100`
+    ? `${GITHUB_API_BASE}/user/repos?visibility=public&affiliation=owner&sort=updated&per_page=100`
     : `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
 
   const data = await githubFetch(url);
@@ -167,6 +185,22 @@ const fetchRecentCommits = cache(async (): Promise<Commit[]> => {
   }
 });
 
+// Four digit year to that calendar year, anything else to a rolling 365 days,
+// matching generateCommitGraph.
+function contributionRange(year?: string): { from: string; to: string } {
+  if (year && /^\d{4}$/.test(year)) {
+    return {
+      from: `${year}-01-01T00:00:00Z`,
+      to: `${year}-12-31T23:59:59Z`,
+    };
+  }
+  const today = DateTime.utc();
+  return {
+    from: today.minus({ days: 364 }).startOf('day').toISO(),
+    to: today.toISO(),
+  };
+}
+
 const fetchContributionCalendar = cache(
   async (year?: string): Promise<ContributionCalendar> => {
     if (!GITHUB_TOKEN) {
@@ -174,17 +208,14 @@ const fetchContributionCalendar = cache(
       return generateCommitGraph(commits, year);
     }
 
-    let contributionsCollectionArgs = '';
-    if (year && year !== 'last') {
-      const fromDate = `${year}-01-01T00:00:00Z`;
-      const toDate = `${year}-12-31T23:59:59Z`;
-      contributionsCollectionArgs = `(from: "${fromDate}", to: "${toDate}")`;
-    }
+    // Always explicit: GitHub's one year default applies to omitted arguments,
+    // not to null ones.
+    const { from, to } = contributionRange(year);
 
     const query = `
-      query {
+      query($from: DateTime!, $to: DateTime!) {
         viewer {
-          contributionsCollection${contributionsCollectionArgs} {
+          contributionsCollection(from: $from, to: $to) {
             contributionCalendar {
               totalContributions
               weeks {
@@ -204,7 +235,7 @@ const fetchContributionCalendar = cache(
       const data = await githubFetch(`${GITHUB_API_BASE}/graphql`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, variables: { from, to } }),
       });
 
       if (data?.data?.viewer?.contributionsCollection?.contributionCalendar) {
@@ -323,7 +354,6 @@ export const getGitHubData = cache(
 
       return {
         user: userData,
-        repositories: repositories.slice(0, 6),
         commits: commits.slice(0, 5),
         commitCalendar,
         stats: {
@@ -337,7 +367,6 @@ export const getGitHubData = cache(
       // Return a structured error state or a fallback object
       return {
         user: null,
-        repositories: [],
         commits: [],
         commitCalendar: { totalContributions: 0, weeks: [] },
         stats: {

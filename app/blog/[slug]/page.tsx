@@ -14,6 +14,13 @@ interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
+// 404s unknown and unpublished slugs at routing. Without it they answer 200
+// with not-found content, which search engines index.
+//
+// TODO: incompatible with cacheComponents and fails the build once it is
+// enabled. Delete then and call notFound() from the page instead.
+export const dynamicParams = false;
+
 // Generate static params for all blog posts
 export async function generateStaticParams() {
   const posts = await getAllBlogPosts();

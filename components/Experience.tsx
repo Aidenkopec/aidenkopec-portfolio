@@ -14,6 +14,13 @@ import { experiences } from '../constants';
 import SectionWrapper from '../hoc/SectionWrapper';
 import { textVariant } from '../utils';
 
+/** Renders the only markup the bullets use: <strong>. */
+const renderPoint = (point: string): React.ReactNode[] =>
+  point.split(/<strong>(.*?)<\/strong>/g).map((chunk, i) =>
+    // Odd indices are the captured contents of a <strong> pair.
+    i % 2 === 1 ? <strong key={i}>{chunk}</strong> : chunk,
+  );
+
 interface Experience {
   title: string;
   company_name: string;
@@ -66,8 +73,9 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
           <li
             key={`experience-point-${index}`}
             className='-100 pl-1 text-[14px] tracking-wider text-secondary'
-            dangerouslySetInnerHTML={{ __html: point }}
-          />
+          >
+            {renderPoint(point)}
+          </li>
         ))}
       </ul>
     </VerticalTimelineElement>

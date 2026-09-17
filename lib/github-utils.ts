@@ -1,23 +1,20 @@
 // Shared GitHub utility functions that can be used in both client and server components
 // Note: These functions don't use 'server-only' so they can be imported by client components
 
-// Types that can be shared
+// Public fields only. The authenticated /user endpoint also returns private
+// account data, and this object reaches the browser in the RSC payload.
 export interface GitHubUser {
   login: string;
   avatar_url: string;
   html_url: string;
   name: string;
   company: string | null;
-  blog: string;
   location: string | null;
-  email: string | null;
   bio: string | null;
   public_repos: number;
-  public_gists: number;
   followers: number;
   following: number;
   created_at: string;
-  updated_at: string;
 }
 
 export interface GitHubRepository {
@@ -84,9 +81,9 @@ export interface GitHubStats {
   contributionYears: number;
 }
 
+// No repositories field: fetched only to derive stats, never rendered.
 export interface GitHubData {
   user: GitHubUser | null;
-  repositories: GitHubRepository[];
   commits: Commit[];
   commitCalendar?: ContributionCalendar;
   stats: GitHubStats;

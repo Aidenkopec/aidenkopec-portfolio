@@ -514,13 +514,11 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
 const GitHubLink: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleGitHubClick = (): void => {
-    window.open(GITHUB_URL, '_blank');
-  };
-
   return (
-    <motion.button
-      onClick={handleGitHubClick}
+    <motion.a
+      href={GITHUB_URL}
+      target='_blank'
+      rel='noopener noreferrer'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg`}
@@ -544,7 +542,7 @@ const GitHubLink: React.FC = () => {
       >
         ↗
       </div>
-    </motion.button>
+    </motion.a>
   );
 };
 

@@ -157,6 +157,12 @@ export async function getBlogPostBySlug(
   try {
     const { metadata, content, readingTime, headings } = parseMDXFile(filePath);
 
+    // Backstop for direct callers. The post page's dynamicParams export also
+    // blocks draft slugs at routing, but that must go when cacheComponents lands.
+    if (metadata.published === false) {
+      return null;
+    }
+
     return {
       slug,
       title: metadata.title || 'Untitled',
@@ -165,7 +171,8 @@ export async function getBlogPostBySlug(
       readingTime,
       tags: metadata.tags || [],
       featured: metadata.featured || false,
-      published: metadata.published !== false,
+      // Drafts returned above.
+      published: true,
       author: metadata.author || { name: 'Aiden Kopec' },
       excerpt: metadata.excerpt || metadata.description || '',
       coverImage: metadata.coverImage,

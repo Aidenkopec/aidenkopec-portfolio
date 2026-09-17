@@ -51,7 +51,8 @@
     "react-vertical-timeline-component": "^4.0.0",
     "resend": "^6.28.1",
     "server-only": "^0.0.1",
-    "tailwind-merge": "^3.7.0"
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.5"
   },
   "overrides": {
     "three": "0.168.0"

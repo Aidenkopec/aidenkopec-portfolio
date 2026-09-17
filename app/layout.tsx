@@ -72,13 +72,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <head>
-        {/* 100% privacy-first analytics */}
-        <script
-          async
-          src='https://scripts.simpleanalyticscdn.com/latest.js'
-        ></script>
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

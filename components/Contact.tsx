@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import React, { useRef, useState } from 'react';
 
 import SectionWrapper from '../hoc/SectionWrapper';
+import { contactSchema, firstError } from '../lib/contact-schema';
 import { styles } from '../styles';
 import { slideIn } from '../utils';
 
@@ -12,15 +13,20 @@ interface FormData {
   name: string;
   email: string;
   message: string;
+  /** Honeypot: any value means an automated fill. */
+  website: string;
 }
+
+const EMPTY_FORM: FormData = {
+  name: '',
+  email: '',
+  message: '',
+  website: '',
+};
 
 const Contact: React.FC = () => {
   const formRef = useRef<HTMLFormElement>(null);
-  const [form, setForm] = useState<FormData>({
-    name: '',
-    email: '',
-    message: '',
-  });
+  const [form, setForm] = useState<FormData>(EMPTY_FORM);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
@@ -60,58 +66,15 @@ const Contact: React.FC = () => {
   const resetForm = () => {
     setSubmitSuccess(false);
     setErrorMessage('');
-    setForm({
-      name: '',
-      email: '',
-      message: '',
-    });
+    setForm(EMPTY_FORM);
   };
 
   const validateLocally = (): boolean => {
-    // Name validation
-    if (!form.name.trim()) {
-      setErrorMessage('Name is required');
+    const parsed = contactSchema.safeParse(form);
+    if (!parsed.success) {
+      setErrorMessage(firstError(parsed.error));
       return false;
     }
-
-    if (form.name.trim().length < 2) {
-      setErrorMessage('Name must be at least 2 characters');
-      return false;
-    }
-
-    if (form.name.trim().length > 100) {
-      setErrorMessage('Name must be less than 100 characters');
-      return false;
-    }
-
-    // Email validation
-    if (!form.email.trim()) {
-      setErrorMessage('Email is required');
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email.trim().toLowerCase())) {
-      setErrorMessage('Please provide a valid email address');
-      return false;
-    }
-
-    // Message validation
-    if (!form.message.trim()) {
-      setErrorMessage('Message is required');
-      return false;
-    }
-
-    if (form.message.trim().length < 10) {
-      setErrorMessage('Message must be at least 10 characters');
-      return false;
-    }
-
-    if (form.message.trim().length > 5000) {
-      setErrorMessage('Message must be less than 5000 characters');
-      return false;
-    }
-
     return true;
   };
 
@@ -139,6 +102,7 @@ const Contact: React.FC = () => {
           name: form.name,
           email: form.email,
           message: form.message,
+          website: form.website,
         }),
       });
 
@@ -186,6 +150,18 @@ const Contact: React.FC = () => {
                 onSubmit={handleSubmit}
                 className='mt-12 flex flex-col gap-8'
               >
+                {/* Honeypot. `hidden`, not sr-only, so it takes no gap slot. */}
+                <input
+                  type='text'
+                  name='website'
+                  value={form.website}
+                  onChange={handleChange}
+                  className='hidden'
+                  tabIndex={-1}
+                  autoComplete='off'
+                  aria-hidden='true'
+                />
+
                 <label className='flex flex-col'>
                   <span className='mb-4 font-medium text-secondary'>
                     Your Name
