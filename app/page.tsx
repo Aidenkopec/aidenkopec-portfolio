@@ -4,6 +4,7 @@ import About from '@/components/About';
 import Experience from '@/components/Experience';
 import Tech from '@/components/Tech';
 import Projects from '@/components/Projects';
+import GitHubActivity from '@/components/GitHubActivity';
 import RecentBlogs from '@/components/RecentBlogs';
 import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
@@ -23,6 +24,7 @@ export default function Home() {
       <Experience />
       <Tech />
       <Projects />
+      <GitHubActivity />
       <RecentBlogs />
       <Testimonials />
       <div className='relative z-0'>

@@ -1,17 +1,14 @@
 import { cacheTag } from 'next/cache';
 import { Suspense } from 'react';
 
-import { projects } from '../constants';
+import SectionWrapper from '../hoc/SectionWrapper';
 import { getGitHubData, preloadGitHubData } from '../lib/github-service';
 
 import {
+  GitHubActivityHeader,
   GitHubDashboard,
   GitHubStats,
-  ProjectCards,
-  ProjectsDescription,
-  ProjectsHeader,
-  ProjectsSectionHeader,
-} from './ProjectsClient';
+} from './GitHubActivityClient';
 
 const GitHubStatsSkeleton = () => (
   <div className='mt-8 mb-12 flex flex-wrap justify-center gap-4'>
@@ -56,7 +53,6 @@ const GitHubDashboardSkeleton = () => (
   </div>
 );
 
-// Server Component with 'use cache' directive for Next.js 15.4.6
 async function GitHubStatsSection() {
   'use cache';
   cacheTag('github-stats');
@@ -75,43 +71,23 @@ async function GitHubDashboardSection() {
   return <GitHubDashboard githubData={githubData} />;
 }
 
-// Main Projects Server Component
-export default async function ProjectsServer() {
-  'use cache';
-  cacheTag('projects-page');
-
+const GitHubActivity: React.FC = () => {
   // Preload GitHub data for better performance
   preloadGitHubData();
 
   return (
-    <>
-      {/* Header Section */}
-      <ProjectsHeader />
-      <ProjectsDescription />
+    <SectionWrapper idName='github'>
+      <GitHubActivityHeader />
 
-      {/* Featured Projects Section */}
-      <ProjectsSectionHeader title='Featured Projects' className='mt-16' />
-
-      <div className='mb-20'>
-        <ProjectCards projects={projects} />
-      </div>
-
-      {/* GitHub Activity Dashboard Section */}
-      <ProjectsSectionHeader
-        title='GitHub Activity Dashboard'
-        className='mt-20'
-        showGitHubLink={true}
-      />
-
-      {/* GitHub Stats Overview with Suspense */}
       <Suspense fallback={<GitHubStatsSkeleton />}>
         <GitHubStatsSection />
       </Suspense>
 
-      {/* Main GitHub Dashboard with Suspense */}
       <Suspense fallback={<GitHubDashboardSkeleton />}>
         <GitHubDashboardSection />
       </Suspense>
-    </>
+    </SectionWrapper>
   );
-}
+};
+
+export default GitHubActivity;

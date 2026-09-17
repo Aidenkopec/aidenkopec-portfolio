@@ -1,3 +1,5 @@
+import type { StaticImageData } from 'next/image';
+
 // Technology icons - Static imports for Next.js optimization
 import aws from '../public/technologies/aws.png';
 import docker from '../public/technologies/docker.png';
@@ -21,15 +23,13 @@ import opit from '../public/companies/opit-logo.png';
 import solvexlogo from '../public/companies/solvex-logo.svg';
 
 // Project images - Static imports
-import digitaldreamscapes from '../public/projects/digital-dreamscapes.png';
-import freqtrade from '../public/projects/freqtrade-logo.png';
+import hennessy from '../public/projects/hennessy.webp';
 import idotogether from '../public/projects/idotogether.webp';
-import n8n from '../public/projects/n8n.png';
-import pdconstruction from '../public/projects/pd-construction.png';
-import solvexdigital from '../public/projects/solvex-digital.svg';
-import summalink from '../public/projects/summalink.png';
-import teevision from '../public/projects/tee-vision.png';
-import victoriaandriley from '../public/projects/vic-riley-wedding.png';
+import pdconstruction from '../public/projects/pd-construction.webp';
+import portfolioSite from '../public/projects/portfolio.webp';
+import profileCard from '../public/projects/profile-card.webp';
+import spartatech from '../public/projects/sparta-tech.webp';
+import treeline from '../public/projects/treeline.webp';
 
 // Service icons (engineering focus) - Static imports
 import backendAutomationErp from '../public/engineering-focus/backendAutomationErp.png';
@@ -69,12 +69,35 @@ interface Testimonial {
   company: string;
 }
 
+type ProjectTier = 'featured' | 'personal' | 'client';
+
+interface ProjectLink {
+  href: string;
+  label: string;
+  kind: 'live' | 'source';
+}
+
+interface ProjectMetric {
+  value: string;
+  label: string;
+}
+
 interface Project {
+  slug: string;
   name: string;
+  tier: ProjectTier;
+  /** One line shown on the showcase card. Keep it under ten words. */
+  blurb: string;
+  /** Featured tier only. */
+  tagline?: string;
   description: string;
-  image?: any;
-  link: string | null;
-  isGitHub: boolean;
+  /** Featured tier only. Rendered as a four column row, so keep it to four. */
+  metrics?: ProjectMetric[];
+  stack: string[];
+  links: ProjectLink[];
+  image: StaticImageData;
+  /** Renders the "source private" note in place of a source link. */
+  sourcePrivate?: boolean;
 }
 
 // Social links
@@ -148,11 +171,11 @@ const experiences: Experience[] = [
     iconBg: '#FFFFFF',
     date: 'January 2024 - Present',
     points: [
-      "Consolidated a separate reporting app into the core platform, <strong>retiring a parallel React codebase</strong>, and rebuilt <strong>40+ reports</strong> and <strong>15+ dashboards</strong> in <strong>Vue 3</strong> for <strong>300+ staff</strong>.",
-      "Rebuilt the month-end <strong>Vertical Market Report</strong>, cutting it from weeks of manual assembly to <strong>15 seconds</strong>.",
+      'Consolidated a separate reporting app into the core platform, <strong>retiring a parallel React codebase</strong>, and rebuilt <strong>40+ reports</strong> and <strong>15+ dashboards</strong> in <strong>Vue 3</strong> for <strong>300+ staff</strong>.',
+      'Rebuilt the month-end <strong>Vertical Market Report</strong>, cutting it from weeks of manual assembly to <strong>15 seconds</strong>.',
       "Built the <strong>Project Budget Tracker</strong>, one of the platform's largest modules, replacing a shared Excel workbook that produced version conflicts, lost files, and hours of re-entry with shared editing, audit history, and ERP integration.",
       "Built the <strong>Bill of Materials costing</strong> app, turning the modeling software's raw Excel export into the revision-tracked BoM the shop floor builds from.",
-      "Replaced manual identity and ERP data sync with a <strong>BullMQ and Redis worker engine</strong>, moving LDAP joiner and leaver provisioning and <strong>MySQL to PostgreSQL replication</strong> onto an unattended daily cron.",
+      'Replaced manual identity and ERP data sync with a <strong>BullMQ and Redis worker engine</strong>, moving LDAP joiner and leaver provisioning and <strong>MySQL to PostgreSQL replication</strong> onto an unattended daily cron.',
       "Integrated <strong>Microsoft Entra</strong> SSO over <strong>OIDC</strong> into another team's PHP ProcessMaker fork and <strong>Angular</strong> suite.",
       'Review pull requests both ways with the senior developers, and wrote the API docs the other Evans teams build on.',
     ],
@@ -227,107 +250,160 @@ const testimonials: Testimonial[] = [
 
 const projects: Project[] = [
   {
-    name: 'Solvex Digital',
+    slug: 'treeline',
+    name: 'Treeline',
+    tier: 'featured',
+    blurb: 'Real ski mountains in 3D, with true run steepness.',
+    tagline:
+      'Resort trail maps are stylized panoramas. They flatten the mountain and hide how steep anything actually is.',
     description:
-      'Custom software agency I founded, building AI-powered web applications and automation solutions for business clients. Specializes in full-stack development with React, Next.js, and PostgreSQL, creating systems that automate workflows and solve operational challenges.',
-    image: solvexdigital,
-    link: 'https://solvexdigital.com',
-    isGitHub: false,
+      "Treeline renders the real mountain in 3D from elevation data, draws the marked runs in their true positions, and computes each run's pitch, aspect, vertical and length from the elevation model rather than reading them off a trail map. All the math runs at build time and is fully unit tested. The web app just reads the baked artifacts, with no database behind it.",
+    metrics: [
+      { value: '6', label: 'resorts baked' },
+      { value: '422', label: 'tests green' },
+      { value: '393k', label: 'vertex mesh at 60fps' },
+      { value: '30m', label: 'elevation resolution' },
+    ],
+    stack: ['TypeScript', 'Next.js', 'React Three Fiber', 'Tailwind', 'Vitest'],
+    links: [
+      {
+        href: 'https://treeline.aidenkopec.com',
+        label: 'Visit live',
+        kind: 'live',
+      },
+      {
+        href: 'https://github.com/Aidenkopec/Treeline',
+        label: 'Read the source',
+        kind: 'source',
+      },
+    ],
+    image: treeline,
   },
   {
-    name: 'Teevision',
+    slug: 'idotogether',
+    name: 'iDoTogether',
+    tier: 'featured',
+    blurb: 'Wedding planning SaaS for couples, families and vendors.',
+    tagline:
+      'A wedding has a hundred moving parts, and most couples track them in a spreadsheet three people are editing at once.',
     description:
-      '3D t-shirt design platform built with Three.js allowing users to customize designs in real-time with photorealistic preview. Users can experiment with colors, patterns, and graphics before ordering their custom apparel.',
-    image: teevision,
-    link: 'https://teevision.netlify.app',
-    isGitHub: false,
-  },
-  {
-    name: 'Cryptocurrency Trading Bot',
-    description:
-      'Cryptocurrency trading bot built with Python and Freqtrade framework. Automates trading strategies using technical indicators and backtesting, executing trades 24/7 based on configured parameters and risk management rules.',
-    image: freqtrade,
-    link: 'https://github.com/Aidenkopec/crypto-bot-trading',
-    isGitHub: true,
-  },
-  {
-    name: 'I Do Together',
-    description:
-      'Full-stack wedding planning SaaS spanning 5+ planning modules (guests & RSVP, vendors, budgets, event timelines, tasks) with role-based collaboration. Features a Stripe-integrated billing system across 9 webhook types with idempotent writes and refund-triggered access revocation, a passwordless magic-link RSVP system, and a normalized PostgreSQL schema in Drizzle ORM backed by Supabase Auth.',
-    link: 'https://www.idotogether.com',
+      'A wedding planning SaaS covering guests and RSVP, vendors, budget, timeline, seating, checklists and a live guest photo board. Four roles share one workspace through a capability based permission layer. Photos compress and transcode in the browser before they upload, because the constraint the whole module is designed around is congested reception WiFi.',
+    metrics: [
+      { value: '400+', label: 'users' },
+      { value: '11', label: 'feature modules' },
+      { value: '30', label: 'Postgres tables' },
+      { value: 'May 2026', label: 'in production since' },
+    ],
+    stack: ['Next.js', 'TypeScript', 'Drizzle', 'Supabase', 'Stripe', 'Vercel'],
+    links: [
+      {
+        href: 'https://www.idotogether.com',
+        label: 'Visit live',
+        kind: 'live',
+      },
+    ],
     image: idotogether,
-    isGitHub: false,
+    sourcePrivate: true,
   },
-  // {
-  //   name: 'I Win Parlays',
-  //   description:
-  //     'Sports betting analytics platform using AI to analyze odds and calculate probabilities. Generates parlay recommendations with transparent win/loss reasoning and statistical analysis to help users make informed betting decisions.',
-  //   link: 'https://www.iwinparlays.com',
-  //   image: iwinparlays,
-  //   isGitHub: false,
-  // },
-  // {
-  //   name: 'Relfeild',
-  //   description:
-  //     'Oilfield contractor directory platform connecting companies with service providers. Features verified reviews, service hour tracking, and contact management to help companies find and vet contractors for projects.',
-  //   link: 'https://oil-gas-ochre.vercel.app',
-  //   image: relfeild,
-  //   isGitHub: false,
-  // },
   {
-    name: 'Digital Dream Scapes',
+    slug: 'profile-card',
+    name: 'GitHub Profile Card',
+    tier: 'personal',
+    blurb: 'My GitHub profile card, rendered by a Python cron.',
     description:
-      'AI art generation platform with integrated social features. Users create AI-generated artwork, share their creations with the community, and explore content from other artists in a collaborative creative space.',
-    link: 'https://digital-dreamscapes.netlify.app/',
-    isGitHub: false,
-    image: digitaldreamscapes,
+      'The card at the top of my GitHub profile is an SVG rendered by a Python script on a six hour cron. It probes each service for status and latency, then pulls repo, commit and language figures from the GitHub API. A row whose measurement fails is dropped rather than defaulted or carried over, and a service that fails its probe prints the status instead of quietly vanishing. Standard library only, so CI needs no install step.',
+    stack: ['Python', 'GitHub Actions', 'SVG'],
+    links: [
+      {
+        href: 'https://github.com/Aidenkopec',
+        label: 'See it live',
+        kind: 'live',
+      },
+      {
+        href: 'https://github.com/Aidenkopec/Aidenkopec',
+        label: 'Read the source',
+        kind: 'source',
+      },
+    ],
+    image: profileCard,
   },
-  // {
-  //   name: 'Pivot Tools',
-  //   description:
-  //     'Corporate website built for Pivot Tools, an oilfield equipment rental company. Showcases available equipment, services, and contact information to generate leads and streamline the rental inquiry process.',
-  //   link: null,
-  //   isGitHub: false,
-  // },
   {
+    slug: 'portfolio',
+    name: 'This Portfolio',
+    tier: 'personal',
+    blurb: 'This site. Next.js, React Three Fiber, MDX blog.',
+    description:
+      'The site you are reading right now. Next.js App Router with server components, cached GitHub data and an MDX blog. Four themes switch at runtime through CSS variables, and the 3D scenes run on React Three Fiber. The source is public, including the parts I would rewrite.',
+    stack: ['Next.js', 'TypeScript', 'React Three Fiber', 'MDX', 'Tailwind'],
+    links: [
+      {
+        href: 'https://www.aidenkopec.com',
+        label: 'You are here',
+        kind: 'live',
+      },
+      {
+        href: 'https://github.com/Aidenkopec/aidenkopec-portfolio',
+        label: 'Read the source',
+        kind: 'source',
+      },
+    ],
+    image: portfolioSite,
+  },
+  {
+    slug: 'hennessy-automotive',
+    name: 'Hennessy Automotive',
+    tier: 'client',
+    blurb: 'Dealership site for a rare and collector vehicle dealer.',
+    description:
+      'A dealership site for a rare and collector vehicle dealer in southern Alberta. The inventory is CMS backed, so staff list, update and mark vehicles sold themselves without a developer.',
+    stack: ['Next.js', 'TypeScript', 'Sanity', 'Vercel'],
+    links: [
+      {
+        href: 'https://hennessy-automotive.vercel.app',
+        label: 'Visit site',
+        kind: 'live',
+      },
+    ],
+    image: hennessy,
+    sourcePrivate: true,
+  },
+  {
+    slug: 'sparta-tech-coatings',
     name: 'Sparta Tech Coatings',
+    tier: 'client',
+    blurb: 'Lead generation site for a concrete coatings contractor.',
     description:
-      'Business website for Sparta Tech Coatings, an epoxy flooring company. Features service offerings, project gallery, and contact forms to generate leads and showcase completed flooring installations.',
-    link: null,
-    isGitHub: false,
+      'A lead generation site for a Calgary concrete coatings contractor. Service pages, a project gallery, online booking and quote capture.',
+    stack: ['Next.js', 'TypeScript', 'Tailwind', 'Vercel'],
+    links: [
+      {
+        href: 'https://spartatech-coatings.vercel.app',
+        label: 'Visit site',
+        kind: 'live',
+      },
+    ],
+    image: spartatech,
+    sourcePrivate: true,
   },
   {
+    slug: 'pd-construction',
     name: 'PD Construction',
+    tier: 'client',
+    blurb: 'Site for a backyard decks and fences builder.',
     description:
-      'Construction company website for PD Construction showcasing residential and commercial projects. Features portfolio of completed work, service descriptions, and client testimonials to generate project inquiries.',
-    link: 'https://www.pdconstruction.ca',
-    isGitHub: false,
+      'A site for a backyard structures builder. Decks, sheds, fences and custom woodwork, with a project portfolio and quote requests.',
+    stack: ['Next.js', 'TypeScript', 'Tailwind', 'Vercel'],
+    links: [
+      {
+        href: 'https://www.pdconstruction.ca',
+        label: 'Visit site',
+        kind: 'live',
+      },
+    ],
     image: pdconstruction,
-  },
-  {
-    name: 'Article Summarizer',
-    description:
-      'AI-powered article summarization tool that extracts key information from lengthy content. Users input article URLs and receive condensed summaries highlighting the main points and insights.',
-    link: 'https://summalink.netlify.app/',
-    isGitHub: false,
-    image: summalink,
-  },
-  {
-    name: 'n8n Workflows',
-    description:
-      'Collection of n8n automation workflows and templates. Includes pre-built integrations and workflow examples for common automation tasks, available as open-source templates for developers to use and customize.',
-    link: 'https://github.com/Aidenkopec/n8n-workflows',
-    isGitHub: true,
-    image: n8n,
-  },
-  {
-    name: 'Victoria & Riley Wedding Website',
-    description:
-      'Custom wedding website built for Victoria & Riley featuring event details, RSVP management, and registry integration. Personalized design matching the couple\'s wedding theme and colors.',
-    link: null,
-    isGitHub: false,
-    image: victoriaandriley,
+    sourcePrivate: true,
   },
 ];
 
 export { experiences, projects, services, technologies, testimonials };
+export type { Project, ProjectLink, ProjectMetric, ProjectTier };
