@@ -86,7 +86,10 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=()',
           },
-          // frame-ancestors supersedes X-Frame-Options, so that header is absent.
+          // frame-ancestors will supersede this once the CSP is enforced. While
+          // the CSP is report only it reports framing rather than blocking it,
+          // so this header is the only thing stopping a clickjacking iframe.
+          { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Content-Security-Policy-Report-Only', value: csp },
         ],
       },

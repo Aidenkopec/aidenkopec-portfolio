@@ -3,7 +3,11 @@ import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useState } from 'react';
 
+import { useCanRender3D } from '../hooks/useCanRender3D';
+import { useInViewport } from '../hooks/useInViewport';
 import { styles } from '../styles';
+
+import CanvasPlaceholder from './CanvasPlaceholder';
 
 // Client only: the canvas needs a real WebGL context, so there is nothing for
 // the server to render. The spinner below holds the space until it mounts.
@@ -27,11 +31,16 @@ function HeroLoader() {
 
 const Hero: React.FC = () => {
   const [modelReady, setModelReady] = useState(false);
+  const canRender3D = useCanRender3D();
+  // The section is the observed box: it is already h-screen, so nothing needs a
+  // wrapper. Unmounting on scroll-away hands the WebGL context back to the
+  // sections below, which is the same ceiling TechGrid works around.
+  const { ref, mounted, paused } = useInViewport<HTMLElement>(canRender3D);
 
   const handleReady = useCallback(() => setModelReady(true), []);
 
   return (
-    <section className={`relative mx-auto h-screen w-full`}>
+    <section ref={ref} className={`relative mx-auto h-screen w-full`}>
       <div
         className={`absolute inset-0 top-[120px] mx-auto max-w-7xl ${styles.paddingX} flex flex-row items-start gap-5`}
       >
@@ -56,9 +65,16 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      {!modelReady && <HeroLoader />}
+      {/* Gated on the canvas actually mounting: without WebGL or under reduced
+          motion nothing ever calls onReady, so an ungated spinner would spin
+          forever for exactly the visitors who should see no motion. */}
+      {canRender3D && mounted && !modelReady && <HeroLoader />}
 
-      <ComputersCanvas onReady={handleReady} />
+      {canRender3D && mounted ? (
+        <ComputersCanvas onReady={handleReady} paused={paused} />
+      ) : (
+        <CanvasPlaceholder />
+      )}
 
       <div className='absolute bottom-32 flex w-full items-center justify-center sm:bottom-10 md:hidden'>
         <a href='#about'>

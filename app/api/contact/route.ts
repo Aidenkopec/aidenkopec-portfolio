@@ -21,6 +21,10 @@ function isHoneypotFilled(body: unknown): boolean {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+// Rate limiting is deliberately absent from this handler. It lives in the Vercel
+// Firewall as a WAF rate limit rule on POST /api/contact, which runs at the edge
+// on the real client IP and holds across function instances. The in-process
+// limiter this replaced was per instance and keyed on a spoofable header.
 export async function POST(request: NextRequest) {
   const correlationId = crypto.randomUUID();
 

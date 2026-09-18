@@ -48,6 +48,12 @@ export async function generateMetadata({
     title: `Posts tagged "${tagName}" - Aiden Kopec`,
     description: `Browse all blog posts tagged with "${tagName}". Insights about software development, AI tools, and modern web technologies.`,
     keywords: [tagName, 'blog', 'software development', 'aiden kopec'],
+    // `tag` is already the slug form that `getAllBlogTags` and the sitemap emit.
+    // Without this the root layout's `alternates` is inherited whole and every
+    // tag page declares the homepage as its canonical.
+    alternates: {
+      canonical: `/blog/tag/${tag}`,
+    },
     openGraph: {
       title: `Posts tagged "${tagName}" - Aiden Kopec`,
       description: `Browse all blog posts tagged with "${tagName}". Insights about software development, AI tools, and modern web technologies.`,

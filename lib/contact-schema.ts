@@ -20,10 +20,19 @@ export const contactSchema = z.object(
       ),
     // Matches what the browser enforces on <input type='email'>. Zod's default
     // is stricter and rejects legal local parts.
-    email: z.email({
-      pattern: z.regexes.html5Email,
-      error: 'Please provide a valid email address',
-    }),
+    //
+    // Piped rather than `z.email().trim()`: appending trim to a format schema
+    // runs the transform after the check, so a pasted address with a trailing
+    // space would still fail. html5Email rejects surrounding whitespace.
+    email: z
+      .string({ error: 'Please provide a valid email address' })
+      .trim()
+      .pipe(
+        z.email({
+          pattern: z.regexes.html5Email,
+          error: 'Please provide a valid email address',
+        }),
+      ),
     message: z
       .string({ error: 'Message is required' })
       .trim()

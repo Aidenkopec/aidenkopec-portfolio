@@ -49,6 +49,12 @@ export async function generateMetadata({
     description: post.description,
     keywords: [...post.tags, 'blog', 'software development', 'aiden kopec'],
     authors: [{ name: post.author?.name || 'Aiden Kopec' }],
+    // Without this the root layout's `alternates` is inherited whole and every
+    // post declares the homepage as its canonical, while the sitemap submits
+    // this URL. Relative, so it composes with the root's `metadataBase`.
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.description,

@@ -353,9 +353,14 @@ const subscribeToMobileQuery = (onChange: () => void) => {
 interface ComputersCanvasProps {
   /** Called once the model has loaded and been drawn. */
   onReady: () => void;
+  /** True while the hero is offscreen, which stops the render loop. */
+  paused?: boolean;
 }
 
-const ComputersCanvas: React.FC<ComputersCanvasProps> = ({ onReady }) => {
+const ComputersCanvas: React.FC<ComputersCanvasProps> = ({
+  onReady,
+  paused = false,
+}) => {
   const isMobile = useSyncExternalStore(
     subscribeToMobileQuery,
     () => window.matchMedia(MOBILE_QUERY).matches,
@@ -364,7 +369,13 @@ const ComputersCanvas: React.FC<ComputersCanvasProps> = ({ onReady }) => {
 
   return (
     <Canvas
-      frameloop='always' // Changed to always for consistent rendering and material processing
+      // `frameloop='demand'` would be a lie here: OrbitControls autoRotate and
+      // damping invalidate every frame, and ContactShadows has no `frames` prop
+      // so it redraws its shadow map every frame too. An honest 'always' paired
+      // with a real 'never' when the hero is offscreen is what stops the work.
+      // The material setup runs in useEffect and useMemo, not useFrame, so it is
+      // not what holds the loop open.
+      frameloop={paused ? 'never' : 'always'}
       shadows={{ enabled: true, type: THREE.PCFShadowMap }}
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}

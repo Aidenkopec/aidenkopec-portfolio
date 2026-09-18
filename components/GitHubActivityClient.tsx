@@ -572,9 +572,14 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
       if (response.ok) {
         const data = await response.json();
         setContributionData(data.commitCalendar ?? null);
+      } else {
+        // `selectedYear` has already moved, so keeping the old calendar would
+        // render last year's grid under this year's heading.
+        setContributionData(null);
       }
     } catch (error) {
       console.error('Error fetching contribution data:', error);
+      setContributionData(null);
     } finally {
       setLoading(false);
     }
