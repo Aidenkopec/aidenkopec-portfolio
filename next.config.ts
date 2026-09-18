@@ -12,13 +12,20 @@ const isDev = process.env.NODE_ENV !== 'production';
  * cover style-src. So this is not XSS mitigation. The value is frame-ancestors,
  * object-src, base-uri and form-action.
  *
- * Production needs no external origin: @vercel/analytics is same origin,
- * next/font self hosts, no remote images.
+ * One external origin is required: drei's <Environment preset> resolves its
+ * HDRIs against raw.githack.com. That image based lighting is what gives the
+ * hero desk its sheen; swapping it for a runtime generated RoomEnvironment
+ * dropped envMapIntensity 0.05 onto a low dynamic range map and flattened the
+ * desk to black. Self hosting the four preset HDRIs would remove this origin.
+ *
+ * Otherwise production needs no external origin: @vercel/analytics is same
+ * origin, next/font self hosts, no remote images.
  *
  * worker-src blob: canvas-confetti. img-src data: the blog hero background.
- * www.gstatic.com is omitted because no model in public/models declares
- * KHR_draco_mesh_compression, so drei never loads its DRACO decoder. Adding a
- * compressed model requires allowing that origin.
+ * No external origin is needed for the 3D models: both useGLTF call sites pass
+ * draco and meshopt as false, and the models use EXT_texture_webp plus
+ * KHR_mesh_quantization, which three decodes natively with no decoder download.
+ * Adding a Draco compressed model would require allowing www.gstatic.com.
  */
 const csp = [
   "default-src 'self'",
@@ -26,7 +33,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "worker-src 'self' blob:",
-  `connect-src 'self'${isDev ? ' ws: https://va.vercel-scripts.com' : ''}`,
+  `connect-src 'self' https://raw.githack.com${isDev ? ' ws: https://va.vercel-scripts.com' : ''}`,
   "object-src 'none'",
   "frame-src 'none'",
   "frame-ancestors 'none'",
@@ -45,6 +52,24 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        // Content addressed by filename: the models changed extension when they
+        // were recompressed, so a year is safe.
+        source: '/models/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Not immutable: CREDITS.md has these tracks slated for re-sourcing under
+        // the same filenames, so a year long immutable cache would strand the old
+        // audio on every repeat visitor.
+        source: '/music/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=604800' }],
+      },
       {
         source: '/:path*',
         headers: [

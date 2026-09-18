@@ -1,13 +1,23 @@
 'use client';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import React, { useRef, useState } from 'react';
 
 import SectionWrapper from '../hoc/SectionWrapper';
+import { useCanRender3D } from '../hooks/useCanRender3D';
+import { useInViewport } from '../hooks/useInViewport';
 import { contactSchema, firstError } from '../lib/contact-schema';
 import { styles } from '../styles';
 import { slideIn } from '../utils';
 
-import { EarthCanvas } from './canvas';
+import CanvasPlaceholder from './CanvasPlaceholder';
+
+// Loaded on demand so three.js stays out of the initial bundle, and only once
+// the section is approaching the viewport.
+const EarthCanvas = dynamic(() => import('./canvas/Earth'), {
+  ssr: false,
+  loading: () => <CanvasPlaceholder />,
+});
 
 interface FormData {
   name: string;
@@ -31,6 +41,13 @@ const Contact: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const canRender3D = useCanRender3D();
+  const {
+    ref: globeRef,
+    mounted: globeMounted,
+    paused: globePaused,
+  } = useInViewport<HTMLDivElement>(canRender3D);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -301,10 +318,15 @@ const Contact: React.FC = () => {
         </motion.div>
 
         <motion.div
+          ref={globeRef}
           variants={slideIn('right', 'tween', 0.2, 1) as any}
           className='h-[350px] md:h-[550px] xl:h-auto xl:flex-1'
         >
-          <EarthCanvas />
+          {canRender3D && globeMounted ? (
+            <EarthCanvas paused={globePaused} />
+          ) : (
+            <CanvasPlaceholder />
+          )}
         </motion.div>
       </div>
     </SectionWrapper>

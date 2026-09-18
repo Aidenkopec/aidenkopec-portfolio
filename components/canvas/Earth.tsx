@@ -1,7 +1,7 @@
 'use client';
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Preload, useGLTF } from '@react-three/drei';
+import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { GLTF } from 'three-stdlib';
 
@@ -13,20 +13,26 @@ type GLTFResult = GLTF & {
 };
 
 const Earth: React.FC = () => {
-  const earth = useGLTF('/models/planet/scene.gltf') as unknown as GLTFResult;
+  const earth = useGLTF(
+    '/models/planet/scene.glb',
+    false,
+    false,
+  ) as unknown as GLTFResult;
 
   return (
     <primitive object={earth.scene} scale={2.5} position-y={0} rotation-y={0} />
   );
 };
 
-const EarthCanvas: React.FC = () => {
+// `frameloop='demand'` would be a lie here: OrbitControls autoRotate invalidates
+// every frame, so the loop never actually idles. An honest 'always' paired with a
+// real 'never' when the section is offscreen is what stops the work.
+const EarthCanvas: React.FC<{ paused?: boolean }> = ({ paused = false }) => {
   return (
     <Canvas
       shadows
-      frameloop='demand'
+      frameloop={paused ? 'never' : 'always'}
       dpr={[1, 2]}
-      gl={{ preserveDrawingBuffer: true }}
       camera={{
         fov: 45,
         near: 0.1,
@@ -42,8 +48,6 @@ const EarthCanvas: React.FC = () => {
           minPolarAngle={Math.PI / 2}
         />
         <Earth />
-
-        <Preload all />
       </Suspense>
     </Canvas>
   );

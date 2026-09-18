@@ -15,15 +15,14 @@ const BlogNavbar: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      if (scrollTop > 100) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      // Functional update so React only commits on the transition, not on every
+      // scroll frame.
+      setScrolled(window.scrollY > 100);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // Passive: without it the browser must wait on this handler in case it
+    // calls preventDefault, which it never does.
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

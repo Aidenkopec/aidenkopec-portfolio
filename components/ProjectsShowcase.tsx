@@ -8,6 +8,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { type Project, type ProjectLink, type ProjectTier } from '../constants';
+import { useCanRender3D } from '../hooks/useCanRender3D';
+import { useInViewport } from '../hooks/useInViewport';
 import { github } from '../public/assets';
 import { styles } from '../styles';
 import { fadeIn, textVariant } from '../utils';
@@ -31,22 +33,6 @@ const shortestDelta = (delta: number, count: number): number => {
   const half = count / 2;
   return ((((delta + half) % count) + count) % count) - half;
 };
-
-function supportsWebGL(): boolean {
-  try {
-    const canvas = document.createElement('canvas');
-    const context =
-      canvas.getContext('webgl2') ||
-      (canvas.getContext('webgl') as WebGLRenderingContext | null);
-    if (!context) return false;
-    // Release the probe context immediately. The homepage already runs close to
-    // the browser's active-context ceiling.
-    context.getExtension('WEBGL_lose_context')?.loseContext();
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 const StackChips: React.FC<{ stack: string[]; className?: string }> = ({
   stack,
@@ -371,11 +357,17 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   const dragOffset = useRef(0);
 
   const [detailIndex, setDetailIndex] = useState<number | null>(null);
-  const [mode, setMode] = useState<'ring' | 'strip' | null>(null);
-  const [canvasMounted, setCanvasMounted] = useState(false);
-  const [paused, setPaused] = useState(true);
 
-  const stageRef = useRef<HTMLDivElement>(null);
+  // False on the server and the first client paint, so the strip is what gets
+  // prerendered. See the comment on the render branch below.
+  const canRender3D = useCanRender3D();
+  const mode = canRender3D ? 'ring' : 'strip';
+  const {
+    ref: stageRef,
+    mounted: canvasMounted,
+    paused,
+  } = useInViewport<HTMLDivElement>(canRender3D);
+
   const drag = useRef<{
     pointerId: number;
     startX: number;
@@ -405,48 +397,6 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
     },
     [count, setCursorTo],
   );
-
-  // Pick the render path once, then follow viewport and preference changes.
-  useEffect(() => {
-    const small = window.matchMedia('(max-width: 767px)');
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    const decide = () =>
-      setMode(
-        small.matches || reduced.matches || !supportsWebGL() ? 'strip' : 'ring',
-      );
-
-    decide();
-    small.addEventListener('change', decide);
-    reduced.addEventListener('change', decide);
-
-    return () => {
-      small.removeEventListener('change', decide);
-      reduced.removeEventListener('change', decide);
-    };
-  }, []);
-
-  // Hold a WebGL context only while the section is being looked at.
-  useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage || mode !== 'ring') return;
-
-    const mountObserver = new IntersectionObserver(
-      ([entry]) => setCanvasMounted(entry.isIntersecting),
-      { rootMargin: '250px 0px' },
-    );
-    const renderObserver = new IntersectionObserver(([entry]) =>
-      setPaused(!entry.isIntersecting),
-    );
-
-    mountObserver.observe(stage);
-    renderObserver.observe(stage);
-
-    return () => {
-      mountObserver.disconnect();
-      renderObserver.disconnect();
-    };
-  }, [mode]);
 
   // Settling is driven off `drag.current` alone rather than an event, so a lost
   // or never-delivered pointerup can recover through the same path.
@@ -546,9 +496,9 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
         <h2 className={`${styles.sectionHeadText}`}>Projects &amp; Code.</h2>
       </motion.div>
 
-      {/* `mode` is null until the effect above decides, so the server HTML and
-          the first client paint are the strip. It is the path that works without
-          JS, without WebGL, and on a phone. */}
+      {/* `useCanRender3D` is false until after hydration, so the server HTML
+          and the first client paint are the strip. It is the path that works
+          without JS, without WebGL, and on a phone. */}
       {mode !== 'ring' ? (
         <div className='mt-8'>
           <ProjectStrip projects={projects} onOpenDetail={setDetailIndex} />

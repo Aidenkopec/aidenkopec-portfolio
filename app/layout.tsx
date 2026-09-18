@@ -64,7 +64,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.ico',
-    shortcut: '/assets/logo.png',
+    // Was /assets/logo.png, a 978 KB 1024x1024 PNG fetched as a favicon on every
+    // page. app/favicon.ico is the right asset for this slot.
+    shortcut: '/favicon.ico',
     apple: '/assets/apple-icon.png',
   },
 };
@@ -75,7 +77,7 @@ const personSchema = {
   '@type': 'Person',
   name: 'Aiden Kopec',
   url: 'https://aidenkopec.com',
-  image: 'https://aidenkopec.com/assets/logo.png',
+  image: 'https://aidenkopec.com/assets/logo.webp',
   jobTitle: 'Full-Stack Software Developer',
   description:
     'Full-Stack Software Developer specializing in scalable web apps, AI tools, and backend automations.',

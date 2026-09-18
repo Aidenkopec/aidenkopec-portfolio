@@ -78,14 +78,17 @@ export interface ContributionCalendar {
 export interface GitHubStats {
   totalStars: number;
   totalForks: number;
-  contributionYears: number;
+  /** Whole years since the account was created. null when GitHub omits the date. */
+  yearsOnGitHub: number | null;
 }
 
 // No repositories field: fetched only to derive stats, never rendered.
 export interface GitHubData {
   user: GitHubUser | null;
   commits: Commit[];
-  commitCalendar?: ContributionCalendar;
+  // null when the contribution calendar is unavailable, so the UI can say so
+  // rather than render a graph totalling zero.
+  commitCalendar: ContributionCalendar | null;
   stats: GitHubStats;
 }
 

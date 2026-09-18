@@ -6,30 +6,26 @@ import React, {
   useState,
   useRef,
   useEffect,
+  useMemo,
   ReactNode,
 } from 'react';
 
 interface Track {
   title: string;
-  artist: string;
   src: string;
 }
 
-// Artists are pending: see CREDITS.md. Do not invent names here.
 const playlist: Track[] = [
   {
     title: 'Deep Space',
-    artist: 'Unknown artist',
     src: '/music/deep-space.mp3',
   },
   {
     title: 'Synthwave Nights',
-    artist: 'Unknown artist',
     src: '/music/synthwave-nights.mp3',
   },
   {
     title: 'Digital Dreams',
-    artist: 'Unknown artist',
     src: '/music/digital-dreams.mp3',
   },
 ];
@@ -200,26 +196,30 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     }
   }, [currentTrack, isPlaying]);
 
-  const selectTrack = (index: number): void => {
-    setCurrentTrack(index);
-    if (isPlaying && audioRef.current) {
-      setTimeout(() => {
-        audioRef.current?.play().catch((error) => {
-          console.warn('Audio playback failed:', error);
-          setIsPlaying(false);
-          setHasError(true);
-        });
-      }, 100);
-    }
-  };
+  const selectTrack = useCallback(
+    (index: number): void => {
+      setCurrentTrack(index);
+      if (isPlaying && audioRef.current) {
+        setTimeout(() => {
+          audioRef.current?.play().catch((error) => {
+            console.warn('Audio playback failed:', error);
+            setIsPlaying(false);
+            setHasError(true);
+          });
+        }, 100);
+      }
+    },
+    [isPlaying],
+  );
 
-  const handleTrackEnd = (): void => {
+  const handleTrackEnd = useCallback((): void => {
     nextTrack();
-  };
+  }, [nextTrack]);
 
-  const toggleFloatingBar = (): void => {
-    setIsFloatingBarVisible(!isFloatingBarVisible);
-  };
+  // Functional update so this needs no dependency and stays referentially stable.
+  const toggleFloatingBar = useCallback((): void => {
+    setIsFloatingBarVisible((visible) => !visible);
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -255,32 +255,49 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [togglePlay, nextTrack, previousTrack]);
 
-  const value: MusicContextType = {
-    // State
-    isPlaying,
-    setIsPlaying,
-    volume,
-    setVolume,
-    currentTrack,
-    setCurrentTrack,
-    hasError,
-    setHasError,
-    isFloatingBarVisible,
-    setIsFloatingBarVisible,
-    floatingBarMode,
-    setFloatingBarMode,
-    isHydrated,
-    audioRef,
-    playlist,
+  const value: MusicContextType = useMemo(
+    () => ({
+      // State
+      isPlaying,
+      setIsPlaying,
+      volume,
+      setVolume,
+      currentTrack,
+      setCurrentTrack,
+      hasError,
+      setHasError,
+      isFloatingBarVisible,
+      setIsFloatingBarVisible,
+      floatingBarMode,
+      setFloatingBarMode,
+      isHydrated,
+      audioRef,
+      playlist,
 
-    // Actions
-    togglePlay,
-    nextTrack,
-    previousTrack,
-    selectTrack,
-    handleTrackEnd,
-    toggleFloatingBar,
-  };
+      // Actions
+      togglePlay,
+      nextTrack,
+      previousTrack,
+      selectTrack,
+      handleTrackEnd,
+      toggleFloatingBar,
+    }),
+    [
+      isPlaying,
+      volume,
+      currentTrack,
+      hasError,
+      isFloatingBarVisible,
+      floatingBarMode,
+      isHydrated,
+      togglePlay,
+      nextTrack,
+      previousTrack,
+      selectTrack,
+      handleTrackEnd,
+      toggleFloatingBar,
+    ],
+  );
 
   return (
     <MusicContext.Provider value={value}>

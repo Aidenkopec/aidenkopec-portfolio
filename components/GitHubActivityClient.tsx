@@ -26,7 +26,7 @@ interface StatCardProps {
 }
 
 interface CommitGraphProps {
-  commitCalendar?: ContributionCalendar;
+  commitCalendar: ContributionCalendar | null;
   loading: boolean;
   selectedYear: string;
   setSelectedYear: (year: string) => void;
@@ -157,8 +157,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     );
   }
 
-  const weeks = commitCalendar?.weeks || [];
-  const total = commitCalendar?.totalContributions || 0;
+  const weeks = commitCalendar?.weeks ?? [];
 
   // Generate month labels using Luxon for proper Jan-Dec ordering
   const monthLabels: { label: string; span: number }[] = [];
@@ -207,8 +206,11 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     >
       <div className='mb-4 flex items-center justify-between'>
         <h4 className='text-[16px] font-semibold text-secondary'>
-          {total} contributions in{' '}
-          {selectedYear === 'last' ? 'the last year' : selectedYear}
+          {commitCalendar
+            ? `${commitCalendar.totalContributions} contributions in ${
+                selectedYear === 'last' ? 'the last year' : selectedYear
+              }`
+            : 'Contribution Activity'}
         </h4>
 
         {/* Custom Year Dropdown */}
@@ -434,7 +436,9 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
         </div>
       ) : (
         <div className='py-4 text-center text-sm text-secondary'>
-          No contribution data available
+          {commitCalendar
+            ? 'No contributions in this period'
+            : 'Contribution data is unavailable right now'}
         </div>
       )}
 
@@ -500,8 +504,8 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
         loading={loading}
       />
       <StatCard
-        title='Years Active'
-        value={githubData.stats.contributionYears || '---'}
+        title='Years on GitHub'
+        value={githubData.stats.yearsOnGitHub ?? '---'}
         icon='📅'
         index={3}
         loading={loading}
@@ -551,9 +555,8 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
 }) => {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<string>('last');
-  const [contributionData, setContributionData] = useState<
-    ContributionCalendar | undefined
-  >(githubData.commitCalendar);
+  const [contributionData, setContributionData] =
+    useState<ContributionCalendar | null>(githubData.commitCalendar);
   const [loading, setLoading] = useState(false);
   const availableYears = [
     'last',
@@ -568,7 +571,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
       const response = await fetch(`/api/github?year=${year}`);
       if (response.ok) {
         const data = await response.json();
-        setContributionData(data.commitCalendar);
+        setContributionData(data.commitCalendar ?? null);
       }
     } catch (error) {
       console.error('Error fetching contribution data:', error);

@@ -88,7 +88,7 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
     handleResize();
     updateThemeColors();
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
 
     // Listen for theme changes by observing CSS custom property changes
     const observer = new MutationObserver(updateThemeColors);

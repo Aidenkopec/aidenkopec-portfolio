@@ -44,7 +44,6 @@ const Icons = {
 
 interface TrackInfo {
   title: string;
-  artist: string;
 }
 
 const FloatingMusicBar: React.FC = () => {
@@ -61,10 +60,8 @@ const FloatingMusicBar: React.FC = () => {
   } = useMusicPlayer();
 
   const [shouldScrollTitle, setShouldScrollTitle] = useState<boolean>(false);
-  const [shouldScrollArtist, setShouldScrollArtist] = useState<boolean>(false);
   const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
   const titleRef = useRef<HTMLSpanElement>(null);
-  const artistRef = useRef<HTMLSpanElement>(null);
 
   // Detect mobile device and set initial mode
   useEffect(() => {
@@ -82,7 +79,7 @@ const FloatingMusicBar: React.FC = () => {
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener('resize', checkMobile, { passive: true });
 
     return () => window.removeEventListener('resize', checkMobile);
   }, [floatingBarMode, setFloatingBarMode, hasUserInteracted]);
@@ -100,7 +97,7 @@ const FloatingMusicBar: React.FC = () => {
   // Get track info, but use defaults if not hydrated yet
   const trackInfo: TrackInfo = isHydrated
     ? getTrackInfo()
-    : { title: 'Deep Space', artist: 'Unknown artist' };
+    : { title: 'Deep Space' };
 
   // Check if text overflows and needs scrolling
   useEffect(() => {
@@ -112,21 +109,15 @@ const FloatingMusicBar: React.FC = () => {
         const isOverflowing = titleRef.current.scrollWidth > containerWidth;
         setShouldScrollTitle(isOverflowing);
       }
-      if (artistRef.current) {
-        const containerWidth =
-          artistRef.current.parentElement?.clientWidth || 0;
-        const isOverflowing = artistRef.current.scrollWidth > containerWidth;
-        setShouldScrollArtist(isOverflowing);
-      }
     };
 
     // Check on mount and when text changes
     checkOverflow();
 
     // Also check on resize
-    window.addEventListener('resize', checkOverflow);
+    window.addEventListener('resize', checkOverflow, { passive: true });
     return () => window.removeEventListener('resize', checkOverflow);
-  }, [trackInfo.title, trackInfo.artist, isHydrated]);
+  }, [trackInfo.title, isHydrated]);
 
   const closeDock = (): void => handleHideMusicBar();
 
@@ -228,23 +219,6 @@ const FloatingMusicBar: React.FC = () => {
                     )}
                   </div>
                 </div>
-
-                <div className='relative mt-0.5 flex h-4 items-center overflow-hidden'>
-                  <span
-                    ref={artistRef}
-                    className='invisible absolute text-xs whitespace-nowrap'
-                  >
-                    {trackInfo.artist}
-                  </span>
-                  <div
-                    className={`text-xs leading-none whitespace-nowrap text-gray-400 transition-colors duration-200 group-hover:text-purple-300 ${shouldScrollArtist ? 'animate-scroll-slow inline-block' : 'block'}`}
-                  >
-                    {trackInfo.artist}
-                    {shouldScrollArtist && (
-                      <span aria-hidden='true'>&nbsp;{trackInfo.artist}</span>
-                    )}
-                  </div>
-                </div>
               </div>
 
               <div className='flex flex-shrink-0 items-center gap-0.5'>
@@ -304,21 +278,8 @@ const FloatingMusicBar: React.FC = () => {
           }
         }
 
-        @keyframes scroll-slow {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-
         .animate-scroll {
           animation: scroll 12s linear infinite;
-        }
-
-        .animate-scroll-slow {
-          animation: scroll-slow 15s linear infinite;
         }
       `}</style>
     </div>

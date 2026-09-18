@@ -36,7 +36,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^13.4.0",
-    "lodash": "^4.18.1",
     "lucide-react": "^1.47.0",
     "luxon": "^3.7.2",
     "mini-svg-data-uri": "^1.4.4",
@@ -52,18 +51,24 @@
     "resend": "^6.28.1",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.7.0",
+    "three": "0.168.0",
+    "three-stdlib": "^2.36.1",
     "zod": "^4.6.5"
   },
   "overrides": {
+    "@types/three": "0.168.0",
+    "stats-gl": {
+      "three": "0.168.0"
+    },
     "three": "0.168.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/lodash": "^4.17.25",
     "@types/luxon": "^3.7.5",
     "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "0.168.0",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "baseline-browser-mapping": "^2.11.24",
     "eslint": "^9.39.5",

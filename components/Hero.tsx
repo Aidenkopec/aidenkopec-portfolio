@@ -1,12 +1,35 @@
 'use client';
 import { motion } from 'framer-motion';
-import React from 'react';
+import dynamic from 'next/dynamic';
+import React, { useCallback, useState } from 'react';
 
 import { styles } from '../styles';
 
-import { ComputersCanvas } from './canvas';
+// Client only: the canvas needs a real WebGL context, so there is nothing for
+// the server to render. The spinner below holds the space until it mounts.
+const ComputersCanvas = dynamic(() => import('./canvas/Computers'), {
+  ssr: false,
+});
+
+/** Holds the model's space while the chunk and the model are still coming down. */
+function HeroLoader() {
+  return (
+    <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
+      <span
+        className='h-10 w-10 animate-spin rounded-full border-2 border-transparent'
+        style={{ borderTopColor: 'var(--text-color-variable)' }}
+        role='status'
+        aria-label='Loading 3D scene'
+      />
+    </div>
+  );
+}
 
 const Hero: React.FC = () => {
+  const [modelReady, setModelReady] = useState(false);
+
+  const handleReady = useCallback(() => setModelReady(true), []);
+
   return (
     <section className={`relative mx-auto h-screen w-full`}>
       <div
@@ -33,7 +56,10 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      <ComputersCanvas />
+      {!modelReady && <HeroLoader />}
+
+      <ComputersCanvas onReady={handleReady} />
+
       <div className='absolute bottom-32 flex w-full items-center justify-center sm:bottom-10 md:hidden'>
         <a href='#about'>
           <div className='relative flex h-[64px] w-[35px] items-start justify-center rounded-3xl border-4 border-secondary p-2'>

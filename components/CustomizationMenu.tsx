@@ -353,9 +353,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                               <div className='truncate font-medium'>
                                 {track.title}
                               </div>
-                              <div className='truncate text-xs opacity-75'>
-                                {track.artist}
-                              </div>
                             </div>
                             {currentTrack === index && isPlaying && (
                               <div className='ml-2 flex-shrink-0'>
@@ -652,9 +649,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       <div className='min-w-0 flex-1'>
                         <div className='truncate font-medium'>
                           {track.title}
-                        </div>
-                        <div className='truncate text-xs opacity-75'>
-                          {track.artist}
                         </div>
                       </div>
                       {currentTrack === index && isPlaying && (

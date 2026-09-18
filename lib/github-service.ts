@@ -5,8 +5,6 @@ import { cache } from 'react';
 import 'server-only';
 import {
   Commit,
-  CommitDay,
-  CommitWeek,
   ContributionCalendar,
   GitHubData,
   GitHubResult,
@@ -198,12 +196,13 @@ function contributionRange(year?: string): { from: string; to: string } {
   };
 }
 
+// Returns null rather than a synthesised graph when the calendar is unavailable.
+// The only other source is fetchRecentCommits, which is capped at 5 commits, so
+// anything built from it would be presented as a year's contributions while being
+// off by orders of magnitude.
 const fetchContributionCalendar = cache(
-  async (year?: string): Promise<ContributionCalendar> => {
-    if (!GITHUB_TOKEN) {
-      const commits = await fetchRecentCommits();
-      return generateCommitGraph(commits, year);
-    }
+  async (year?: string): Promise<ContributionCalendar | null> => {
+    if (!GITHUB_TOKEN) return null;
 
     // Always explicit: GitHub's one year default applies to omitted arguments,
     // not to null ones.
@@ -238,86 +237,14 @@ const fetchContributionCalendar = cache(
       if (data?.data?.viewer?.contributionsCollection?.contributionCalendar) {
         return data.data.viewer.contributionsCollection.contributionCalendar;
       }
-      const commits = await fetchRecentCommits();
-      return generateCommitGraph(commits, year);
+      console.error('GitHub returned no contribution calendar');
+      return null;
     } catch (error) {
       console.error('Error in fetchContributionCalendar:', error);
-      const commits = await fetchRecentCommits();
-      return generateCommitGraph(commits, year);
+      return null;
     }
   },
 );
-
-function generateCommitGraph(
-  commits: Commit[],
-  year?: string,
-): ContributionCalendar {
-  const weeks: CommitWeek[] = [];
-  let startDate: DateTime;
-  let endDate: DateTime;
-
-  if (year && year !== 'last') {
-    // Use calendar year boundaries (Jan 1 - Dec 31)
-    startDate = DateTime.fromObject({ year: parseInt(year), month: 1, day: 1 });
-    endDate = DateTime.fromObject({ year: parseInt(year), month: 12, day: 31 });
-  } else {
-    // For "last" year, use rolling 365 days
-    const today = DateTime.now();
-    startDate = today.minus({ days: 364 });
-    endDate = today;
-  }
-
-  // Start from the first Sunday of the date range to align with GitHub's grid
-  const firstSunday = startDate.startOf('week').minus({ days: 1 }); // Luxon week starts Monday, get Sunday before
-  const lastDate = endDate.endOf('day');
-
-  let currentDate = firstSunday;
-
-  while (currentDate <= lastDate) {
-    const weekDays: CommitDay[] = [];
-
-    // Generate 7 days for each week
-    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-      const dayDate = currentDate.plus({ days: dayOffset });
-
-      // Only include days that are within our actual date range
-      if (dayDate >= startDate && dayDate <= endDate) {
-        const dayCommits = commits.filter((commit) => {
-          const commitDate = DateTime.fromISO(commit.date);
-          return commitDate.hasSame(dayDate, 'day');
-        });
-
-        weekDays.push({
-          date:
-            dayDate.toISODate() ||
-            dayDate.toISO() ||
-            dayDate.toFormat('yyyy-MM-dd'),
-          count: dayCommits.length,
-          level: getContributionLevel(dayCommits.length),
-        });
-      }
-    }
-
-    if (weekDays.length > 0) {
-      weeks.push(weekDays);
-    }
-
-    currentDate = currentDate.plus({ weeks: 1 });
-  }
-
-  return {
-    weeks,
-    totalContributions: commits.length,
-  };
-}
-
-function getContributionLevel(count: number): number {
-  if (count === 0) return 0;
-  if (count <= 3) return 1;
-  if (count <= 6) return 2;
-  if (count <= 9) return 3;
-  return 4;
-}
 
 // One cached fan out for the whole section, so both halves of the dashboard
 // share a single snapshot instead of each doing its own four request fan out.
@@ -356,9 +283,15 @@ const fetchGitHubSnapshot = unstable_cache(
         (sum, repo) => sum + repo.forks_count,
         0,
       );
-      const createdAt = new Date(userData.created_at || '2022-01-10');
-      const contributionYears =
-        new Date().getFullYear() - createdAt.getFullYear();
+      // Whole elapsed years, not a calendar-year subtraction: an account created
+      // in December 2024 is not "2 years on GitHub" in January 2026. null when
+      // GitHub did not send created_at, so the UI can say so instead of guessing.
+      const yearsOnGitHub = userData.created_at
+        ? Math.floor(
+            DateTime.now().diff(DateTime.fromISO(userData.created_at), 'years')
+              .years,
+          )
+        : null;
 
       return {
         user: userData,
@@ -367,7 +300,7 @@ const fetchGitHubSnapshot = unstable_cache(
         stats: {
           totalStars,
           totalForks,
-          contributionYears,
+          yearsOnGitHub,
         },
       };
     } catch (error) {

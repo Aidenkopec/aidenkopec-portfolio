@@ -405,4 +405,4 @@ const projects: Project[] = [
 ];
 
 export { experiences, projects, services, technologies, testimonials };
-export type { Project, ProjectLink, ProjectMetric, ProjectTier };
+export type { Project, ProjectLink, ProjectMetric, ProjectTier, Technology };

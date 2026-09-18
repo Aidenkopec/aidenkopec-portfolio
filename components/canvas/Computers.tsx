@@ -12,8 +12,6 @@ import { useTheme } from 'next-themes';
 import React, { Suspense, useSyncExternalStore } from 'react';
 import * as THREE from 'three';
 
-import CanvasLoader from '../Loader';
-
 type Theme = 'obsidian' | 'cosmicVoyage' | 'glacierSapphire' | 'auroraJade';
 
 interface ComputersProps {
@@ -21,7 +19,7 @@ interface ComputersProps {
 }
 
 const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
-  const computer = useGLTF('/models/desktop-pc/scene.gltf');
+  const computer = useGLTF('/models/desktop-pc/scene.glb', false, false);
   const { theme } = useTheme();
 
   // Define theme-specific colors matching CSS theme variables
@@ -324,6 +322,26 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
   );
 };
 
+/**
+ * Rendered as a sibling of <Computers> inside the same Suspense boundary, so it
+ * only commits once useGLTF has resolved. Two frames later the model is on
+ * screen and the hero can drop its loader.
+ */
+function ReadySignal({ onReady }: { onReady: () => void }) {
+  React.useEffect(() => {
+    let second = 0;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(onReady);
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(second);
+    };
+  }, [onReady]);
+
+  return null;
+}
+
 const MOBILE_QUERY = '(max-width: 500px)';
 
 const subscribeToMobileQuery = (onChange: () => void) => {
@@ -332,7 +350,12 @@ const subscribeToMobileQuery = (onChange: () => void) => {
   return () => mediaQuery.removeEventListener('change', onChange);
 };
 
-const ComputersCanvas: React.FC = () => {
+interface ComputersCanvasProps {
+  /** Called once the model has loaded and been drawn. */
+  onReady: () => void;
+}
+
+const ComputersCanvas: React.FC<ComputersCanvasProps> = ({ onReady }) => {
   const isMobile = useSyncExternalStore(
     subscribeToMobileQuery,
     () => window.matchMedia(MOBILE_QUERY).matches,
@@ -355,7 +378,7 @@ const ComputersCanvas: React.FC = () => {
       }}
       style={{ touchAction: 'pan-y' }}
     >
-      <Suspense fallback={<CanvasLoader />}>
+      <Suspense fallback={null}>
         <OrbitControls
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
@@ -372,6 +395,8 @@ const ComputersCanvas: React.FC = () => {
         />
 
         <Computers isMobile={isMobile} />
+
+        <ReadySignal onReady={onReady} />
 
         {/* Contact shadows */}
         <ContactShadows

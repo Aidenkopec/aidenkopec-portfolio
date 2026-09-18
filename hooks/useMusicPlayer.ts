@@ -34,7 +34,6 @@ export const useMusicPlayer = () => {
   // Helper to get formatted track info
   const getTrackInfo = () => ({
     title: currentSong?.title || 'No Track',
-    artist: currentSong?.artist || 'Unknown Artist',
     index: currentTrack + 1,
     total: playlist.length,
   });
