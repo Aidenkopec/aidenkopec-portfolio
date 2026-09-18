@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { useIsHydrated } from '../../hooks/useIsHydrated';
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 
 type WavyLinesProps = {
   className?: string;
@@ -73,6 +74,10 @@ function generateWavePath(
 
 function WavyLines({ className = '', waveCount }: WavyLinesProps) {
   const mounted = useIsHydrated();
+  // SVG SMIL runs on its own timeline, so neither the reduced-motion CSS block
+  // nor MotionConfig reaches it. This is plain SVG, not WebGL, so it is also
+  // not behind useCanRender3D.
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [screenSize, setScreenSize] = useState<ScreenSize>('desktop');
   const [themeColors, setThemeColors] = useState(getThemeColors());
 
@@ -466,12 +471,14 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
           {/* Premium mesh gradient - primary aurora */}
           <linearGradient id='waveGradient1' x1='0%' y1='0%' x2='100%' y2='0%'>
             <stop offset='0%' stopColor={themeColors.primary} stopOpacity='0'>
-              <animate
-                attributeName='stopOpacity'
-                values='0;0.2;0'
-                dur='8s'
-                repeatCount='indefinite'
-              />
+              {!prefersReducedMotion && (
+                <animate
+                  attributeName='stopOpacity'
+                  values='0;0.2;0'
+                  dur='8s'
+                  repeatCount='indefinite'
+                />
+              )}
             </stop>
             <stop
               offset='20%'

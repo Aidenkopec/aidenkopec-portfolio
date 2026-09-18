@@ -92,7 +92,7 @@ const RecentBlogsSectionHeader: React.FC = () => {
 
 const RecentBlogsClient: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
   return (
-    <SectionWrapper idName='recent-blogs'>
+    <SectionWrapper idName='recent-blogs' label='Recent blog posts'>
       {/* Header Section */}
       <RecentBlogsHeader />
       <RecentBlogsDescription />

@@ -106,8 +106,10 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   if (isFullScreen || isMobile) {
     return (
       <>
-        {/* Backdrop */}
+        {/* Backdrop. Escape already closes the menu, so this is a pointer
+            convenience rather than the only dismissal path. */}
         <div
+          aria-hidden='true'
           className='animate-fadeIn fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm'
           onClick={onClose}
         />
@@ -137,6 +139,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
               <div className='flex space-x-1 rounded-lg bg-tertiary p-1'>
                 <button
                   onClick={() => setActiveTab('themes')}
+                  aria-pressed={activeTab === 'themes'}
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                     activeTab === 'themes'
                       ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
@@ -147,6 +150,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 </button>
                 <button
                   onClick={() => setActiveTab('music')}
+                  aria-pressed={activeTab === 'music'}
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                     activeTab === 'music'
                       ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
@@ -168,39 +172,41 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     const isSelected = theme === themeKey;
 
                     return (
-                      <div
+                      <button
                         key={themeKey}
+                        type='button'
+                        aria-pressed={isSelected}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleThemeChange(themeKey);
                         }}
-                        className={`relative cursor-pointer rounded-lg border p-3 transition-all duration-300 ${
+                        className={`relative w-full cursor-pointer rounded-lg border p-3 text-left transition-all duration-300 ${
                           isSelected
                             ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
                             : 'border-tertiary bg-tertiary hover:border-[var(--text-color-variable)] hover:bg-[var(--tertiary-color)]'
                         } `}
                       >
-                        <div className='flex items-center justify-between'>
-                          <div className='flex-1'>
-                            <h4 className='mb-2 text-sm font-medium text-secondary'>
+                        <span className='flex items-center justify-between'>
+                          <span className='block flex-1'>
+                            <span className='mb-2 block text-sm font-medium text-secondary'>
                               {themeData.name}
-                            </h4>
-                            <div className='flex items-center gap-2'>
+                            </span>
+                            <span className='flex items-center gap-2'>
                               {colors && (
                                 <>
-                                  <div
-                                    className='h-4 w-4 rounded-full border border-gray-600'
+                                  <span
+                                    className='block h-4 w-4 rounded-full border border-gray-600'
                                     style={{ backgroundColor: colors.primary }}
                                     title='Primary Color'
                                   />
-                                  <div
-                                    className='h-4 w-4 rounded-full border border-gray-600'
+                                  <span
+                                    className='block h-4 w-4 rounded-full border border-gray-600'
                                     style={{ backgroundColor: colors.accent }}
                                     title='Accent Color'
                                   />
-                                  <div
-                                    className='h-4 w-4 rounded-full border border-gray-600'
+                                  <span
+                                    className='block h-4 w-4 rounded-full border border-gray-600'
                                     style={{
                                       backgroundColor: colors.secondary,
                                     }}
@@ -208,25 +214,25 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                                   />
                                 </>
                               )}
-                            </div>
-                          </div>
+                            </span>
+                          </span>
 
                           {isSelected && (
-                            <div className='text-sm font-medium text-[var(--text-color-variable)]'>
+                            <span className='text-sm font-medium text-[var(--text-color-variable)]'>
                               ✓ Active
-                            </div>
+                            </span>
                           )}
-                        </div>
+                        </span>
 
                         {colors && (
-                          <div
-                            className='absolute top-0 right-0 h-full w-1 rounded-r-lg'
+                          <span
+                            className='absolute top-0 right-0 block h-full w-1 rounded-r-lg'
                             style={{
                               background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
                             }}
                           />
                         )}
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -246,6 +252,9 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       </div>
                       <button
                         onClick={toggleFloatingBar}
+                        role='switch'
+                        aria-checked={isFloatingBarVisible}
+                        aria-label='Show music dock'
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                           isFloatingBarVisible
                             ? 'bg-[var(--text-color-variable)]'
@@ -269,6 +278,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                         <div className='flex space-x-2'>
                           <button
                             onClick={() => setFloatingBarMode('mini')}
+                            aria-pressed={floatingBarMode === 'mini'}
                             className={`rounded-md px-3 py-1 text-xs transition-colors ${
                               floatingBarMode === 'mini'
                                 ? 'bg-[var(--text-color-variable)] text-secondary'
@@ -279,6 +289,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                           </button>
                           <button
                             onClick={() => setFloatingBarMode('standard')}
+                            aria-pressed={floatingBarMode === 'standard'}
                             className={`rounded-md px-3 py-1 text-xs transition-colors ${
                               floatingBarMode === 'standard'
                                 ? 'bg-[var(--text-color-variable)] text-secondary'
@@ -304,6 +315,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     </h4>
                     <div className='flex items-center space-x-3'>
                       <svg
+                        aria-hidden='true'
                         className='h-4 w-4 text-gray-400'
                         fill='currentColor'
                         viewBox='0 0 20 20'
@@ -316,6 +328,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                         max='1'
                         step='0.1'
                         value={volume}
+                        aria-label='Volume'
                         onChange={(e) =>
                           handleVolumeChange(parseFloat(e.target.value))
                         }
@@ -356,7 +369,9 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                             </div>
                             {currentTrack === index && isPlaying && (
                               <div className='ml-2 flex-shrink-0'>
+                                <span className='sr-only'>Now playing</span>
                                 <svg
+                                  aria-hidden='true'
                                   className='h-4 w-4 animate-pulse text-secondary'
                                   fill='currentColor'
                                   viewBox='0 0 20 20'
@@ -433,6 +448,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
           <button
             onClick={onClose}
             className='text-xl text-secondary transition-colors hover:text-secondary'
+            aria-label='Close menu'
           >
             ×
           </button>
@@ -441,6 +457,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
         <div className='flex space-x-1 rounded-lg bg-tertiary p-1'>
           <button
             onClick={() => setActiveTab('themes')}
+            aria-pressed={activeTab === 'themes'}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
               activeTab === 'themes'
                 ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
@@ -451,6 +468,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('music')}
+            aria-pressed={activeTab === 'music'}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
               activeTab === 'music'
                 ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
@@ -471,63 +489,65 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
               const isSelected = theme === themeKey;
 
               return (
-                <div
+                <button
                   key={themeKey}
+                  type='button'
+                  aria-pressed={isSelected}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handleThemeChange(themeKey);
                   }}
-                  className={`relative cursor-pointer rounded-lg border p-3 transition-all duration-300 ${
+                  className={`relative w-full cursor-pointer rounded-lg border p-3 text-left transition-all duration-300 ${
                     isSelected
                       ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
                       : 'border-tertiary bg-tertiary hover:border-[var(--text-color-variable)] hover:bg-[var(--tertiary-color)]'
                   } `}
                 >
-                  <div className='flex items-center justify-between'>
-                    <div className='flex-1'>
-                      <h4 className='mb-2 text-sm font-medium text-secondary'>
+                  <span className='flex items-center justify-between'>
+                    <span className='block flex-1'>
+                      <span className='mb-2 block text-sm font-medium text-secondary'>
                         {themeData.name}
-                      </h4>
-                      <div className='flex items-center gap-2'>
+                      </span>
+                      <span className='flex items-center gap-2'>
                         {colors && (
                           <>
-                            <div
-                              className='h-4 w-4 rounded-full border border-gray-600'
+                            <span
+                              className='block h-4 w-4 rounded-full border border-gray-600'
                               style={{ backgroundColor: colors.primary }}
                               title='Primary Color'
                             />
-                            <div
-                              className='h-4 w-4 rounded-full border border-gray-600'
+                            <span
+                              className='block h-4 w-4 rounded-full border border-gray-600'
                               style={{ backgroundColor: colors.accent }}
                               title='Accent Color'
                             />
-                            <div
-                              className='h-4 w-4 rounded-full border border-gray-600'
+                            <span
+                              className='block h-4 w-4 rounded-full border border-gray-600'
                               style={{ backgroundColor: colors.secondary }}
                               title='Secondary Color'
                             />
                           </>
                         )}
-                      </div>
-                    </div>
+                      </span>
+                    </span>
 
                     {isSelected && (
-                      <div className='text-sm font-medium text-[var(--text-color-variable)]'>
+                      <span className='text-sm font-medium text-[var(--text-color-variable)]'>
                         ✓ Active
-                      </div>
+                      </span>
                     )}
-                  </div>
+                  </span>
 
                   {colors && (
-                    <div
-                      className='absolute top-0 right-0 h-full w-1 rounded-r-lg'
+                    <span
+                      className='absolute top-0 right-0 block h-full w-1 rounded-r-lg'
                       style={{
                         background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
                       }}
                     />
                   )}
-                </div>
+                </button>
               );
             })}
           </div>
@@ -545,6 +565,9 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 </div>
                 <button
                   onClick={toggleFloatingBar}
+                  role='switch'
+                  aria-checked={isFloatingBarVisible}
+                  aria-label='Show music dock'
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     isFloatingBarVisible
                       ? 'bg-[var(--text-color-variable)]'
@@ -566,6 +589,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   <div className='flex space-x-2'>
                     <button
                       onClick={() => setFloatingBarMode('mini')}
+                      aria-pressed={floatingBarMode === 'mini'}
                       className={`rounded-md px-3 py-1 text-xs transition-colors ${
                         floatingBarMode === 'mini'
                           ? 'bg-[var(--text-color-variable)] text-secondary'
@@ -576,6 +600,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     </button>
                     <button
                       onClick={() => setFloatingBarMode('standard')}
+                      aria-pressed={floatingBarMode === 'standard'}
                       className={`rounded-md px-3 py-1 text-xs transition-colors ${
                         floatingBarMode === 'standard'
                           ? 'bg-[var(--text-color-variable)] text-secondary'
@@ -601,6 +626,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
               </h4>
               <div className='flex items-center space-x-3'>
                 <svg
+                  aria-hidden='true'
                   className='h-4 w-4 text-gray-400'
                   fill='currentColor'
                   viewBox='0 0 20 20'
@@ -613,6 +639,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   max='1'
                   step='0.1'
                   value={volume}
+                  aria-label='Volume'
                   onChange={(e) =>
                     handleVolumeChange(parseFloat(e.target.value))
                   }
@@ -653,7 +680,9 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       </div>
                       {currentTrack === index && isPlaying && (
                         <div className='ml-2 flex-shrink-0'>
+                          <span className='sr-only'>Now playing</span>
                           <svg
+                            aria-hidden='true'
                             className='h-4 w-4 animate-pulse text-secondary'
                             fill='currentColor'
                             viewBox='0 0 20 20'

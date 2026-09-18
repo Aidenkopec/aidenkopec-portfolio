@@ -105,6 +105,7 @@ const BlogNavbar: React.FC = () => {
                 onClick={() =>
                   setCustomizationMenuDesktop(!customizationMenuDesktop)
                 }
+                aria-expanded={customizationMenuDesktop}
                 className={`group relative overflow-hidden rounded-lg px-6 py-2 text-[16px] font-medium transition-all duration-300 ${
                   customizationMenuDesktop
                     ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
@@ -141,6 +142,8 @@ const BlogNavbar: React.FC = () => {
         <div className='flex flex-1 items-center justify-end gap-4 sm:hidden'>
           <button
             aria-label='Toggle menu'
+            aria-expanded={toggle}
+            aria-controls='blog-mobile-menu'
             className={`group relative z-[100] flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl transition-all duration-300 focus:ring-2 focus:ring-[var(--text-color-variable)] focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none ${
               toggle
                 ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
@@ -186,7 +189,11 @@ const BlogNavbar: React.FC = () => {
           </button>
 
           {/* Enhanced Mobile Dropdown Menu */}
+          {/* The handler only stops a click inside the panel from reaching the
+              document listener that closes the menu. Not an affordance. */}
+          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
           <div
+            id='blog-mobile-menu'
             className={`${
               !toggle
                 ? 'hidden scale-95 opacity-0'

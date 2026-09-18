@@ -189,6 +189,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
                     type='text'
                     value={searchTerm}
                     onChange={(e) => handleSearchChange(e.target.value)}
+                    aria-label='Search articles'
                     className='w-full rounded-lg border border-black-100 bg-black-100 py-2.5 pr-4 pl-10 text-sm text-secondary placeholder-secondary transition-all focus:border-transparent focus:ring-2 focus:ring-[var(--text-color-variable)] focus:outline-none'
                     placeholder='Search articles...'
                   />

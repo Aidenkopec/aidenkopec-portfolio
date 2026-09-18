@@ -30,6 +30,21 @@ const eslintConfig = [
       'react-hooks/exhaustive-deps': 'warn',
       'react/no-unescaped-entities': 'warn',
 
+      // Accessibility. These are the rules that would have caught the Phase 4
+      // findings: icon only buttons with no name, and a clickable div with no
+      // keyboard path.
+      // Form fields are covered by label-has-associated-control below. This
+      // rule only looks inside the control's own subtree, so it cannot see a
+      // label attached with htmlFor and flags every correct input.
+      'jsx-a11y/control-has-associated-label': [
+        'error',
+        { ignoreElements: ['input', 'textarea', 'select', 'audio', 'video'] },
+      ],
+      'jsx-a11y/no-static-element-interactions': 'error',
+      'jsx-a11y/click-events-have-key-events': 'error',
+      'jsx-a11y/label-has-associated-control': 'error',
+      'jsx-a11y/anchor-is-valid': 'error',
+
       // General
       'no-console': 'off',
       'no-debugger': 'warn',

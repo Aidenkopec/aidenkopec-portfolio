@@ -56,7 +56,7 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
 
 const Testimonials: React.FC = () => {
   return (
-    <SectionWrapper idName=''>
+    <SectionWrapper label='Testimonials'>
       <section className='mt-12 rounded-[20px] bg-black-100'>
         <div
           className={`min-h-[300px] rounded-2xl bg-tertiary ${styles.padding}`}

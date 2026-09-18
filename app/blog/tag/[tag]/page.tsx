@@ -65,7 +65,8 @@ export async function generateMetadata({
 
 function TagPageSkeleton() {
   return (
-    <div className='mx-auto max-w-6xl'>
+    <div role='status' aria-live='polite' className='mx-auto max-w-6xl'>
+      <span className='sr-only'>Loading tagged posts</span>
       {/* Header Skeleton */}
       <div className='mb-12'>
         <div className='mb-6 h-4 w-24 rounded bg-black-100'></div>

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 
 import { GITHUB_URL } from '@/constants';
+import { MotionProvider } from '@/components/MotionProvider';
 import { MusicProvider } from '@/context/MusicContext';
 import './globals.css';
 
@@ -105,7 +106,9 @@ export default function RootLayout({
           defaultTheme='glacierSapphire'
           enableSystem={false}
         >
-          <MusicProvider>{children}</MusicProvider>
+          <MotionProvider>
+            <MusicProvider>{children}</MusicProvider>
+          </MotionProvider>
         </ThemeProvider>
         <Analytics />
       </body>

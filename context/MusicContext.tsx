@@ -224,15 +224,28 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-        return; // Don't trigger shortcuts when typing
+      // A document keydown can target the document itself, which has no
+      // closest().
+      const target = e.target instanceof HTMLElement ? e.target : null;
+      // Only text entry is off limits, where Ctrl+Left and Ctrl+Right move by
+      // word. Buttons and links are not excluded: the modifier below already
+      // keeps bare Space working on a focused control, and the player's own
+      // buttons hold focus after every click, which silenced the shortcuts.
+      if (
+        target?.isContentEditable ||
+        target?.closest('input, textarea, select, [contenteditable]')
+      ) {
+        return;
       }
 
       switch (e.code) {
+        // Modifier required, to match the track shortcuts below and so bare
+        // Space keeps paging the document.
         case 'Space':
-          e.preventDefault();
-          togglePlay();
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            togglePlay();
+          }
           break;
         case 'ArrowRight':
           if (e.ctrlKey || e.metaKey) {

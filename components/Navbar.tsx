@@ -41,6 +41,12 @@ const Navbar: React.FC = () => {
     }
   };
 
+  // Selecting a link in the mobile dropdown marks it active and closes the menu.
+  const handleNavSelect = (title: string) => () => {
+    setMobileMenuOpen(false);
+    setActive(title);
+  };
+
   return (
     <nav
       className={`${
@@ -85,13 +91,14 @@ const Navbar: React.FC = () => {
           <ul className='flex list-none flex-row items-center gap-1'>
             {navLinks.map((nav) => (
               <li key={nav.id} className='group relative'>
+                {/* The padding lives on the anchor, not this wrapper, so the
+                    whole row is the click target. */}
                 <div
-                  className={`relative cursor-pointer overflow-hidden rounded-lg px-4 py-2 transition-all duration-300 ${
+                  className={`relative overflow-hidden rounded-lg transition-all duration-300 ${
                     active === nav.title
                       ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                       : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
                   }`}
-                  onClick={() => setActive(nav.title)}
                 >
                   {/* Animated underline */}
                   <div
@@ -101,17 +108,23 @@ const Navbar: React.FC = () => {
                   {/* Shimmer effect on hover */}
                   <div className='absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-700 group-hover:translate-x-full' />
 
-                  <span className='relative text-[16px] font-medium'>
-                    {nav.id === 'blog' ? (
-                      <Link href='/blog' className='block'>
-                        {nav.title}
-                      </Link>
-                    ) : (
-                      <a href={`#${nav.id}`} className='block'>
-                        {nav.title}
-                      </a>
-                    )}
-                  </span>
+                  {nav.id === 'blog' ? (
+                    <Link
+                      href='/blog'
+                      className='relative block px-4 py-2 text-[16px] font-medium'
+                      onClick={() => setActive(nav.title)}
+                    >
+                      {nav.title}
+                    </Link>
+                  ) : (
+                    <a
+                      href={`#${nav.id}`}
+                      className='relative block px-4 py-2 text-[16px] font-medium'
+                      onClick={() => setActive(nav.title)}
+                    >
+                      {nav.title}
+                    </a>
+                  )}
                 </div>
               </li>
             ))}
@@ -122,6 +135,7 @@ const Navbar: React.FC = () => {
                 onClick={() =>
                   setCustomizationMenuDesktop(!customizationMenuDesktop)
                 }
+                aria-expanded={customizationMenuDesktop}
                 className={`group relative overflow-hidden rounded-lg px-6 py-2 text-[16px] font-medium transition-all duration-300 ${
                   customizationMenuDesktop
                     ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
@@ -158,6 +172,8 @@ const Navbar: React.FC = () => {
           {/* Enhanced Mobile Menu Button */}
           <button
             aria-label='Toggle menu'
+            aria-expanded={toggle}
+            aria-controls='mobile-menu'
             className={`group relative z-[100] flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl transition-all duration-300 focus:ring-2 focus:ring-[var(--text-color-variable)] focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none ${
               toggle
                 ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
@@ -203,7 +219,11 @@ const Navbar: React.FC = () => {
           </button>
 
           {/* Enhanced Mobile Dropdown Menu */}
+          {/* The handler only stops a click inside the panel from reaching the
+              document listener that closes the menu. Not an affordance. */}
+          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
           <div
+            id='mobile-menu'
             className={`${
               !toggle
                 ? 'hidden scale-95 opacity-0'
@@ -225,16 +245,15 @@ const Navbar: React.FC = () => {
                   className='group w-full'
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
+                  {/* The padding lives on the anchor, not this wrapper, so
+                      tapping anywhere in the row navigates and closes the
+                      menu. */}
                   <div
-                    className={`relative w-full cursor-pointer overflow-hidden rounded-lg px-4 py-3 transition-all duration-300 ${
+                    className={`relative w-full overflow-hidden rounded-lg transition-all duration-300 ${
                       active === nav.title
                         ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                         : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
                     }`}
-                    onClick={() => {
-                      setMobileMenuOpen(!toggle);
-                      setActive(nav.title);
-                    }}
                   >
                     {/* Slide-in animation background */}
                     <div className='absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-[var(--text-color-variable)]/10 to-transparent transition-transform duration-300 group-hover:translate-x-0' />
@@ -244,19 +263,23 @@ const Navbar: React.FC = () => {
                       <div className='absolute top-1/2 left-1 h-2 w-2 -translate-y-1/2 transform animate-pulse rounded-full bg-[var(--text-color-variable)]' />
                     )}
 
-                    <span
-                      className={`relative text-[16px] font-medium transition-all duration-300 ${active === nav.title ? 'ml-4' : 'ml-0 group-hover:ml-2'}`}
-                    >
-                      {nav.id === 'blog' ? (
-                        <Link href='/blog' className='block'>
-                          {nav.title}
-                        </Link>
-                      ) : (
-                        <a href={`#${nav.id}`} className='block'>
-                          {nav.title}
-                        </a>
-                      )}
-                    </span>
+                    {nav.id === 'blog' ? (
+                      <Link
+                        href='/blog'
+                        className={`relative block px-4 py-3 text-[16px] font-medium transition-all duration-300 ${active === nav.title ? 'pl-8' : 'group-hover:pl-6'}`}
+                        onClick={handleNavSelect(nav.title)}
+                      >
+                        {nav.title}
+                      </Link>
+                    ) : (
+                      <a
+                        href={`#${nav.id}`}
+                        className={`relative block px-4 py-3 text-[16px] font-medium transition-all duration-300 ${active === nav.title ? 'pl-8' : 'group-hover:pl-6'}`}
+                        onClick={handleNavSelect(nav.title)}
+                      >
+                        {nav.title}
+                      </a>
+                    )}
                   </div>
                 </li>
               ))}

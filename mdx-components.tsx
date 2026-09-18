@@ -1,92 +1,77 @@
 import type { MDXComponents } from 'mdx/types';
 import Image from 'next/image';
 import Link from 'next/link';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { createSlugger } from '@/lib/slugify';
+
+/**
+ * MDX hands a heading a plain string only when it contains nothing but text. Any
+ * heading with inline code, bold or a link arrives as an array of nodes, so the
+ * old `typeof children === 'string'` check fell through to a constant id and
+ * every such heading collided.
+ */
+function childrenToText(node: React.ReactNode): string {
+  if (node === null || node === undefined || typeof node === 'boolean') {
+    return '';
+  }
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(childrenToText).join('');
+  if (React.isValidElement(node)) {
+    // React 19 types `props` as `unknown`. Fragments land here too: their
+    // payload is `props.children` like any other element.
+    return childrenToText(
+      (node.props as { children?: React.ReactNode }).children,
+    );
+  }
+  return '';
+}
+
+const HEADING_CLASSES: Record<number, string> = {
+  1: 'mt-8 mb-6 text-2xl leading-tight font-bold text-white first:mt-0 sm:text-3xl md:text-4xl',
+  2: 'mt-8 mb-4 text-2xl font-bold text-white sm:text-3xl',
+  3: 'mt-6 mb-3 text-xl font-semibold text-white sm:text-2xl',
+  4: 'mt-4 mb-2 text-lg font-semibold text-white sm:text-xl',
+  5: 'mt-4 mb-2 text-base font-semibold text-white sm:text-lg',
+  6: 'mt-4 mb-2 text-sm font-semibold text-white sm:text-base',
+};
+
+function createHeading(level: number, slug: (input: string) => string) {
+  const Tag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+
+  return function Heading({
+    children,
+    ...props
+  }: React.HTMLAttributes<HTMLHeadingElement>) {
+    return (
+      <Tag
+        id={slug(childrenToText(children))}
+        className={HEADING_CLASSES[level]}
+        {...props}
+      >
+        {children}
+      </Tag>
+    );
+  };
+}
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
+  // One slugger per render, matching the one `extractHeadings` makes per post,
+  // so the collision suffixes on both sides line up. This only holds while this
+  // function is called per page render. Hoisting the result to module scope
+  // would turn the counter into a cross request global.
+  const slug = createSlugger();
+
   return {
     // Override default HTML elements with custom components
-    h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
-      const id =
-        typeof children === 'string'
-          ? children
-              .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, '')
-              .replace(/\s+/g, '-')
-              .replace(/-+/g, '-')
-              .replace(/^-|-$/g, '')
-          : 'heading-1';
-      return (
-        <h1
-          id={id}
-          className='mt-8 mb-6 text-2xl leading-tight font-bold text-white first:mt-0 sm:text-3xl md:text-4xl'
-          {...props}
-        >
-          {children}
-        </h1>
-      );
-    },
-    h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
-      const id =
-        typeof children === 'string'
-          ? children
-              .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, '')
-              .replace(/\s+/g, '-')
-              .replace(/-+/g, '-')
-              .replace(/^-|-$/g, '')
-          : 'heading-2';
-      return (
-        <h2
-          id={id}
-          className='mt-8 mb-4 text-2xl font-bold text-white sm:text-3xl'
-          {...props}
-        >
-          {children}
-        </h2>
-      );
-    },
-    h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
-      const id =
-        typeof children === 'string'
-          ? children
-              .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, '')
-              .replace(/\s+/g, '-')
-              .replace(/-+/g, '-')
-              .replace(/^-|-$/g, '')
-          : 'heading-3';
-      return (
-        <h3
-          id={id}
-          className='mt-6 mb-3 text-xl font-semibold text-white sm:text-2xl'
-          {...props}
-        >
-          {children}
-        </h3>
-      );
-    },
-    h4: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
-      const id =
-        typeof children === 'string'
-          ? children
-              .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, '')
-              .replace(/\s+/g, '-')
-              .replace(/-+/g, '-')
-              .replace(/^-|-$/g, '')
-          : 'heading-4';
-      return (
-        <h4
-          id={id}
-          className='mt-4 mb-2 text-lg font-semibold text-white sm:text-xl'
-          {...props}
-        >
-          {children}
-        </h4>
-      );
-    },
+    h1: createHeading(1, slug),
+    h2: createHeading(2, slug),
+    h3: createHeading(3, slug),
+    h4: createHeading(4, slug),
+    h5: createHeading(5, slug),
+    h6: createHeading(6, slug),
     p: ({ children }) => (
       <p className='mb-4 leading-relaxed text-secondary'>{children}</p>
     ),

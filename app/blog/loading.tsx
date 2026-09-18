@@ -3,9 +3,12 @@ import React from 'react';
 export default function BlogLoading() {
   return (
     <div
+      role='status'
+      aria-live='polite'
       className='relative min-h-screen overflow-hidden'
       style={{ background: 'var(--primary-color)' }}
     >
+      <span className='sr-only'>Loading blog posts</span>
       {/* Subtle animated background */}
       <div className='absolute inset-0 opacity-10'>
         <div

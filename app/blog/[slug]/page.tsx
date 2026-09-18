@@ -85,7 +85,12 @@ export async function generateMetadata({
 
 function BlogPostSkeleton() {
   return (
-    <div className='mx-auto max-w-4xl animate-pulse'>
+    <div
+      role='status'
+      aria-live='polite'
+      className='mx-auto max-w-4xl animate-pulse'
+    >
+      <span className='sr-only'>Loading blog post</span>
       {/* Header Skeleton */}
       <div className='mb-12'>
         <div className='mb-6 h-4 w-24 rounded bg-black-100'></div>

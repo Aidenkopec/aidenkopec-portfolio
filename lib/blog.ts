@@ -5,6 +5,7 @@ import path from 'path';
 
 import { cache } from 'react';
 
+import { createSlugger, stripInlineMarkdown } from './slugify';
 import { BlogPost, BlogMetadata, BlogTag, BlogHeading } from './types';
 
 const BLOG_DIRECTORY = path.join(process.cwd(), 'content/blog');
@@ -16,26 +17,45 @@ function calculateReadingTime(content: string): number {
   return Math.ceil(words / wordsPerMinute);
 }
 
-// Helper to extract headings from MDX content for table of contents
+// Helper to extract headings from MDX content for table of contents.
+//
+// Line scan rather than a global regex so `# comment` lines inside fenced code
+// blocks stop producing phantom entries whose anchors point nowhere. The ids
+// come from the same slugger the heading elements use, via lib/slugify.
 function extractHeadings(content: string): BlogHeading[] {
-  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
   const headings: BlogHeading[] = [];
-  let match;
+  const slug = createSlugger();
+  // The open fence, not a boolean: a ``` line inside a ~~~ block is content,
+  // not a close, and flipping on it desynced the flag for the rest of the file.
+  let fence: { char: string; length: number } | null = null;
 
-  while ((match = headingRegex.exec(content)) !== null) {
-    const level = match[1].length;
-    const text = match[2].trim();
-    const id = text
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
+  for (const line of content.split('\n')) {
+    const fenceMatch = line.match(/^\s{0,3}(`{3,}|~{3,})/);
+    if (fenceMatch) {
+      const char = fenceMatch[1][0];
+      const length = fenceMatch[1].length;
+      if (!fence) {
+        fence = { char, length };
+      } else if (char === fence.char && length >= fence.length) {
+        fence = null;
+      }
+      continue;
+    }
+    if (fence) continue;
+
+    // The optional trailing run handles ATX closing sequences. It needs the
+    // leading whitespace CommonMark requires, so a `#` that is part of the
+    // heading text survives: `## Why I picked C#`.
+    const match = line.match(/^(#{1,6})\s+(.+?)(?:\s+#+)?\s*$/);
+    if (!match) continue;
+
+    const text = stripInlineMarkdown(match[2].trim());
+    if (!text) continue;
 
     headings.push({
-      id,
+      id: slug(text),
       text,
-      level,
+      level: match[1].length,
     });
   }
 
@@ -213,6 +233,13 @@ export async function getAllBlogTags(): Promise<BlogTag[]> {
     .map(([name, count]) => ({
       name,
       count,
+      // Deliberately NOT the shared slugify from lib/slugify. getBlogPostsByTag
+      // above matches with a bare toLowerCase and never hyphenates, so the route
+      // resolves only because this slug is lenient: `Next.js` stays `next.js`.
+      // Running it through slugify would yield `nextjs`, the match would fail,
+      // and /blog/tag/next.js would 404. Unifying the two means changing this,
+      // the matcher, both reverse lookups in app/blog/tag/[tag]/page.tsx and the
+      // href in components/blog/BlogHeader.tsx together, and it alters live URLs.
       slug: name.toLowerCase().replace(/\s+/g, '-'),
     }))
     .sort((a, b) => b.count - a.count);

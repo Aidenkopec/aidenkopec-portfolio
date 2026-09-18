@@ -10,6 +10,7 @@ import { createPortal } from 'react-dom';
 import { type Project, type ProjectLink, type ProjectTier } from '../constants';
 import { useCanRender3D } from '../hooks/useCanRender3D';
 import { useInViewport } from '../hooks/useInViewport';
+import { useIsSmallViewport } from '../hooks/useIsSmallViewport';
 import { github } from '../public/assets';
 import { styles } from '../styles';
 import { fadeIn, textVariant } from '../utils';
@@ -358,15 +359,19 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
 
   const [detailIndex, setDetailIndex] = useState<number | null>(null);
 
-  // False on the server and the first client paint, so the strip is what gets
-  // prerendered. See the comment on the render branch below.
+  // Both false on the server and the first client paint, so the strip is what
+  // gets prerendered. See the comment on the render branch below.
   const canRender3D = useCanRender3D();
-  const mode = canRender3D ? 'ring' : 'strip';
+  const isSmallViewport = useIsSmallViewport();
+  // The ring is driven by dragging, which is a poor fit for a phone, so the
+  // strip stays the small viewport path even where WebGL is available.
+  const showRing = canRender3D && !isSmallViewport;
+  const mode = showRing ? 'ring' : 'strip';
   const {
     ref: stageRef,
     mounted: canvasMounted,
     paused,
-  } = useInViewport<HTMLDivElement>(canRender3D);
+  } = useInViewport<HTMLDivElement>(showRing);
 
   const drag = useRef<{
     pointerId: number;
@@ -496,9 +501,9 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
         <h2 className={`${styles.sectionHeadText}`}>Projects &amp; Code.</h2>
       </motion.div>
 
-      {/* `useCanRender3D` is false until after hydration, so the server HTML
-          and the first client paint are the strip. It is the path that works
-          without JS, without WebGL, and on a phone. */}
+      {/* Both gates read false until after hydration, so the server HTML and
+          the first client paint are the strip. It is the path that works
+          without JS, without WebGL, under reduced motion, and on a phone. */}
       {mode !== 'ring' ? (
         <div className='mt-8'>
           <ProjectStrip projects={projects} onOpenDetail={setDetailIndex} />

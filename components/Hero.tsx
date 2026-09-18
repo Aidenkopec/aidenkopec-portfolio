@@ -5,6 +5,7 @@ import React, { useCallback, useState } from 'react';
 
 import { useCanRender3D } from '../hooks/useCanRender3D';
 import { useInViewport } from '../hooks/useInViewport';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { styles } from '../styles';
 
 import CanvasPlaceholder from './CanvasPlaceholder';
@@ -32,6 +33,7 @@ function HeroLoader() {
 const Hero: React.FC = () => {
   const [modelReady, setModelReady] = useState(false);
   const canRender3D = useCanRender3D();
+  const prefersReducedMotion = usePrefersReducedMotion();
   // The section is the observed box: it is already h-screen, so nothing needs a
   // wrapper. Unmounting on scroll-away hands the WebGL context back to the
   // sections below, which is the same ceiling TechGrid works around.
@@ -77,13 +79,20 @@ const Hero: React.FC = () => {
       )}
 
       <div className='absolute bottom-32 flex w-full items-center justify-center sm:bottom-10 md:hidden'>
-        <a href='#about'>
+        <a href='#about' aria-label='Scroll to the About section'>
           <div className='relative flex h-[64px] w-[35px] items-start justify-center rounded-3xl border-4 border-secondary p-2'>
+            {/* MotionConfig drops the `y` keyframes under reduced motion but
+                not the opacity ones, and this loop is infinite, so it needs an
+                explicit guard. */}
             <motion.div
-              animate={{
-                y: [0, 24, 0],
-                opacity: [1, 0.5, 1],
-              }}
+              animate={
+                prefersReducedMotion
+                  ? undefined
+                  : {
+                      y: [0, 24, 0],
+                      opacity: [1, 0.5, 1],
+                    }
+              }
               transition={{
                 duration: 1.5,
                 repeat: Infinity,

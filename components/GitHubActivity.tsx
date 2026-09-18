@@ -10,7 +10,12 @@ import {
 } from './GitHubActivityClient';
 
 const GitHubStatsSkeleton = () => (
-  <div className='mt-8 mb-12 flex flex-wrap justify-center gap-4'>
+  <div
+    role='status'
+    aria-live='polite'
+    className='mt-8 mb-12 flex flex-wrap justify-center gap-4'
+  >
+    <span className='sr-only'>Loading GitHub stats</span>
     {[...Array(4)].map((_, i) => (
       <div key={i} className='min-w-[160px] flex-1'>
         <div className='rounded-xl border border-tertiary bg-tertiary p-4'>
@@ -26,7 +31,12 @@ const GitHubStatsSkeleton = () => (
 );
 
 const GitHubDashboardSkeleton = () => (
-  <div className='mb-12 grid grid-cols-1 gap-8'>
+  <div
+    role='status'
+    aria-live='polite'
+    className='mb-12 grid grid-cols-1 gap-8'
+  >
+    <span className='sr-only'>Loading GitHub activity</span>
     <div className='w-full rounded-xl border border-tertiary bg-tertiary p-4'>
       <div className='mb-4 h-6 w-48 animate-pulse rounded bg-gray-600'></div>
       <div className='h-32 animate-pulse rounded bg-gray-600'></div>
@@ -86,7 +96,7 @@ async function GitHubDashboardSection() {
 
 const GitHubActivity: React.FC = () => {
   return (
-    <SectionWrapper idName='github'>
+    <SectionWrapper idName='github' label='GitHub activity'>
       <GitHubActivityHeader />
 
       <Suspense fallback={<GitHubStatsSkeleton />}>

@@ -3,9 +3,12 @@ import React from 'react';
 export default function Loading() {
   return (
     <div
+      role='status'
+      aria-live='polite'
       className='relative flex min-h-screen items-center justify-center overflow-hidden'
       style={{ background: 'var(--primary-color)' }}
     >
+      <span className='sr-only'>Loading page</span>
       {/* Subtle animated background gradient */}
       <div className='absolute inset-0 opacity-20'>
         <div

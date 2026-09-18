@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 
-const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
+import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
 // Probing costs a real WebGL context, so the answer is cached for the document
 // rather than recomputed on every render.
@@ -31,14 +31,9 @@ function supportsWebGL(): boolean {
   return probed;
 }
 
-const subscribe = (onChange: () => void) => {
-  const reduced = window.matchMedia(REDUCED_QUERY);
-  reduced.addEventListener('change', onChange);
-  return () => reduced.removeEventListener('change', onChange);
-};
+const subscribe = () => () => {};
 
-const getSnapshot = () =>
-  !window.matchMedia(REDUCED_QUERY).matches && supportsWebGL();
+const getSnapshot = () => supportsWebGL();
 
 /**
  * Whether this client should mount a WebGL canvas at all. False on the server
@@ -47,5 +42,7 @@ const getSnapshot = () =>
  * hero, and gating it on width took the whole visual away on mobile.
  */
 export function useCanRender3D(): boolean {
-  return useSyncExternalStore(subscribe, getSnapshot, () => false);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const hasWebGL = useSyncExternalStore(subscribe, getSnapshot, () => false);
+  return !prefersReducedMotion && hasWebGL;
 }

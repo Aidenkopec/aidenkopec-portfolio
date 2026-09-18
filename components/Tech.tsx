@@ -11,7 +11,7 @@ const Tech: React.FC = () => {
   );
 
   return (
-    <SectionWrapper idName=''>
+    <SectionWrapper label='Technologies'>
       <div className='flex flex-col items-center gap-10'>
         <TechGrid technologies={technologiesWithIcons} />
       </div>

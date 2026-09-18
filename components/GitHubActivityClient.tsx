@@ -93,6 +93,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const handleYearChange = (year: string): void => {
     setSelectedYear(year);
@@ -100,7 +101,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     setDropdownOpen(false);
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside, or on Escape.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -111,12 +112,22 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setDropdownOpen(false);
+      // Escape leaves focus where it was, which is inside a subtree about to
+      // unmount, so hand it back to the trigger.
+      triggerRef.current?.focus();
+    };
+
     if (dropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [dropdownOpen]);
 
@@ -216,14 +227,18 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
         {/* Custom Year Dropdown */}
         <div className='relative' ref={dropdownRef}>
           <button
+            ref={triggerRef}
             onClick={() => setDropdownOpen(!dropdownOpen)}
+            aria-expanded={dropdownOpen}
+            aria-label='Filter contributions by year'
             className='flex items-center justify-between gap-1.5 rounded-md border border-tertiary bg-black-100 px-2.5 py-1.5 text-xs font-medium text-secondary transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
           >
             <span className='flex items-center gap-1.5 text-[11px] sm:text-sm'>
-              📅 {selectedYear === 'last' ? 'Last year' : selectedYear}
+              <span aria-hidden='true'>📅</span>{' '}
+              {selectedYear === 'last' ? 'Last year' : selectedYear}
             </span>
-            <div
-              className={`chevron scale-75 transition-transform duration-150 ${
+            <span
+              className={`chevron block scale-75 transition-transform duration-150 ${
                 dropdownOpen ? 'rotate-180' : ''
               }`}
             />
@@ -236,23 +251,32 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                   <button
                     key={year}
                     onClick={() => handleYearChange(year.toString())}
+                    aria-pressed={selectedYear === year.toString()}
                     className={`w-full px-3 py-2 text-left text-xs font-medium text-secondary transition-colors duration-150 hover:bg-[var(--text-color-variable)]/10 hover:text-secondary sm:px-4 sm:py-2.5 sm:text-sm ${
                       selectedYear === year.toString()
                         ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                         : ''
                     }`}
                   >
-                    <div className='flex items-center gap-1.5 sm:gap-2'>
-                      <span className='text-[10px] sm:text-xs'>📅</span>
+                    <span className='flex items-center gap-1.5 sm:gap-2'>
+                      <span
+                        aria-hidden='true'
+                        className='text-[10px] sm:text-xs'
+                      >
+                        📅
+                      </span>
                       <span className='text-[11px] sm:text-sm'>
                         {year === 'last' ? 'Last year' : year}
                       </span>
                       {selectedYear === year.toString() && (
-                        <div className='ml-auto text-[10px] text-[var(--text-color-variable)] sm:text-xs'>
+                        <span
+                          aria-hidden='true'
+                          className='ml-auto text-[10px] text-[var(--text-color-variable)] sm:text-xs'
+                        >
                           ✓
-                        </div>
+                        </span>
                       )}
-                    </div>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -416,6 +440,8 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                       ].map(({ level, label, range }) => (
                         <div
                           key={level}
+                          role='img'
+                          aria-label={`${label}: ${range} contributions`}
                           className='h-3 w-3 cursor-help rounded-[2px] transition-transform hover:scale-125'
                           style={{
                             backgroundColor: getContributionColor(level),

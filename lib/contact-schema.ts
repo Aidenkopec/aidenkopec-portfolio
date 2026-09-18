@@ -49,3 +49,28 @@ export type ContactInput = z.infer<typeof contactSchema>;
 export function firstError(error: z.ZodError): string {
   return error.issues[0]?.message ?? 'Please check the form and try again';
 }
+
+/** Field names the form can mark invalid. */
+export type ContactField = keyof ContactInput;
+
+const CONTACT_FIELDS: readonly string[] = ['name', 'email', 'message'];
+
+/**
+ * The same first message, plus the field it came from, so the form marks only
+ * that input invalid instead of all three. `field` is undefined for an object
+ * level issue, which belongs to no single input.
+ */
+export function firstIssue(error: z.ZodError): {
+  field?: ContactField;
+  message: string;
+} {
+  const issue = error.issues[0];
+  const path = issue?.path[0];
+  return {
+    field:
+      typeof path === 'string' && CONTACT_FIELDS.includes(path)
+        ? (path as ContactField)
+        : undefined,
+    message: issue?.message ?? 'Please check the form and try again',
+  };
+}
