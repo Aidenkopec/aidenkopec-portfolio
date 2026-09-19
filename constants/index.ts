@@ -44,18 +44,18 @@ interface NavLink {
 
 interface Service {
   title: string;
-  icon: any;
+  icon: StaticImageData;
 }
 
 interface Technology {
   name: string;
-  icon: any;
+  icon: StaticImageData;
 }
 
 interface Experience {
   title: string;
   company_name: string;
-  icon: any;
+  icon: StaticImageData;
   iconBg: string;
   date: string;
   points: string[];
@@ -405,4 +405,14 @@ const projects: Project[] = [
 ];
 
 export { experiences, projects, services, technologies, testimonials };
-export type { Project, ProjectLink, ProjectMetric, ProjectTier, Technology };
+export type {
+  Experience,
+  NavLink,
+  Project,
+  ProjectLink,
+  ProjectMetric,
+  ProjectTier,
+  Service,
+  Technology,
+  Testimonial,
+};

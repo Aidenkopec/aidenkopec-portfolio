@@ -1,18 +1,11 @@
 'use client';
-import { motion, type Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import React from 'react';
 
-import { testimonials } from '../constants';
+import { testimonials, type Testimonial } from '../constants';
 import SectionWrapper from '../hoc/SectionWrapper';
 import { styles } from '../styles';
 import { fadeIn, textVariant } from '../utils';
-
-interface Testimonial {
-  testimonial: string;
-  name: string;
-  designation: string;
-  company: string;
-}
 
 interface FeedbackCardProps extends Testimonial {
   index: number;
@@ -26,7 +19,7 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
   company,
 }) => (
   <motion.div
-    variants={fadeIn('up', 'spring', index * 0.25, 0.6) as unknown as Variants}
+    variants={fadeIn('up', 'spring', index * 0.25, 0.6)}
     className='h-full rounded-3xl bg-black-200 p-8 md:p-10'
   >
     <p className='text-4xl leading-none font-black text-secondary'>&ldquo;</p>
@@ -61,7 +54,7 @@ const Testimonials: React.FC = () => {
         <div
           className={`min-h-[300px] rounded-2xl bg-tertiary ${styles.padding}`}
         >
-          <motion.div variants={textVariant() as unknown as Variants}>
+          <motion.div variants={textVariant()}>
             <p className={styles.sectionSubText}>WHAT OTHERS SAY</p>
             <h2 className={styles.sectionHeadText}>Testimonials.</h2>
           </motion.div>

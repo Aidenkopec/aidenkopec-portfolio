@@ -15,7 +15,7 @@ import { fadeIn, textVariant } from '../utils';
 const BlogCards: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
   return (
     <motion.div
-      variants={fadeIn('up', 'spring', 0.3, 1) as any}
+      variants={fadeIn('up', 'spring', 0.3, 1)}
       className='grid auto-rows-fr gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
     >
       {posts.map((post, index) => (
@@ -33,7 +33,7 @@ const BlogCards: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
 // Recent Blogs Header Component - matches ProjectsHeader design
 const RecentBlogsHeader: React.FC = () => {
   return (
-    <motion.div variants={textVariant() as any}>
+    <motion.div variants={textVariant()}>
       <p className={`${styles.sectionSubText}`}>Latest insights & tutorials</p>
       <h2 className={`${styles.sectionHeadText}`}>Recent Blog Posts.</h2>
     </motion.div>
@@ -45,7 +45,7 @@ const RecentBlogsDescription: React.FC = () => {
   return (
     <div className='flex w-full'>
       <motion.p
-        variants={fadeIn('up', 'spring', 0.1, 1) as any}
+        variants={fadeIn('up', 'spring', 0.1, 1)}
         className='mt-3 max-w-3xl text-[17px] leading-[30px] text-secondary'
       >
         Dive into my thoughts on software development, AI tools, and emerging
@@ -61,7 +61,7 @@ const RecentBlogsSectionHeader: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <motion.div variants={textVariant() as any} className='mt-16'>
+    <motion.div variants={textVariant()} className='mt-16'>
       <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between'>
         <h3 className='text-[24px] font-bold text-secondary'>
           Featured Articles

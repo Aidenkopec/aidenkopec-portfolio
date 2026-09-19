@@ -172,8 +172,9 @@ const ProjectDetail: React.FC<{
     );
     if (focusable.length === 0) return;
 
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
+    // The length check above guarantees both ends exist.
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
     const current = document.activeElement;
 
     if (event.shiftKey && (current === first || !dialog.contains(current))) {
@@ -383,7 +384,9 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   } | null>(null);
 
   const activeIndex = ((cursor % count) + count) % count;
-  const active = projects[activeIndex];
+  // activeIndex is cursor wrapped into [0, count), so it always indexes a
+  // project. `projects` comes from constants and is never empty.
+  const active = projects[activeIndex]!;
 
   const setCursorTo = useCallback((next: number) => {
     cursorRef.current = next;
@@ -494,7 +497,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
 
   return (
     <>
-      <motion.div variants={textVariant() as any}>
+      <motion.div variants={textVariant()}>
         <p className={`${styles.sectionSubText}`}>
           My work &amp; contributions
         </p>
@@ -540,7 +543,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
           </div>
 
           <motion.div
-            variants={fadeIn('up', 'spring', 0.1, 0.75) as any}
+            variants={fadeIn('up', 'spring', 0.1, 0.75)}
             className='mt-5 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between'
           >
             <div className='min-w-0'>
@@ -638,7 +641,8 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
       <AnimatePresence>
         {detailIndex !== null && (
           <ProjectDetail
-            project={projects[detailIndex]}
+            // detailIndex is only ever set from activeIndex, already wrapped.
+            project={projects[detailIndex]!}
             onClose={() => setDetailIndex(null)}
           />
         )}

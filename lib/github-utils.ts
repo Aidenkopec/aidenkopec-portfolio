@@ -62,17 +62,13 @@ export interface ContributionWeek {
   contributionDays: ContributionDay[];
 }
 
-export interface CommitDay {
-  date: string;
-  count: number;
-  level: number;
-}
-
-export type CommitWeek = CommitDay[];
-
 export interface ContributionCalendar {
   totalContributions: number;
-  weeks: ContributionWeek[] | CommitWeek[];
+  // One shape, not a union. The commit derived fallback that produced the other
+  // branch was deleted with finding 2.8, so fetchContributionCalendar now
+  // returns GitHub's GraphQL shape or null. The untagged union it left behind
+  // could not be narrowed without a runtime shape check.
+  weeks: ContributionWeek[];
 }
 
 export interface GitHubStats {
@@ -111,12 +107,14 @@ export const formatCommitMessage = (
 
 // Helper function to get contribution level color
 export const getContributionColor = (level: number): string => {
+  // `as const` makes this a fixed length tuple, so colors[0] is known to exist
+  // and can serve as the out of range fallback.
   const colors = [
     'var(--black-100, #1f2937)', // No contributions
     'var(--text-color-variable, #ff6b6b)', // Low contributions
     'var(--gradient-start, #00cea8)', // Medium contributions
     'var(--gradient-end, #bf61ff)', // High contributions
     'var(--secondary-color, #ffffff)', // Very high contributions
-  ];
-  return colors[level] || colors[0];
+  ] as const;
+  return colors[level] ?? colors[0];
 };

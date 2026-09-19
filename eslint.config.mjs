@@ -20,7 +20,9 @@ const eslintConfig = [
         'warn',
         { argsIgnorePattern: '^_', ignoreRestSiblings: true },
       ],
-      '@typescript-eslint/no-explicit-any': 'off',
+      // The regression guard for Phase 5. This was 'off', which is why 32
+      // explicit `any` accumulated without the lint ever failing.
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-empty-object-type': 'warn',
 
       // React essentials

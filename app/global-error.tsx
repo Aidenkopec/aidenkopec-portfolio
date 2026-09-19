@@ -1,6 +1,8 @@
 'use client';
-import React from 'react';
+import { Analytics } from '@vercel/analytics/next';
+import { track } from '@vercel/analytics';
 import { motion } from 'motion/react';
+import React, { useEffect } from 'react';
 
 import { MotionProvider } from '@/components/MotionProvider';
 
@@ -11,11 +13,30 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // Same reporting as app/error.tsx. track() is a no-op until <Analytics />
+  // has run, which is why this route mounts its own below.
+  useEffect(() => {
+    console.error(error);
+    // Deferred by a tick on purpose. <Analytics /> assigns window.va in its own
+    // effect, and track() silently no-ops if that has not happened yet, so a
+    // crash during the first paint would report nothing. Every effect in the
+    // commit flushes before this timeout runs.
+    const timer = setTimeout(() => {
+      track('client_error', {
+        digest: error.digest ?? 'none',
+        message: error.message,
+        path: window.location.pathname,
+      });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [error]);
+
   return (
     <html lang='en'>
       <body>
         {/* This route replaces the root layout, so it is outside the app's
-            MotionProvider and needs its own. */}
+            MotionProvider and Analytics and needs its own of each. */}
+        <Analytics />
         <MotionProvider>
           <div className='relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-slate-900 px-4'>
             {/* Background overlay */}

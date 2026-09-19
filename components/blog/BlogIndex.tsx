@@ -21,6 +21,10 @@ interface BlogIndexProps {
 export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Only the first featured post is rendered. Bound here so the JSX guard
+  // narrows the element itself rather than checking the array's length.
+  const featuredPost = featuredPosts[0];
+
   const {
     filteredPosts,
     categories,
@@ -60,7 +64,7 @@ export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
       {/* Main Content */}
       <div className='container mx-auto max-w-7xl px-6 py-16'>
         {/* Featured Post Section */}
-        {!isFiltered && featuredPosts.length > 0 && (
+        {!isFiltered && featuredPost && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -70,8 +74,8 @@ export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
           >
             {/* Single Large Featured Post */}
             <BlogCard
-              key={featuredPosts[0].slug}
-              post={featuredPosts[0]}
+              key={featuredPost.slug}
+              post={featuredPost}
               singleFeatured={true}
               index={0}
             />

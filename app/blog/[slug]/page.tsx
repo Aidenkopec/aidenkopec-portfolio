@@ -9,7 +9,7 @@ import BlogNavbar from '@/components/blog/BlogNavbar';
 import { BackToBlog, BlogNavigation } from '@/components/blog/BlogNavigation';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
 import { BlogPost } from '@/lib/types';
-import { useMDXComponents } from '@/mdx-components';
+import { getMDXComponents } from '@/mdx-components';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -117,27 +117,24 @@ function BlogPostSkeleton() {
   );
 }
 
-// Client component that handles MDX rendering
+// Server component. MDXRemote here is next-mdx-remote/rsc, not the client build.
 function BlogPostRenderer({
   post,
   previousPost,
   nextPost,
 }: {
-  post: any;
-  previousPost: any;
-  nextPost: any;
+  post: BlogPost;
+  previousPost: BlogPost | null;
+  nextPost: BlogPost | null;
 }) {
-  // Use headings from parsed blog post
-  const headings = post.headings || [];
-
   // Get MDX components for styling
-  const mdxComponents = useMDXComponents({});
+  const mdxComponents = getMDXComponents();
 
   return (
     <div className='mx-auto max-w-7xl'>
       <BlogHeader post={post} />
 
-      <BlogContent headings={headings} title={post.title} slug={post.slug}>
+      <BlogContent headings={post.headings} title={post.title} slug={post.slug}>
         <MDXRemote source={post.content || ''} components={mdxComponents} />
       </BlogContent>
 
@@ -184,8 +181,11 @@ async function BlogPostContent({ slug }: { slug: string }) {
   // Find previous and next posts
   const currentIndex = allPosts.findIndex((p) => p.slug === slug);
   const previousPost =
-    currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
-  const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+    currentIndex < allPosts.length - 1
+      ? (allPosts[currentIndex + 1] ?? null)
+      : null;
+  const nextPost =
+    currentIndex > 0 ? (allPosts[currentIndex - 1] ?? null) : null;
 
   return (
     <>

@@ -351,7 +351,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       Playlist
                     </h4>
                     <div className='h-32 space-y-2 overflow-y-auto'>
-                      {playlist.map((track: any, index: number) => (
+                      {playlist.map((track, index) => (
                         <button
                           key={index}
                           onClick={() => selectTrack(index)}
@@ -662,7 +662,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 Playlist
               </h4>
               <div className='max-h-32 space-y-2 overflow-y-auto'>
-                {playlist.map((track: any, index: number) => (
+                {playlist.map((track, index) => (
                   <button
                     key={index}
                     onClick={() => selectTrack(index)}

@@ -290,7 +290,8 @@ const Ring: React.FC<RingProps> = ({
       {projects.map((project, index) => (
         <Panel
           key={project.slug}
-          texture={textures[index]}
+          // useTexture was given exactly one url per project, so index-aligned.
+          texture={textures[index]!}
           index={index}
           count={projects.length}
           spin={spin}

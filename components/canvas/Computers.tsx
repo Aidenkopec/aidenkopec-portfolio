@@ -36,7 +36,7 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
       backRim: string;
       topDown: string;
       screenEmissive: string;
-      envPreset: string;
+      envPreset: 'night' | 'dawn' | 'city' | 'forest';
       deskColor: string;
       hardwareAccent: string;
       frameColor: string;
@@ -117,12 +117,16 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
   // Enhanced material processing for optimal lighting response - runs immediately
   const processMaterials = React.useCallback(() => {
     if (computer.scene) {
-      computer.scene.traverse((child: any) => {
-        if (child.isMesh) {
+      computer.scene.traverse((child: THREE.Object3D) => {
+        if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
 
-          if (child.material) {
+          // MeshStandardMaterial is what carries metalness, roughness,
+          // envMapIntensity and emissive. Narrowing to it replaces the
+          // `!== undefined` checks the untyped version needed.
+          const material = child.material;
+          if (material instanceof THREE.MeshStandardMaterial) {
             const name = child.name?.toLowerCase() || '';
             const isScreen =
               name.includes('screen') ||
@@ -133,47 +137,39 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
               name.includes('table') ||
               name.includes('surface') ||
               name.includes('plane') ||
-              child.material.name?.toLowerCase().includes('wood') ||
-              child.material.name?.toLowerCase().includes('desk');
+              material.name?.toLowerCase().includes('wood') ||
+              material.name?.toLowerCase().includes('desk');
 
             // Set metalness immediately to prevent initial shininess
-            if (child.material.metalness !== undefined) {
-              if (isDesk) {
-                child.material.metalness = 0;
-              } else if (isScreen) {
-                child.material.metalness = 0.05;
-              } else {
-                child.material.metalness = 0.05; // Reduced from potentially high default
-              }
+            if (isDesk) {
+              material.metalness = 0;
+            } else if (isScreen) {
+              material.metalness = 0.05;
+            } else {
+              material.metalness = 0.05; // Reduced from potentially high default
             }
 
             // Set roughness immediately to prevent initial shininess
-            if (child.material.roughness !== undefined) {
-              if (isDesk) {
-                child.material.roughness = 0.95;
-              } else if (isScreen) {
-                child.material.roughness = 0.1;
-              } else {
-                child.material.roughness = 0.8; // Higher roughness = less shiny
-              }
+            if (isDesk) {
+              material.roughness = 0.95;
+            } else if (isScreen) {
+              material.roughness = 0.1;
+            } else {
+              material.roughness = 0.8; // Higher roughness = less shiny
             }
 
             // Immediately reduce envMapIntensity to prevent excessive reflections
-            if (child.material.envMapIntensity !== undefined) {
-              child.material.envMapIntensity = isDesk ? 0.02 : 0.05; // Even lower for immediate load
-            }
+            material.envMapIntensity = isDesk ? 0.02 : 0.05; // Even lower for immediate load
 
             // Theme-based hardware coloring
-            if (child.material.color) {
+            if (material.color) {
               if (isDesk) {
                 // Desk matches theme tertiary color
-                child.material.color = new THREE.Color(colors.deskColor);
+                material.color = new THREE.Color(colors.deskColor);
               } else if (isScreen) {
                 // Keep screen bright for readability
-                child.material.emissive = new THREE.Color(
-                  colors.screenEmissive,
-                );
-                child.material.emissiveIntensity = 0.8;
+                material.emissive = new THREE.Color(colors.screenEmissive);
+                material.emissiveIntensity = 0.8;
               } else {
                 // Other hardware (monitor frame, PC case, keyboard) with theme accent
                 const isFrame =
@@ -193,23 +189,21 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
                   const accentColor = new THREE.Color(colors.hardwareAccent);
 
                   // Mix base color with slight accent tint
-                  child.material.color = baseColor.lerp(accentColor, 0.1);
+                  material.color = baseColor.lerp(accentColor, 0.1);
 
                   // Add subtle emissive glow for accent parts
-                  if (child.material.emissive) {
-                    child.material.emissive = new THREE.Color(
-                      colors.hardwareAccent,
-                    );
-                    child.material.emissiveIntensity = 0.05;
+                  if (material.emissive) {
+                    material.emissive = new THREE.Color(colors.hardwareAccent);
+                    material.emissiveIntensity = 0.05;
                   }
                 } else {
                   // Default hardware color matching theme frame color
-                  child.material.color = new THREE.Color(colors.frameColor);
+                  material.color = new THREE.Color(colors.frameColor);
                 }
               }
             }
 
-            child.material.needsUpdate = true;
+            material.needsUpdate = true;
           }
         }
       });
@@ -311,7 +305,7 @@ const Computers: React.FC<ComputersProps> = ({ isMobile }) => {
         color={colors.topDown}
       />
       {/* Theme-specific environment with reduced intensity */}
-      <Environment preset={colors.envPreset as any} background={false} />
+      <Environment preset={colors.envPreset} background={false} />
       <primitive
         object={computer.scene}
         scale={isMobile ? 0.7 : 0.75}

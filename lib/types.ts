@@ -1,43 +1,24 @@
+import type { BlogMetadata } from './blog-schema';
+
 export interface BlogHeading {
   id: string;
   text: string;
   level: number;
 }
 
-export interface BlogPost {
+/**
+ * A post is its validated frontmatter plus what lib/blog.ts derives from the
+ * file. Composed rather than re-declared: the two used to be parallel interfaces
+ * free to drift, and the frontmatter half is now owned by the zod schema.
+ *
+ * Type only, so nothing in the zod import reaches a client bundle.
+ */
+export interface BlogPost extends BlogMetadata {
   slug: string;
-  title: string;
-  description: string;
-  date: string;
   readingTime: number;
-  tags: string[];
-  featured?: boolean;
-  published?: boolean;
-  author?: {
-    name: string;
-    avatar?: string;
-  };
-  excerpt?: string;
-  coverImage?: string;
-  content?: any; // MDX content
-  headings?: BlogHeading[];
-  category?: string;
-}
-
-export interface BlogMetadata {
-  title: string;
-  description: string;
-  date: string;
-  tags: string[];
-  featured?: boolean;
-  published?: boolean;
-  author?: {
-    name: string;
-    avatar?: string;
-  };
-  excerpt?: string;
-  coverImage?: string;
-  category?: string;
+  headings: BlogHeading[];
+  /** Raw MDX source, present only on a single post fetched by slug. */
+  content?: string;
 }
 
 export interface BlogPostsResponse {
@@ -52,3 +33,5 @@ export interface BlogTag {
   count: number;
   slug: string;
 }
+
+export type { BlogMetadata };

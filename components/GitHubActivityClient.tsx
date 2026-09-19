@@ -51,7 +51,7 @@ const StatCard: React.FC<StatCardProps> = ({
   loading,
 }) => (
   <motion.div
-    variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
+    variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
     className='min-w-[160px] flex-1'
   >
     <div className='transform-gpu rounded-xl border border-tertiary bg-tertiary p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
@@ -176,14 +176,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     let currentMonth: string | null = null;
     let startWeek = 0;
     weeks.forEach((week, index) => {
-      let firstDayOfWeek: string | null = null;
-
-      // Find the first valid day in the week
-      if ('contributionDays' in week && week.contributionDays?.length > 0) {
-        firstDayOfWeek = week.contributionDays[0].date;
-      } else if (Array.isArray(week) && week.length > 0) {
-        firstDayOfWeek = week[0].date;
-      }
+      const firstDayOfWeek = week.contributionDays[0]?.date ?? null;
 
       if (firstDayOfWeek) {
         const firstDay = DateTime.fromISO(firstDayOfWeek);
@@ -328,95 +321,55 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                 <div className='flex gap-[2px]'>
                   {weeks.map((week, weekIndex) => (
                     <div key={weekIndex} className='flex flex-col gap-[2px]'>
-                      {'contributionDays' in week
-                        ? week.contributionDays.map((day, dayIndex) => {
-                            const contributionLevel =
-                              day.contributionCount === 0
-                                ? 0
-                                : day.contributionCount <= 3
-                                  ? 1
-                                  : day.contributionCount <= 6
-                                    ? 2
-                                    : day.contributionCount <= 9
-                                      ? 3
-                                      : 4;
+                      {week.contributionDays.map((day, dayIndex) => {
+                        const contributionLevel =
+                          day.contributionCount === 0
+                            ? 0
+                            : day.contributionCount <= 3
+                              ? 1
+                              : day.contributionCount <= 6
+                                ? 2
+                                : day.contributionCount <= 9
+                                  ? 3
+                                  : 4;
 
-                            const date = DateTime.fromISO(day.date);
-                            const formattedDate = date.toLocaleString({
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            });
+                        const date = DateTime.fromISO(day.date);
+                        const formattedDate = date.toLocaleString({
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        });
 
-                            return (
-                              <motion.div
-                                key={`${weekIndex}-${dayIndex}`}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{
-                                  duration: 0.2,
-                                  delay: (weekIndex * 7 + dayIndex) * 0.001,
-                                }}
-                                className='hover:ring-opacity-50 h-3 w-3 cursor-pointer rounded-[2px] transition-all duration-200 hover:scale-110 hover:ring-2 hover:ring-[var(--text-color-variable)]'
-                                style={{
-                                  backgroundColor:
-                                    getContributionColor(contributionLevel),
-                                }}
-                                onMouseEnter={(e) =>
-                                  showTooltip(
-                                    e,
-                                    day.contributionCount === 0
-                                      ? 'No contributions'
-                                      : `${day.contributionCount} contribution${
-                                          day.contributionCount !== 1 ? 's' : ''
-                                        }`,
-                                    formattedDate,
-                                  )
-                                }
-                                onMouseLeave={hideTooltip}
-                              ></motion.div>
-                            );
-                          })
-                        : week.map((day, dayIndex) => {
-                            const date = DateTime.fromISO(day.date);
-                            const formattedDate = date.toLocaleString({
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            });
-
-                            return (
-                              <motion.div
-                                key={`${weekIndex}-${dayIndex}`}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{
-                                  duration: 0.2,
-                                  delay: (weekIndex * 7 + dayIndex) * 0.001,
-                                }}
-                                className='hover:ring-opacity-50 h-3 w-3 cursor-pointer rounded-[2px] transition-all duration-200 hover:scale-110 hover:ring-2 hover:ring-[var(--text-color-variable)]'
-                                style={{
-                                  backgroundColor: getContributionColor(
-                                    day.level,
-                                  ),
-                                }}
-                                onMouseEnter={(e) =>
-                                  showTooltip(
-                                    e,
-                                    day.count === 0
-                                      ? 'No contributions'
-                                      : `${day.count} contribution${
-                                          day.count !== 1 ? 's' : ''
-                                        }`,
-                                    formattedDate,
-                                  )
-                                }
-                                onMouseLeave={hideTooltip}
-                              ></motion.div>
-                            );
-                          })}
+                        return (
+                          <motion.div
+                            key={`${weekIndex}-${dayIndex}`}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{
+                              duration: 0.2,
+                              delay: (weekIndex * 7 + dayIndex) * 0.001,
+                            }}
+                            className='hover:ring-opacity-50 h-3 w-3 cursor-pointer rounded-[2px] transition-all duration-200 hover:scale-110 hover:ring-2 hover:ring-[var(--text-color-variable)]'
+                            style={{
+                              backgroundColor:
+                                getContributionColor(contributionLevel),
+                            }}
+                            onMouseEnter={(e) =>
+                              showTooltip(
+                                e,
+                                day.contributionCount === 0
+                                  ? 'No contributions'
+                                  : `${day.contributionCount} contribution${
+                                      day.contributionCount !== 1 ? 's' : ''
+                                    }`,
+                                formattedDate,
+                              )
+                            }
+                            onMouseLeave={hideTooltip}
+                          ></motion.div>
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
@@ -596,7 +549,11 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
     try {
       const response = await fetch(`/api/github?year=${year}`);
       if (response.ok) {
-        const data = await response.json();
+        // The route returns the calendar and nothing else. Annotated because
+        // response.json() is `any`, and this is the one place untyped data
+        // crosses back into typed state.
+        const data: { commitCalendar: ContributionCalendar | null } =
+          await response.json();
         setContributionData(data.commitCalendar ?? null);
       } else {
         // `selectedYear` has already moved, so keeping the old calendar would
@@ -615,7 +572,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
     <div className='mb-12 grid grid-cols-1 gap-8'>
       {/* Full Width - Contribution Graph */}
       <motion.div
-        variants={fadeIn('up', 'spring', 0.3, 0.75) as any}
+        variants={fadeIn('up', 'spring', 0.3, 0.75)}
         className='w-full'
       >
         <CommitGraph
@@ -630,7 +587,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
 
       {/* Open Source Activity Section */}
       <motion.div
-        variants={fadeIn('up', 'spring', 0.4, 0.75) as any}
+        variants={fadeIn('up', 'spring', 0.4, 0.75)}
         className='w-full'
       >
         <div className='transform-gpu rounded-xl border border-tertiary bg-tertiary p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
@@ -643,7 +600,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
               {githubData.commits.slice(0, 5).map((commit, index) => (
                 <motion.div
                   key={`${commit.sha || commit.date}-${index}`}
-                  variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
+                  variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
                   className='rounded-lg border border-tertiary bg-black-100 p-3 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
                 >
                   <div className='mb-1 flex items-center gap-3'>
@@ -679,7 +636,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
 
 export const GitHubActivityHeader: React.FC = () => {
   return (
-    <motion.div variants={textVariant() as any}>
+    <motion.div variants={textVariant()}>
       <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between'>
         <div>
           <p className={`${styles.sectionSubText}`}>Measured, not estimated</p>

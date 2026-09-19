@@ -10,7 +10,7 @@ import Image from 'next/image';
 import 'react-vertical-timeline-component/style.min.css';
 
 import { styles } from '../styles';
-import { experiences } from '../constants';
+import { experiences, type Experience } from '../constants';
 import SectionWrapper from '../hoc/SectionWrapper';
 import { textVariant } from '../utils';
 
@@ -20,15 +20,6 @@ const renderPoint = (point: string): React.ReactNode[] =>
     // Odd indices are the captured contents of a <strong> pair.
     i % 2 === 1 ? <strong key={i}>{chunk}</strong> : chunk,
   );
-
-interface Experience {
-  title: string;
-  company_name: string;
-  icon: any;
-  iconBg: string;
-  date: string;
-  points: string[];
-}
 
 interface ExperienceCardProps {
   experience: Experience;
@@ -82,10 +73,10 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
   );
 };
 
-const Experience: React.FC = () => {
+const ExperienceSection: React.FC = () => {
   return (
     <SectionWrapper idName='work' label='Work experience'>
-      <motion.div variants={textVariant() as any}>
+      <motion.div variants={textVariant()}>
         <p className={`${styles.sectionSubText} text-center`}>
           What I have done so far
         </p>
@@ -96,7 +87,7 @@ const Experience: React.FC = () => {
 
       <div className='mt-20 flex flex-col'>
         <VerticalTimeline>
-          {experiences.map((experience: Experience, index: number) => (
+          {experiences.map((experience, index) => (
             <ExperienceCard
               key={`experience-${index}`}
               experience={experience}
@@ -108,4 +99,4 @@ const Experience: React.FC = () => {
   );
 };
 
-export default Experience;
+export default ExperienceSection;

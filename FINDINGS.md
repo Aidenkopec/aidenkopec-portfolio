@@ -1125,6 +1125,31 @@ state, and compute the difference in whole years from the actual dates.
 
 ## Phase 4. Accessibility
 
+**Status: fixed.** 12 of 12 findings. Deviations from the text below:
+
+| #    | Deviation                                                                                                                                                                                                                                                                                                                         |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.1  | Resolved with a **modifier** rather than a wider guard alone. The toggle is now Ctrl/Cmd+Space, matching the Ctrl/Cmd+Arrow track shortcuts already in the same switch, and the bail guard was widened as described. Bare Space now activates buttons and pages the document again.                                                 |
+| 4.2  | **Five of the six files listed were already fixed** in earlier phases. Only `Contact.tsx` still had bare `outline-none`. A second instance was found and fixed instead: `ui/button.tsx:8` had a ring, but hardcoded `ring-neutral-950/50`, which is invisible on every one of the four dark themes. It now uses the `ring` token.    |
+| 4.3  | **Worse than reported.** `FloatingMusicBar.tsx` labelled with `title`, not `aria-label`, and had a clickable `<div>` with no role, tabindex or key handler, so its mini mode toggle was unreachable by keyboard. `CustomizationMenu.tsx`'s theme cards had the same defect, so themes could not be changed by keyboard at all. Both are now real buttons. The volume slider and the blog search input also had no accessible name. |
+| 4.8  | **Half of this was already done.** `hooks/useCanRender3D.ts` already gates every WebGL canvas on the preference. Three layers were added for the rest: the global CSS block, one `MotionConfig reducedMotion='user'` in `components/MotionProvider.tsx`, and explicit guards on the four things neither reaches (the infinite hero chevron, the confetti, the SMIL `<animate>` in `canvas/WavyLines.tsx`, and `app/global-error.tsx`, which replaces the root layout). The CSS block reaches **no** framer-motion animation; framer drives WAAPI and rAF, not CSS transitions. |
+| 4.12 | `.hash-span` had no CSS anywhere in the repo, so the class was already dead. `Tech.tsx` and `Testimonials.tsx` also passed `idName=''`, emitting two elements with `id=""`. `idName` is now optional and a separate `label` prop carries the landmark name, because the raw slug made a poor announced name.                          |
+| 4.5  | Two extra defects fixed alongside: `extractHeadings` matched `#` lines **inside fenced code blocks**, and emitted `#{1,6}` entries while overrides existed only for h1 to h4. Tag slugs at `lib/blog.ts:216` were **deliberately left alone**: `getBlogPostsByTag` matches without hyphenating, so the strict slug would 404 `/blog/tag/next.js`. See the comment there. |
+
+**Added beyond the findings:** a `jsx-a11y` rule set in `eslint.config.mjs`, as the regression
+guard for exactly these defects.
+
+**Surfaced but not fixed, being outside this phase:** `react-vertical-timeline-component`
+emits `id=""` on all ten timeline entries; the GitHub contribution card and the blog TOC both
+jump a heading level; blog category pills and the back-to-blog button fail colour contrast;
+inline links in post bodies are distinguished by colour alone until hover. The first is a
+dependency defect, the rest are closer to Phase 7's colour system work.
+
+**Lighthouse accessibility, before and after:** home 95 to 98, blog post 90 to 90. The post's
+three remaining failures are all in the list above and none are Phase 4 findings. Most of what
+this phase fixed is not automatically detectable: the Space key regression, the live region
+announcements, toggle state, reduced motion and the duplicate MDX heading ids.
+
 The audit surface here is wide: 34 client components, heavy animation, icon only controls and
 a global keyboard handler.
 
@@ -1383,6 +1408,44 @@ the fixed navbar offset that the span was presumably working around.
 ---
 
 ## Phase 5. Type safety and error handling
+
+**Status: fixed.** 12 of 13 findings; 5.10 was already fixed in Phase 1. All 32 explicit `any`
+in application code are gone. Deviations from the text below:
+
+| #    | Deviation                                                                                                                                                                                                                                                                                                                     |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 5.10 | **Already fixed in Phase 1.** `lib/spam-protection.ts` was deleted and `lib/contact-schema.ts` is the single zod schema, imported by both the form and the route. Re-verified in the browser: a one character name is rejected client side with the server's own message and `aria-invalid` on that input.                     |
+| 5.5  | **Not applicable as written.** `mdx-components.tsx` cannot rename its export: `next.config.ts` applies `withMDX` and the Next 16 file convention requires a function named exactly `useMDXComponents`, taking no arguments. The result cannot be hoisted either, because Phase 4 made `createSlugger()` per call and hoisting would turn the collision counter into a cross request global. Split into `getMDXComponents()` plus a thin convention wrapper; the page calls the former, so no `use` prefix appears in a server component. |
+| 5.6  | **Neither option in the finding was needed.** Phase 2 deleted the commit derived fallback, so the `CommitWeek[]` branch was already dead. The union was removed rather than normalized or tagged, taking ~45 lines of unreachable JSX with it. No consumer was casting; the narrowing was `in` and `Array.isArray` guards. |
+| 5.8  | Types exported from `constants/index.ts` rather than moved to `lib/types.ts`. `Project` and `Technology` were already exported from there, so moving four of six would split the content model across two homes. `Experience.tsx`'s component const was renamed to `ExperienceSection`, because importing the type turns the shadowing into a genuine redeclaration.                                                            |
+| 5.1  | Also removed the per-file `try/catch` that logged and skipped, in both `getAllBlogPosts` and `getBlogPostBySlug`, along with the `.filter(Boolean) as BlogPost[]` cast behind it. Validation that swallows its own failures is not validation. Verified: a bad `date:` now fails `npm run build`, naming the file and the field. |
+| 5.2  | The schema owns the type outright. `BlogMetadata` is now `z.infer` of it and `BlogPost extends BlogMetadata`, so the two can no longer drift. The old parallel interface in `lib/types.ts` is gone.                                                                                                                             |
+| 5.12 | **The `target` rationale does not hold for this build.** There is no `browserslist` key and no `.browserslistrc`, Next compiles with SWC against its own browser targets rather than tsconfig `target`, `tsc` runs `noEmit`, and `lib` was already `esnext`. Raised to ES2022 anyway at zero type errors, but measured: `.next/static` moved **+6,694 bytes**, all of it 5.13's reporting code in the error boundary chunks, and none of it attributable to `target`. The finding's "costs bytes in downlevelled async and spread helpers" is wrong here. |
+| 5.12 | `noUncheckedIndexedAccess` produced 30 errors across 8 files, of which 26 needed fixing after steps 1 and 5 deleted the rest. `noImplicitOverride` and `target: ES2022` produced **zero** each. Most fixes are real guards; four are documented non-null assertions where the index is provably in range (a length checked focus trap, a modulo wrapped carousel index, and a texture array built one-per-project). `WavyLines` was fixed at the source instead: its width and height were being parsed back out of a `viewBox` string built from literals, so the numbers are now the source of truth and the string is derived. |
+| 5.13 | **The obvious implementation silently drops the most important case.** `track()` no-ops unless `window.va` exists, which `<Analytics />` assigns in its own effect, so a crash during the first paint reported nothing. Confirmed in the browser, then fixed by deferring the call one tick, after which every effect in the commit has flushed. `app/global-error.tsx` also needed its own `<Analytics />`, for the same reason it already carries its own `MotionProvider`: it replaces the root layout. `app/error.tsx` now shows the digest in production too, matching `global-error.tsx`; a support id the visitor cannot see is not a support id. |
+
+**Added beyond the findings:** `@typescript-eslint/no-explicit-any` raised from `off` to `error`,
+as the regression guard, matching Phase 4's `jsx-a11y` precedent. That rule was why 32 `any`
+accumulated without the lint ever failing. It required four fixes outside this phase's named
+files: two `track: any` in `CustomizationMenu.tsx` (`playlist` is already `Track[]`), and in
+`canvas/Computers.tsx` a `child: any` traverse callback, now `THREE.Object3D` narrowed with
+`instanceof THREE.Mesh` plus `MeshStandardMaterial`, which also replaced five `!== undefined`
+duck checks with real type guards, and `envPreset`, now a literal union rather than `string`.
+
+**Surfaced but not fixed, being outside this phase:** post dates render one day early
+(`Oct 27, 2025` for `date: '2025-10-28'`), because `new Date('2025-10-28')` is parsed as UTC
+midnight and formatted in local time. Pre-existing and unchanged by this phase, since the schema
+passes the same string through. `BlogPostsResponse` in `lib/types.ts` has no callers. The `w-18`
+Tailwind class at `app/blog/[slug]/page.tsx:106` is not on the default scale. `calculateReadingTime`
+counts fenced code blocks and JSX as prose, so code heavy posts overstate their reading time.
+
+**Verified in the browser, not just by the tooling:** home page (3D desk materials, service cards,
+work timeline, testimonials, project carousel and detail modal focus trap), the GitHub contribution
+graph including a year switch that exercises the refetch path, both post pages with TOC anchors
+resolving, the blog index, contact form validation, and the error boundary firing `client_error`
+with a real digest on a cold load.
+
+**TODO, not code:** none.
 
 ### 5.1 Hand written YAML parser silently discards the `author` object
 

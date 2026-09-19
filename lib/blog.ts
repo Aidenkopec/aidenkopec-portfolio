@@ -3,10 +3,12 @@ import 'server-only';
 import fs from 'fs';
 import path from 'path';
 
+import matter from 'gray-matter';
 import { cache } from 'react';
 
+import { blogFrontmatterSchema, formatIssues } from './blog-schema';
 import { createSlugger, stripInlineMarkdown } from './slugify';
-import { BlogPost, BlogMetadata, BlogTag, BlogHeading } from './types';
+import { BlogPost, BlogTag, BlogHeading } from './types';
 
 const BLOG_DIRECTORY = path.join(process.cwd(), 'content/blog');
 
@@ -32,8 +34,10 @@ function extractHeadings(content: string): BlogHeading[] {
   for (const line of content.split('\n')) {
     const fenceMatch = line.match(/^\s{0,3}(`{3,}|~{3,})/);
     if (fenceMatch) {
-      const char = fenceMatch[1][0];
-      const length = fenceMatch[1].length;
+      // Group 1 matched, so it is a non-empty run of one repeated character.
+      const run = fenceMatch[1] as string;
+      const char = run[0] as string;
+      const length = run.length;
       if (!fence) {
         fence = { char, length };
       } else if (char === fence.char && length >= fence.length) {
@@ -49,72 +53,44 @@ function extractHeadings(content: string): BlogHeading[] {
     const match = line.match(/^(#{1,6})\s+(.+?)(?:\s+#+)?\s*$/);
     if (!match) continue;
 
-    const text = stripInlineMarkdown(match[2].trim());
+    // Both groups are mandatory in the pattern, so a match populates both.
+    const hashes = match[1] as string;
+    const text = stripInlineMarkdown((match[2] as string).trim());
     if (!text) continue;
 
     headings.push({
       id: slug(text),
       text,
-      level: match[1].length,
+      level: hashes.length,
     });
   }
 
   return headings;
 }
 
-// Helper to extract frontmatter and content from MDX file
+/**
+ * Frontmatter is parsed by gray-matter and validated by the schema, so the
+ * returned metadata is a type the data actually satisfies. The previous hand
+ * written parser split each line on its first colon, which could not express a
+ * nested `author:` and laundered a `Partial` into a complete `BlogMetadata`
+ * with two `as any` casts.
+ *
+ * Throws on a malformed post. Callers do not catch it: a post that cannot be
+ * parsed must fail the build, not vanish from the index.
+ */
 function parseMDXFile(filePath: string) {
   const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const { data, content } = matter(fileContent);
 
-  // Extract frontmatter between --- markers
-  const frontmatterMatch = fileContent.match(
-    /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/,
-  );
-
-  if (!frontmatterMatch) {
-    throw new Error(`Invalid MDX file format: ${filePath}`);
-  }
-
-  const frontmatterString = frontmatterMatch[1];
-  const content = frontmatterMatch[2];
-
-  // Parse YAML-like frontmatter (simple key-value parsing)
-  const metadata: Partial<BlogMetadata> = {};
-  const lines = frontmatterString.split('\n');
-
-  for (const line of lines) {
-    const trimmedLine = line.trim();
-    if (!trimmedLine || trimmedLine.startsWith('#')) continue;
-
-    const colonIndex = trimmedLine.indexOf(':');
-    if (colonIndex === -1) continue;
-
-    const key = trimmedLine.slice(0, colonIndex).trim();
-    let value = trimmedLine.slice(colonIndex + 1).trim();
-
-    // Remove quotes if present
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-
-    // Parse arrays (tags)
-    if (key === 'tags' && value.startsWith('[') && value.endsWith(']')) {
-      const tagsString = value.slice(1, -1);
-      metadata.tags = tagsString
-        .split(',')
-        .map((tag) => tag.trim().replace(/['"]/g, ''));
-    } else if (key === 'published' || key === 'featured') {
-      (metadata as any)[key] = value === 'true';
-    } else {
-      (metadata as any)[key] = value;
-    }
+  const parsed = blogFrontmatterSchema.safeParse(data);
+  if (!parsed.success) {
+    throw new Error(
+      `Invalid frontmatter in ${filePath}:\n${formatIssues(parsed.error)}`,
+    );
   }
 
   return {
-    metadata: metadata as BlogMetadata,
+    metadata: parsed.data,
     content,
     readingTime: calculateReadingTime(content),
     headings: extractHeadings(content),
@@ -123,44 +99,32 @@ function parseMDXFile(filePath: string) {
 
 // Get all blog posts
 export const getAllBlogPosts = cache(async (): Promise<BlogPost[]> => {
-  // Create blog directory if it doesn't exist
+  // A read path does not repair the tree. The directory ships with the repo, so
+  // its absence is a build time problem, and mkdirSync here would throw EROFS on
+  // a read only serverless filesystem rather than degrading to an empty list.
   if (!fs.existsSync(BLOG_DIRECTORY)) {
-    fs.mkdirSync(BLOG_DIRECTORY, { recursive: true });
     return [];
   }
 
   const files = fs.readdirSync(BLOG_DIRECTORY);
   const mdxFiles = files.filter((file) => file.endsWith('.mdx'));
 
-  const posts = mdxFiles
-    .map((file) => {
-      const slug = file.replace('.mdx', '');
-      const filePath = path.join(BLOG_DIRECTORY, file);
+  // parseMDXFile throws on a post that fails the schema, and nothing catches it.
+  // Logging and skipping would hide a broken post behind a passing build.
+  const posts = mdxFiles.map((file) => {
+    const slug = file.replace('.mdx', '');
+    const { metadata, readingTime, headings } = parseMDXFile(
+      path.join(BLOG_DIRECTORY, file),
+    );
 
-      try {
-        const { metadata, readingTime, headings } = parseMDXFile(filePath);
-
-        return {
-          slug,
-          title: metadata.title || 'Untitled',
-          description: metadata.description || '',
-          date: metadata.date || new Date().toISOString(),
-          readingTime,
-          tags: metadata.tags || [],
-          featured: metadata.featured || false,
-          published: metadata.published !== false, // Default to true
-          author: metadata.author || { name: 'Aiden Kopec' },
-          excerpt: metadata.excerpt || metadata.description || '',
-          coverImage: metadata.coverImage,
-          headings: headings || [],
-          category: metadata.category,
-        };
-      } catch (error) {
-        console.error(`Error parsing blog post ${file}:`, error);
-        return null;
-      }
-    })
-    .filter(Boolean) as BlogPost[];
+    return {
+      slug,
+      readingTime,
+      headings,
+      ...metadata,
+      excerpt: metadata.excerpt || metadata.description,
+    };
+  });
 
   // Sort by date (newest first) and filter published posts
   return posts
@@ -178,36 +142,22 @@ export async function getBlogPostBySlug(
     return null;
   }
 
-  try {
-    const { metadata, content, readingTime, headings } = parseMDXFile(filePath);
+  const { metadata, content, readingTime, headings } = parseMDXFile(filePath);
 
-    // Backstop for direct callers. The post page's dynamicParams export also
-    // blocks draft slugs at routing, but that must go when cacheComponents lands.
-    if (metadata.published === false) {
-      return null;
-    }
-
-    return {
-      slug,
-      title: metadata.title || 'Untitled',
-      description: metadata.description || '',
-      date: metadata.date || new Date().toISOString(),
-      readingTime,
-      tags: metadata.tags || [],
-      featured: metadata.featured || false,
-      // Drafts returned above.
-      published: true,
-      author: metadata.author || { name: 'Aiden Kopec' },
-      excerpt: metadata.excerpt || metadata.description || '',
-      coverImage: metadata.coverImage,
-      content, // Include raw content for MDX rendering
-      headings: headings || [],
-      category: metadata.category,
-    };
-  } catch (error) {
-    console.error(`Error parsing blog post ${slug}:`, error);
+  // Backstop for direct callers. The post page's dynamicParams export also
+  // blocks draft slugs at routing, but that must go when cacheComponents lands.
+  if (!metadata.published) {
     return null;
   }
+
+  return {
+    slug,
+    readingTime,
+    headings,
+    ...metadata,
+    excerpt: metadata.excerpt || metadata.description,
+    content, // Include raw content for MDX rendering
+  };
 }
 
 // Get posts by tag

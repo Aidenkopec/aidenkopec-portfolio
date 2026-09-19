@@ -1,6 +1,8 @@
 'use client';
+import { track } from '@vercel/analytics';
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function Error({
   error,
@@ -9,6 +11,25 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // React redacts `message` in production and only `digest` survives, so
+  // without this a live crash leaves no trace at all and the id the visitor is
+  // holding maps to nothing.
+  useEffect(() => {
+    console.error(error);
+    // Deferred by a tick on purpose. <Analytics /> assigns window.va in its own
+    // effect, and track() silently no-ops if that has not happened yet, so a
+    // crash during the first paint would report nothing. Every effect in the
+    // commit flushes before this timeout runs.
+    const timer = setTimeout(() => {
+      track('client_error', {
+        digest: error.digest ?? 'none',
+        message: error.message,
+        path: window.location.pathname,
+      });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [error]);
+
   return (
     <div className='relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-slate-900 px-4'>
       {/* Background overlay */}
@@ -87,6 +108,26 @@ export default function Error({
             </motion.button>
           </Link>
         </motion.div>
+
+        {/* Error ID for support. Shown in production too: the digest is the only
+            thing that survives React's redaction, so it is all a visitor can
+            quote and all that can be looked up. */}
+        {error.digest && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className='mt-12 rounded-lg bg-slate-800/50 p-4'
+          >
+            <p className='mb-2 text-sm text-neutral-400'>
+              If this problem persists, please contact support with this error
+              ID:
+            </p>
+            <code className='rounded bg-slate-800 px-3 py-1 font-mono text-sm text-red-300'>
+              {error.digest}
+            </code>
+          </motion.div>
+        )}
 
         {/* Error details for development */}
         {process.env.NODE_ENV === 'development' && (

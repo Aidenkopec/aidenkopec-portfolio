@@ -411,7 +411,7 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
         amplitudeIncrement: 15,
         baseFrequency: 0.8,
         frequencyIncrement: 0.25,
-        viewBox: '0 0 1000 700',
+        viewSize: [1000, 700] as const,
         strokeWidth: 1.5,
         verticalOffset: 0,
       };
@@ -423,7 +423,7 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
       amplitudeIncrement: 20,
       baseFrequency: 1.0,
       frequencyIncrement: 0.3,
-      viewBox: '0 0 1200 800',
+      viewSize: [1200, 800] as const,
       strokeWidth: 2,
       verticalOffset: 0,
     };
@@ -453,8 +453,10 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
     };
   });
 
-  const viewBoxDimensions = params.viewBox.split(' ').slice(2).map(Number);
-  const [viewWidth, viewHeight] = viewBoxDimensions;
+  // The numbers are the source of truth and the viewBox string is derived from
+  // them. Parsing them back out of a string is what made both possibly
+  // undefined, for values that are literals a few lines above.
+  const [viewWidth, viewHeight] = params.viewSize;
 
   return (
     <div
@@ -464,7 +466,7 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
       <svg
         className='absolute inset-0 h-full w-full'
         preserveAspectRatio='none'
-        viewBox={params.viewBox}
+        viewBox={`0 0 ${viewWidth} ${viewHeight}`}
         xmlns='http://www.w3.org/2000/svg'
       >
         <defs>

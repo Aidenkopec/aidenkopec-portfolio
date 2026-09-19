@@ -18,12 +18,14 @@ export function useInViewport<T extends Element>(enabled: boolean) {
     if (!element || !enabled) return;
 
     const mountObserver = new IntersectionObserver(
-      ([entry]) => setMounted(entry.isIntersecting),
+      ([entry]) => {
+        if (entry) setMounted(entry.isIntersecting);
+      },
       { rootMargin: '250px 0px' },
     );
-    const renderObserver = new IntersectionObserver(([entry]) =>
-      setPaused(!entry.isIntersecting),
-    );
+    const renderObserver = new IntersectionObserver(([entry]) => {
+      if (entry) setPaused(!entry.isIntersecting);
+    });
 
     mountObserver.observe(element);
     renderObserver.observe(element);
