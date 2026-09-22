@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-import UserAcknowledgmentEmail from '../../../components/emails/UserAcknowledgment';
-import ContactNotificationEmail from '../../../components/emails/ContactNotification';
-import { contactSchema, firstError } from '../../../lib/contact-schema';
+import UserAcknowledgmentEmail from '@/components/emails/UserAcknowledgment';
+import ContactNotificationEmail from '@/components/emails/ContactNotification';
+import { contactSchema, firstError } from '@/lib/contact-schema';
 
 const NOTIFICATION_RECIPIENT = 'aidenkopec@icloud.com';
 

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 
 import { GITHUB_URL } from '@/constants';
+import { themeKeys } from '@/constants/themes';
 import { MotionProvider } from '@/components/MotionProvider';
 import { MusicProvider } from '@/context/MusicContext';
 import './globals.css';
@@ -102,7 +103,7 @@ export default function RootLayout({
         />
         <ThemeProvider
           attribute='class'
-          themes={['glacierSapphire', 'obsidian', 'cosmicVoyage', 'auroraJade']}
+          themes={themeKeys}
           defaultTheme='glacierSapphire'
           enableSystem={false}
         >

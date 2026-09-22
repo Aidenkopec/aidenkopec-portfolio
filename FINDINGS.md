@@ -1805,6 +1805,49 @@ CI (6.2) exists, so treat this as optional.
 
 ## Phase 7. Structure, naming and CSS hygiene
 
+**Status: fixed.** 17 of 17 findings; 7.13's pagination half, 7.16's lodash and 7.17's slugify
+bullet were already fixed in earlier phases. Deviations from the text below:
+
+| #          | Deviation |
+| ---------- | --------- |
+| 7.1        | **The suggested fix cannot work.** The menu previews all four themes at once, and `getComputedStyle` only sees the active one. Theme selectors are now plain classes (`:root, .obsidian`, `.glacierSapphire` and so on), and each preview swatch carries its theme's class, so custom property inheritance supplies the values. The swatches use `var()` directly, because Tailwind resolves `@theme` values on `:root` and `bg-primary` would still show the active theme. `styles/index.ts` is deleted; keys and names live in `constants/themes.ts`, which `app/layout.tsx` also reads. |
+| 7.4        | Converted to `@utility` with a new `xs` breakpoint, class names unchanged. Computed styles are identical across 4 pages, 4 themes and 5 widths. The old classes were unlayered, so `.padding` silently beat `pt-24` on `/blog` and the tag page; as utilities `pt-24` would win and add up to 72px, so the dead `pt-24` was removed to keep the shipped spacing. The unused `padding-y` was dropped. |
+| 7.5, 7.6   | `button.tsx` was **deleted, not cleaned**: it was only exposed to MDX and no post used it. `@radix-ui/react-slot` and `class-variance-authority` went with it. `BlogShare.tsx` had three more dead `dark:` variants. |
+| 7.7        | Nothing used shadcn's meaning of `primary`, so the duplicate was deleted rather than renamed, along with every shadcn token nothing consumed. `bg-primary` is now the background. **The workaround was also broken:** `bg-primary-color/90` on both navbars and the `via-primary-color/70 to-primary-color` stops in `BlogHero.tsx` generated no CSS at all, so the scrolled navbar was transparent and the hero fade never rendered. Both render now. The Contact submit buttons used `shadow-primary`, which resolved to the accent, and now say `shadow-text-color-variable` so they look the same. |
+| 7.8        | **The stated mechanism is wrong.** `-webkit-text-fill-color: transparent` takes precedence over `color` when painting, so the `!important` block never blocked the gradient; it was redundant, not harmful. Deleted as asked, along with the green, pink and orange variants, which nothing used. |
+| 7.10       | **Wider than reported.** The same invalid `rgba(var(--hex), a)` appeared 30 more times in `app/blog/loading.tsx` and `app/blog/[slug]/loading.tsx`. All 34 now use `color-mix`, and all 34 parse in the browser. |
+| 7.11, 7.12 | **The cause was layering, not source order.** The manual classes sat outside any `@layer`, and unlayered CSS outranks every Tailwind layer, so they beat every `hover:` and `focus:` colour on 35 or more elements. Those hover states work for the first time now; verified on the nav links in the browser. |
+| 7.17       | `categories` is now `tags` in `useBlogSearch`. The categories UI is fed tags, and `BlogPost.category` is display only, which is correct. `BlogIndex` now calls the hook's `clearFilters`, which nothing used, and the hero input is controlled, so Clear filters empties it. `MusicContext` reads storage through `useIsHydrated` plus derived state instead of an effect that sets state, so the lint suppression is gone; each stored value is validated and falls back to its default. The error boundaries share `components/ErrorShell.tsx` on `error.tsx`'s visual variant, which also removed a `<button>` nested inside a `<Link>`. Removing the duplicate colour in `background-boxes.tsx` fixed the stride too, since 3 is coprime with 8. ProjectRing now seeds in a layout effect: a temporary probe showed the old code reading `spin` as 0 on the first frame after a remount, and the new code reading the cursor. Theme display names now match their keys, a visible copy change: "Obsidian Black" is now "Obsidian" and "Cosmic Purple" is now "Cosmic Voyage". |
+
+**Added beyond the findings:** `no-restricted-imports` banning `../`, as the regression guard,
+matching the Phase 4 and 5 precedent. And the contrast failures Phase 4 surfaced, which were
+this phase's colour work:
+
+- White text on the accent fails 4.5:1 in all four themes (1.86 to 3.96). Text on a solid
+  accent fill is now `text-primary` (5.08 to 10.33), across the blog and the customization menu.
+- The category badge is now an inset outline. No accent tint behind 12px accent text passes in
+  Cosmic Voyage.
+- Post links are underlined. A global `.blog-content a` rule in `BlogContent.tsx` was
+  cancelling the underline and duplicated the MDX override, so it was removed.
+
+Lighthouse accessibility: post 90 to 98, blog 94 to 98, home 98 unchanged, tag page 100. Also
+removed with no remaining users: `public/assets/menu.svg`, `close.svg`, `.wave-path` and
+`--radius`.
+
+**How this was verified, with no test suite yet (Phase 6):** a computed style snapshot of every
+element on four pages, in four themes at five widths, diffed before and after each section, so
+every visual change above is one that was chosen. Plus scripted browser checks for hover states,
+the scrolled navbar, the theme swatches, search clearing, corrupt localStorage and both error
+boundaries.
+
+**Surfaced but not fixed, being outside this phase:** `heading-order` still fails on home, blog
+and post (the GitHub card and the TOC, as noted in Phase 4). `CustomizationMenu.tsx` renders the
+same music markup twice, once for desktop and once full screen; the theme cards now share
+`ThemeOption`. The comment above the
+`CustomizationMenu` import in `Navbar.tsx` describes public folder assets and no longer relates
+to anything. The typography utilities hardcode white rather than `--white-100`, which differs
+only in Cosmic Voyage; left as is to keep the typography identical.
+
 Individually small. Collectively this is the layer that reads as "sloppy" versus
 "deliberate", which is the bar you named.
 

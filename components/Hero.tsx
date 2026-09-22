@@ -3,10 +3,9 @@ import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useState } from 'react';
 
-import { useCanRender3D } from '../hooks/useCanRender3D';
-import { useInViewport } from '../hooks/useInViewport';
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
-import { styles } from '../styles';
+import { useCanRender3D } from '@/hooks/useCanRender3D';
+import { useInViewport } from '@/hooks/useInViewport';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 import CanvasPlaceholder from './CanvasPlaceholder';
 
@@ -42,10 +41,8 @@ const Hero: React.FC = () => {
   const handleReady = useCallback(() => setModelReady(true), []);
 
   return (
-    <section ref={ref} className={`relative mx-auto h-screen w-full`}>
-      <div
-        className={`absolute inset-0 top-[120px] mx-auto max-w-7xl ${styles.paddingX} flex flex-row items-start gap-5`}
-      >
+    <section ref={ref} className='relative mx-auto h-screen w-full'>
+      <div className='absolute inset-0 top-[120px] mx-auto flex max-w-7xl flex-row items-start gap-5 padding-x'>
         <div className='mt-5 flex flex-col items-center justify-center'>
           <div
             className='h-5 w-5 rounded-full'
@@ -55,11 +52,11 @@ const Hero: React.FC = () => {
         </div>
 
         <div>
-          <h1 className={`${styles.heroHeadText}`}>
+          <h1 className='hero-head-text'>
             Hi, I&apos;m
             <span style={{ color: 'var(--text-color-variable)' }}> Aiden</span>
           </h1>
-          <p className={`${styles.heroSubText}`}>
+          <p className='hero-sub-text'>
             {/*className='sm:block hidden'*/}
             Analyze. Build. Transform. <br />
             Turning business challenges into powerful solutions.

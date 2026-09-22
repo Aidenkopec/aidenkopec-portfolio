@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 
-import SectionWrapper from '../hoc/SectionWrapper';
-import { getGitHubData } from '../lib/github-service';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { getGitHubData } from '@/lib/github-service';
 
 import {
   GitHubActivityHeader,

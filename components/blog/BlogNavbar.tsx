@@ -2,8 +2,7 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-import { styles } from '../../styles';
-import CustomizationMenu from '../CustomizationMenu';
+import CustomizationMenu from '@/components/CustomizationMenu';
 
 const BlogNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -46,9 +45,9 @@ const BlogNavbar: React.FC = () => {
     <nav
       className={`fixed top-0 z-50 flex w-full items-center py-4 transition-all duration-500 ease-in-out ${
         scrolled
-          ? 'bg-primary-color/90 border-b border-[var(--text-color-variable)]/20 shadow-2xl backdrop-blur-xl'
+          ? 'border-b border-[var(--text-color-variable)]/20 bg-primary/90 shadow-2xl backdrop-blur-xl'
           : 'bg-transparent'
-      } ${styles.paddingX}`}
+      } padding-x`}
     >
       {/* Animated gradient border on scroll */}
       {scrolled && (

@@ -7,13 +7,12 @@ import Image from 'next/image';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { type Project, type ProjectLink, type ProjectTier } from '../constants';
-import { useCanRender3D } from '../hooks/useCanRender3D';
-import { useInViewport } from '../hooks/useInViewport';
-import { useIsSmallViewport } from '../hooks/useIsSmallViewport';
-import { github } from '../public/assets';
-import { styles } from '../styles';
-import { fadeIn, textVariant } from '../utils';
+import { type Project, type ProjectLink, type ProjectTier } from '@/constants';
+import { useCanRender3D } from '@/hooks/useCanRender3D';
+import { useInViewport } from '@/hooks/useInViewport';
+import { useIsSmallViewport } from '@/hooks/useIsSmallViewport';
+import github from '@/public/assets/github.png';
+import { fadeIn, textVariant } from '@/utils';
 
 // Loaded on demand so three.js stays out of the initial bundle and the WebGL
 // context is only created once the section is actually approaching the viewport.
@@ -498,10 +497,8 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   return (
     <>
       <motion.div variants={textVariant()}>
-        <p className={`${styles.sectionSubText}`}>
-          My work &amp; contributions
-        </p>
-        <h2 className={`${styles.sectionHeadText}`}>Projects &amp; Code.</h2>
+        <p className='section-sub-text'>My work &amp; contributions</p>
+        <h2 className='section-head-text'>Projects &amp; Code.</h2>
       </motion.div>
 
       {/* Both gates read false until after hydration, so the server HTML and

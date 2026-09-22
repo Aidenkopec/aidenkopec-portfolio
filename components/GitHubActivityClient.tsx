@@ -5,16 +5,15 @@ import { DateTime } from 'luxon';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { GITHUB_URL } from '../constants';
+import { GITHUB_URL } from '@/constants';
 import {
   formatCommitMessage,
   getContributionColor,
   type ContributionCalendar,
   type GitHubData,
-} from '../lib/github-utils';
-import { github } from '../public/assets';
-import { styles } from '../styles';
-import { fadeIn, textVariant } from '../utils';
+} from '@/lib/github-utils';
+import github from '@/public/assets/github.png';
+import { fadeIn, textVariant } from '@/utils';
 
 // Types for component props
 interface StatCardProps {
@@ -504,7 +503,7 @@ const GitHubLink: React.FC = () => {
       rel='noopener noreferrer'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg`}
+      className='group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg'
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
@@ -639,8 +638,8 @@ export const GitHubActivityHeader: React.FC = () => {
     <motion.div variants={textVariant()}>
       <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between'>
         <div>
-          <p className={`${styles.sectionSubText}`}>Measured, not estimated</p>
-          <h2 className={`${styles.sectionHeadText}`}>GitHub Activity.</h2>
+          <p className='section-sub-text'>Measured, not estimated</p>
+          <h2 className='section-head-text'>GitHub Activity.</h2>
         </div>
         <GitHubLink />
       </div>

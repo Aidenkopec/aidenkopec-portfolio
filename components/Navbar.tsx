@@ -2,8 +2,7 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-import { navLinks } from '../constants';
-import { styles } from '../styles';
+import { navLinks } from '@/constants';
 
 // Direct paths for public folder assets - this is the correct Next.js approach
 import CustomizationMenu from './CustomizationMenu';
@@ -49,11 +48,9 @@ const Navbar: React.FC = () => {
 
   return (
     <nav
-      className={`${
-        styles.paddingX
-      } fixed top-0 z-50 flex w-full items-center py-4 transition-all duration-500 ease-in-out ${
+      className={`fixed top-0 z-50 flex w-full items-center py-4 padding-x transition-all duration-500 ease-in-out ${
         scrolled
-          ? 'bg-primary-color/90 border-b border-[var(--text-color-variable)]/20 shadow-2xl backdrop-blur-xl'
+          ? 'border-b border-[var(--text-color-variable)]/20 bg-primary/90 shadow-2xl backdrop-blur-xl'
           : 'bg-transparent'
       }`}
     >

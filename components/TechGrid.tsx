@@ -4,9 +4,9 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React from 'react';
 
-import { type Technology } from '../constants';
-import { useCanRender3D } from '../hooks/useCanRender3D';
-import { useInViewport } from '../hooks/useInViewport';
+import { type Technology } from '@/constants';
+import { useCanRender3D } from '@/hooks/useCanRender3D';
+import { useInViewport } from '@/hooks/useInViewport';
 
 // Loaded on demand so three.js stays out of the initial bundle.
 const BallCanvas = dynamic(() => import('./canvas/Ball'), { ssr: false });

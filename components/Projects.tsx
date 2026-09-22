@@ -1,5 +1,5 @@
-import SectionWrapper from '../hoc/SectionWrapper';
-import { projects } from '../constants';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { projects } from '@/constants';
 
 import ProjectsShowcase from './ProjectsShowcase';
 

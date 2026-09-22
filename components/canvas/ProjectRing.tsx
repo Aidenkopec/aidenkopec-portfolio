@@ -8,10 +8,17 @@ import {
   useTexture,
 } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import * as THREE from 'three';
 
-import type { Project } from '../../constants';
+import type { Project } from '@/constants';
 
 // Panel geometry matches the native 16:10 of every project screenshot.
 const PANEL_W = 4;
@@ -267,20 +274,17 @@ const Ring: React.FC<RingProps> = ({
     });
   }, [textures]);
 
-  // Seeded from the live cursor on the first frame rather than during render,
-  // so the ring starts where the cursor already is instead of easing in from 0.
+  // Seeded from the live cursor so the ring starts where the cursor already is
+  // instead of easing in from 0. A layout effect, because the Panels read spin
+  // in their own useFrame, and children subscribe before this component does:
+  // seeding in the first frame would come after they had already read 0.
   const spin = useRef(0);
-  const spinSeeded = useRef(false);
+  useLayoutEffect(() => {
+    spin.current = cursorRef.current + dragOffset.current;
+  }, [cursorRef, dragOffset]);
 
   useFrame((_, delta) => {
     const wanted = cursorRef.current + dragOffset.current;
-
-    if (!spinSeeded.current) {
-      spinSeeded.current = true;
-      spin.current = wanted;
-      return;
-    }
-
     const ease = 1 - Math.pow(0.0015, delta);
     spin.current = THREE.MathUtils.lerp(spin.current, wanted, ease);
   });

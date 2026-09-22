@@ -34,9 +34,9 @@ export default async function BlogPage() {
   ]);
 
   return (
-    <main className='bg-primary-color relative min-h-screen'>
+    <main className='relative min-h-screen bg-primary'>
       <BlogNavbar />
-      <div className='padding pt-24'>
+      <div className='padding'>
         <div className='mx-auto max-w-7xl'>
           <BlogIndex allPosts={allPosts} featuredPosts={featuredPosts} />
         </div>

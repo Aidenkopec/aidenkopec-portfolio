@@ -14,7 +14,7 @@ import WavyLines from '@/components/canvas/WavyLines';
 
 export default function Home() {
   return (
-    <div className='bg-primary-color relative z-0 max-w-full overflow-x-hidden'>
+    <div className='relative z-0 max-w-full overflow-x-hidden bg-primary'>
       <div className='relative'>
         <WavyLines className='-z-10' />
         <Navbar />

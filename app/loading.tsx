@@ -26,7 +26,7 @@ export default function Loading() {
             style={{
               background: 'rgba(255, 255, 255, 0.05)',
               borderColor: 'var(--text-color-variable)',
-              boxShadow: `0 0 60px rgba(var(--gradient-start), 0.3), 0 0 120px rgba(var(--gradient-start), 0.1), inset 0 0 40px rgba(255, 255, 255, 0.1)`,
+              boxShadow: `0 0 60px color-mix(in srgb, var(--gradient-start) 30%, transparent), 0 0 120px color-mix(in srgb, var(--gradient-start) 10%, transparent), inset 0 0 40px rgba(255, 255, 255, 0.1)`,
             }}
           >
             {/* Rotating outer ring */}

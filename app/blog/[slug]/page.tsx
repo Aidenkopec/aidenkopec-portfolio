@@ -208,7 +208,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
   return (
-    <main className='bg-primary-color min-h-screen w-full'>
+    <main className='min-h-screen w-full bg-primary'>
       <BlogNavbar />
       <div className='pt-28 pb-20'>
         <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>

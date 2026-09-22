@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Decal, Float, OrbitControls, useTexture } from '@react-three/drei';
 
-import CanvasLoader from '../Loader';
+import CanvasLoader from '@/components/Loader';
 
 interface BallProps {
   imgUrl: string | { src: string };

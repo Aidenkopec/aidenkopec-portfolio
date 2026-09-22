@@ -3,8 +3,8 @@
 import dynamic from 'next/dynamic';
 import React from 'react';
 
-import { useCanRender3D } from '../hooks/useCanRender3D';
-import { useInViewport } from '../hooks/useInViewport';
+import { useCanRender3D } from '@/hooks/useCanRender3D';
+import { useInViewport } from '@/hooks/useInViewport';
 
 // Loaded on demand so three.js stays out of the initial bundle.
 const StarsCanvas = dynamic(() => import('./canvas/Stars'), { ssr: false });

@@ -4,10 +4,9 @@ import Image from 'next/image';
 import React from 'react';
 import Tilt from 'react-parallax-tilt';
 
-import { services, type Service } from '../constants';
-import SectionWrapper from '../hoc/SectionWrapper';
-import { styles } from '../styles';
-import { fadeIn, textVariant } from '../utils';
+import { services, type Service } from '@/constants';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { fadeIn, textVariant } from '@/utils';
 
 // Extends the constants type rather than restating it: `icon: string` here was
 // wrong, the values are static image imports, and the `any` on the map below was
@@ -26,7 +25,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
   >
     <motion.div
       variants={fadeIn('right', 'spring', index * 0.5, 0.75)}
-      className='green-pink-gradient w-full rounded-[20px] p-[1px] shadow-card'
+      className='green-pink-gradient shadow-card w-full rounded-[20px] p-[1px]'
     >
       <div className='flex min-h-[280px] flex-col items-center justify-evenly rounded-[20px] bg-tertiary px-6 py-5 sm:px-12'>
         <Image
@@ -63,8 +62,8 @@ const About: React.FC = () => {
   return (
     <SectionWrapper idName='about' label='About'>
       <motion.div variants={textVariant()}>
-        <p className={styles.sectionSubText}>Introduction</p>
-        <h2 className={styles.sectionHeadText}>Overview.</h2>
+        <p className='section-sub-text'>Introduction</p>
+        <h2 className='section-head-text'>Overview.</h2>
       </motion.div>
 
       <motion.p

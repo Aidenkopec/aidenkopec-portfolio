@@ -52,6 +52,17 @@ const eslintConfig = [
       'no-debugger': 'warn',
       'prefer-const': 'warn',
       'no-var': 'error',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^\\.\\./',
+              message: "Use the '@/' alias instead of a parent relative path.",
+            },
+          ],
+        },
+      ],
 
       // Import order (auto-fixable)
       'import/order': [

@@ -72,7 +72,7 @@ export function BlogCategories({
           onClick={() => onCategorySelect(null)}
           className={`flex h-11 items-center justify-center rounded-2xl border-2 px-4 py-2.5 text-sm font-semibold transition-all duration-300 sm:inline-flex sm:h-12 sm:w-auto sm:rounded-full sm:px-5 ${
             selectedCategory === null
-              ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-secondary shadow-[var(--text-color-variable)]/30 shadow-xl'
+              ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-primary shadow-[var(--text-color-variable)]/30 shadow-xl'
               : 'border-black-100/50 bg-tertiary/80 text-secondary backdrop-blur-sm hover:border-[var(--text-color-variable)]/40 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
           }`}
           whileHover={{ scale: 1.02, y: -1 }}
@@ -91,7 +91,7 @@ export function BlogCategories({
             transition={{ delay: index * 0.08, type: 'spring', stiffness: 300 }}
             className={`relative flex h-11 items-center justify-center rounded-2xl border-2 px-4 py-2.5 text-sm font-semibold transition-all duration-300 sm:inline-flex sm:h-12 sm:w-auto sm:rounded-full sm:px-5 ${
               selectedCategory === category
-                ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-secondary shadow-[var(--text-color-variable)]/30 shadow-xl'
+                ? 'border-[var(--text-color-variable)] bg-[var(--text-color-variable)] text-primary shadow-[var(--text-color-variable)]/30 shadow-xl'
                 : 'border-black-100/50 bg-tertiary/80 text-secondary backdrop-blur-sm hover:border-[var(--text-color-variable)]/40 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
             }`}
             whileHover={{ scale: 1.02, y: -1 }}

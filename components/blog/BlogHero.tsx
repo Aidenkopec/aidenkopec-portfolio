@@ -3,40 +3,31 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen, Filter, Search, Tag } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
 
 import { BlogPost } from '@/lib/types';
 
 interface BlogHeroProps {
   postsCount: number;
   recentPosts: BlogPost[];
-  onSearch?: (term: string) => void;
+  searchResults: BlogPost[];
+  searchTerm: string;
+  onSearch: (term: string) => void;
 }
 
-export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  // Filter posts based on search term
-  const filteredPosts = useMemo<BlogPost[]>(() => {
-    if (!searchTerm.trim()) {
-      return recentPosts.slice(0, 3);
-    }
-
-    return recentPosts.filter(
-      (post) =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.tags.some((tag) =>
-          tag.toLowerCase().includes(searchTerm.toLowerCase()),
-        ),
-    );
-  }, [searchTerm, recentPosts]);
-
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-    onSearch?.(term);
-  };
-
+export function BlogHero({
+  postsCount,
+  recentPosts,
+  searchResults,
+  searchTerm,
+  onSearch,
+}: BlogHeroProps) {
   const isSearchActive = searchTerm.trim().length > 0;
+
+  // Search results come from useBlogSearch, so the hero and the post list
+  // below always agree.
+  const filteredPosts = isSearchActive
+    ? searchResults
+    : recentPosts.slice(0, 3);
 
   return (
     <div className='relative isolate overflow-hidden'>
@@ -57,7 +48,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
       />
 
       {/* Gradient overlay */}
-      <div className='via-primary-color/70 to-primary-color absolute inset-0 z-10 bg-gradient-to-b from-transparent' />
+      <div className='absolute inset-0 z-10 bg-gradient-to-b from-transparent via-primary/70 to-primary' />
 
       {/* Main content */}
       <div className='relative z-20 container mx-auto max-w-7xl px-6 pt-32 pb-16'>
@@ -115,7 +106,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
                 href='#featured'
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className='group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-[var(--text-color-variable)]/20 bg-gradient-to-r from-[var(--text-color-variable)] to-[var(--gradient-start)] px-6 py-3 text-sm font-medium text-secondary shadow-lg transition-all hover:from-[var(--text-color-variable)]/90 hover:to-[var(--gradient-start)]/90 hover:shadow-[var(--text-color-variable)]/25 sm:text-base md:px-8 md:py-4'
+                className='group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-[var(--text-color-variable)]/20 bg-gradient-to-r from-[var(--text-color-variable)] to-[var(--gradient-start)] px-6 py-3 text-sm font-medium text-primary shadow-lg transition-all hover:from-[var(--text-color-variable)]/90 hover:to-[var(--gradient-start)]/90 hover:shadow-[var(--text-color-variable)]/25 sm:text-base md:px-8 md:py-4'
               >
                 <span className='absolute inset-0 h-full w-full bg-gradient-to-r from-white/10 to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></span>
                 <span className='relative z-10 flex items-center'>
@@ -188,7 +179,7 @@ export function BlogHero({ postsCount, recentPosts, onSearch }: BlogHeroProps) {
                   <input
                     type='text'
                     value={searchTerm}
-                    onChange={(e) => handleSearchChange(e.target.value)}
+                    onChange={(e) => onSearch(e.target.value)}
                     aria-label='Search articles'
                     className='w-full rounded-lg border border-black-100 bg-black-100 py-2.5 pr-4 pl-10 text-sm text-secondary placeholder-secondary transition-all focus:border-transparent focus:ring-2 focus:ring-[var(--text-color-variable)] focus:outline-none'
                     placeholder='Search articles...'

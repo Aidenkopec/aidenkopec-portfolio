@@ -150,7 +150,7 @@ async function TagPageContent({ tag }: { tag: string }) {
       <div className='mt-16 text-center'>
         <Link
           href='/blog'
-          className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium text-secondary transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
+          className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium text-primary transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
         >
           <ArrowLeft className='h-4 w-4' />
           View All Posts
@@ -164,9 +164,9 @@ export default async function TagPage({ params }: TagPageProps) {
   const { tag } = await params;
 
   return (
-    <main className='bg-primary-color relative min-h-screen'>
+    <main className='relative min-h-screen bg-primary'>
       <BlogNavbar />
-      <div className='padding pt-24'>
+      <div className='padding'>
         <Suspense fallback={<TagPageSkeleton />}>
           <TagPageContent tag={tag} />
         </Suspense>

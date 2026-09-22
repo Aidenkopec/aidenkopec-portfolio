@@ -1,7 +1,7 @@
 import React from 'react';
 
-import SectionWrapper from '../hoc/SectionWrapper';
-import { technologies } from '../constants';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { technologies } from '@/constants';
 
 import TechGrid from './TechGrid';
 

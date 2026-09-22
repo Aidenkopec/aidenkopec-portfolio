@@ -7,9 +7,8 @@ import React, { useState } from 'react';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { BlogPost } from '@/lib/types';
 
-import SectionWrapper from '../hoc/SectionWrapper';
-import { styles } from '../styles';
-import { fadeIn, textVariant } from '../utils';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { fadeIn, textVariant } from '@/utils';
 
 // Blog Cards Grid Component - uses actual BlogCard component
 const BlogCards: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
@@ -34,8 +33,8 @@ const BlogCards: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
 const RecentBlogsHeader: React.FC = () => {
   return (
     <motion.div variants={textVariant()}>
-      <p className={`${styles.sectionSubText}`}>Latest insights & tutorials</p>
-      <h2 className={`${styles.sectionHeadText}`}>Recent Blog Posts.</h2>
+      <p className='section-sub-text'>Latest insights & tutorials</p>
+      <h2 className='section-head-text'>Recent Blog Posts.</h2>
     </motion.div>
   );
 };
@@ -69,7 +68,7 @@ const RecentBlogsSectionHeader: React.FC = () => {
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Link
             href='/blog'
-            className={`group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg`}
+            className='group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg'
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >

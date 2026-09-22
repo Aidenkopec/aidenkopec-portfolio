@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
-import { useIsHydrated } from '../../hooks/useIsHydrated';
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { useIsHydrated } from '@/hooks/useIsHydrated';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 type WavyLinesProps = {
   className?: string;

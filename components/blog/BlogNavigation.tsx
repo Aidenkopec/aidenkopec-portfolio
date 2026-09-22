@@ -98,7 +98,7 @@ export function BackToBlog() {
     >
       <Link
         href='/blog'
-        className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium text-secondary transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
+        className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium text-primary transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
       >
         <ArrowLeft className='h-4 w-4' />
         Back to All Posts

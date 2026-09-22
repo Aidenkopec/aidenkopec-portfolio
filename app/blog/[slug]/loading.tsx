@@ -34,7 +34,7 @@ export default function BlogPostLoading() {
               className='h-8 w-32 animate-pulse rounded backdrop-blur-sm'
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                boxShadow: `0 0 20px rgba(var(--gradient-start), 0.3)`,
+                boxShadow: `0 0 20px color-mix(in srgb, var(--gradient-start) 30%, transparent)`,
               }}
             ></div>
             <div className='flex space-x-6'>
@@ -45,7 +45,7 @@ export default function BlogPostLoading() {
                   style={{
                     background: 'rgba(255, 255, 255, 0.08)',
                     animationDelay: `${i * 200}ms`,
-                    boxShadow: `0 0 15px rgba(var(--text-color-variable), 0.2)`,
+                    boxShadow: `0 0 15px color-mix(in srgb, var(--text-color-variable) 20%, transparent)`,
                   }}
                 ></div>
               ))}
@@ -63,7 +63,7 @@ export default function BlogPostLoading() {
             style={{
               background: 'rgba(255, 255, 255, 0.06)',
               borderColor: 'var(--gradient-start)',
-              boxShadow: `0 0 15px rgba(var(--text-color-variable), 0.2)`,
+              boxShadow: `0 0 15px color-mix(in srgb, var(--text-color-variable) 20%, transparent)`,
             }}
           ></div>
 
@@ -82,7 +82,7 @@ export default function BlogPostLoading() {
               className='h-10 w-full animate-pulse rounded backdrop-blur-xl'
               style={{
                 background: 'rgba(255, 255, 255, 0.12)',
-                boxShadow: `0 0 40px rgba(var(--text-color-variable), 0.3), inset 0 0 20px rgba(255, 255, 255, 0.1)`,
+                boxShadow: `0 0 40px color-mix(in srgb, var(--text-color-variable) 30%, transparent), inset 0 0 20px rgba(255, 255, 255, 0.1)`,
                 animationDuration: '3s',
               }}
             ></div>
@@ -90,7 +90,7 @@ export default function BlogPostLoading() {
               className='h-10 w-3/4 animate-pulse rounded backdrop-blur-sm'
               style={{
                 background: 'rgba(255, 255, 255, 0.10)',
-                boxShadow: `0 0 30px rgba(var(--gradient-start), 0.2)`,
+                boxShadow: `0 0 30px color-mix(in srgb, var(--gradient-start) 20%, transparent)`,
                 animationDelay: '0.5s',
                 animationDuration: '2.8s',
               }}
@@ -107,7 +107,7 @@ export default function BlogPostLoading() {
                   width: i === 0 ? '6rem' : i === 1 ? '5rem' : '4rem',
                   background: 'rgba(255, 255, 255, 0.08)',
                   animationDelay: `${i * 200}ms`,
-                  boxShadow: `0 0 10px rgba(var(--text-color-variable), 0.1)`,
+                  boxShadow: `0 0 10px color-mix(in srgb, var(--text-color-variable) 10%, transparent)`,
                 }}
               ></div>
             ))}
@@ -119,7 +119,7 @@ export default function BlogPostLoading() {
             style={{
               background: 'rgba(255, 255, 255, 0.08)',
               borderColor: 'var(--text-color-variable)',
-              boxShadow: `0 0 60px rgba(var(--gradient-start), 0.3), 0 0 120px rgba(var(--text-color-variable), 0.1), inset 0 0 40px rgba(255, 255, 255, 0.1)`,
+              boxShadow: `0 0 60px color-mix(in srgb, var(--gradient-start) 30%, transparent), 0 0 120px color-mix(in srgb, var(--text-color-variable) 10%, transparent), inset 0 0 40px rgba(255, 255, 255, 0.1)`,
               animationDuration: '4s',
             }}
           >
@@ -155,7 +155,7 @@ export default function BlogPostLoading() {
                       style={{
                         background: 'rgba(255, 255, 255, 0.08)',
                         animationDelay: `${i * 300 + lineIndex * 100}ms`,
-                        boxShadow: `0 0 8px rgba(var(--text-color-variable), 0.1)`,
+                        boxShadow: `0 0 8px color-mix(in srgb, var(--text-color-variable) 10%, transparent)`,
                       }}
                     ></div>
                   ))}
@@ -169,7 +169,7 @@ export default function BlogPostLoading() {
                   style={{
                     background: 'rgba(255, 255, 255, 0.05)',
                     borderColor: 'var(--gradient-start)',
-                    boxShadow: `0 0 40px rgba(var(--text-color-variable), 0.2), inset 0 0 30px rgba(255, 255, 255, 0.08)`,
+                    boxShadow: `0 0 40px color-mix(in srgb, var(--text-color-variable) 20%, transparent), inset 0 0 30px rgba(255, 255, 255, 0.08)`,
                     animationDuration: '3.5s',
                   }}
                 >
@@ -215,7 +215,7 @@ export default function BlogPostLoading() {
                 className='mb-4 h-6 w-16 animate-pulse rounded backdrop-blur-sm'
                 style={{
                   background: 'rgba(255, 255, 255, 0.10)',
-                  boxShadow: `0 0 20px rgba(var(--gradient-start), 0.3)`,
+                  boxShadow: `0 0 20px color-mix(in srgb, var(--gradient-start) 30%, transparent)`,
                 }}
               ></div>
               <div className='flex flex-wrap gap-2'>
@@ -243,7 +243,7 @@ export default function BlogPostLoading() {
                 className='mb-4 h-6 w-20 animate-pulse rounded backdrop-blur-sm'
                 style={{
                   background: 'rgba(255, 255, 255, 0.10)',
-                  boxShadow: `0 0 20px rgba(var(--gradient-start), 0.3)`,
+                  boxShadow: `0 0 20px color-mix(in srgb, var(--gradient-start) 30%, transparent)`,
                 }}
               ></div>
               <div className='flex space-x-4'>
@@ -254,7 +254,7 @@ export default function BlogPostLoading() {
                     style={{
                       background: 'rgba(255, 255, 255, 0.08)',
                       borderColor: 'var(--gradient-start)',
-                      boxShadow: `0 0 15px rgba(var(--text-color-variable), 0.2)`,
+                      boxShadow: `0 0 15px color-mix(in srgb, var(--text-color-variable) 20%, transparent)`,
                       animationDelay: `${i * 100}ms`,
                     }}
                   ></div>
@@ -272,7 +272,7 @@ export default function BlogPostLoading() {
                 style={{
                   background: 'rgba(255, 255, 255, 0.05)',
                   borderColor: 'var(--text-color-variable)',
-                  boxShadow: `0 0 40px rgba(var(--gradient-start), 0.2), inset 0 0 30px rgba(255, 255, 255, 0.08)`,
+                  boxShadow: `0 0 40px color-mix(in srgb, var(--gradient-start) 20%, transparent), inset 0 0 30px rgba(255, 255, 255, 0.08)`,
                   animationDuration: '3.2s',
                 }}
               >
@@ -280,7 +280,7 @@ export default function BlogPostLoading() {
                   className='mb-4 h-6 w-32 animate-pulse rounded backdrop-blur-sm'
                   style={{
                     background: 'rgba(255, 255, 255, 0.12)',
-                    boxShadow: `0 0 20px rgba(var(--text-color-variable), 0.3)`,
+                    boxShadow: `0 0 20px color-mix(in srgb, var(--text-color-variable) 30%, transparent)`,
                   }}
                 ></div>
                 <div className='space-y-3'>
@@ -312,7 +312,7 @@ export default function BlogPostLoading() {
                 style={{
                   background: 'rgba(255, 255, 255, 0.05)',
                   borderColor: 'var(--text-color-variable)',
-                  boxShadow: `0 0 40px rgba(var(--gradient-start), 0.2), inset 0 0 30px rgba(255, 255, 255, 0.08)`,
+                  boxShadow: `0 0 40px color-mix(in srgb, var(--gradient-start) 20%, transparent), inset 0 0 30px rgba(255, 255, 255, 0.08)`,
                   animationDuration: '3.8s',
                 }}
               >
@@ -320,7 +320,7 @@ export default function BlogPostLoading() {
                   className='mb-4 h-6 w-28 animate-pulse rounded backdrop-blur-sm'
                   style={{
                     background: 'rgba(255, 255, 255, 0.12)',
-                    boxShadow: `0 0 20px rgba(var(--text-color-variable), 0.3)`,
+                    boxShadow: `0 0 20px color-mix(in srgb, var(--text-color-variable) 30%, transparent)`,
                   }}
                 ></div>
                 <div className='space-y-4'>
@@ -370,7 +370,7 @@ export default function BlogPostLoading() {
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
                 borderColor: 'var(--gradient-start)',
-                boxShadow: `0 0 30px rgba(var(--text-color-variable), 0.2)`,
+                boxShadow: `0 0 30px color-mix(in srgb, var(--text-color-variable) 20%, transparent)`,
                 animationDuration: '2.5s',
               }}
             ></div>
@@ -379,7 +379,7 @@ export default function BlogPostLoading() {
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
                 borderColor: 'var(--gradient-start)',
-                boxShadow: `0 0 30px rgba(var(--text-color-variable), 0.2)`,
+                boxShadow: `0 0 30px color-mix(in srgb, var(--text-color-variable) 20%, transparent)`,
                 animationDelay: '0.3s',
                 animationDuration: '2.5s',
               }}

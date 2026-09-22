@@ -2,15 +2,78 @@
 import { useTheme } from 'next-themes';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useIsHydrated } from '../hooks/useIsHydrated';
-import { useMusicPlayer } from '../hooks/useMusicPlayer';
-import { getThemePreviewColors, themes } from '../styles';
+import { useIsHydrated } from '@/hooks/useIsHydrated';
+import { useMusicContext } from '@/context';
+import { themes } from '@/constants/themes';
 
 interface CustomizationMenuProps {
   isOpen: boolean;
   onClose: () => void;
   isMobile?: boolean;
 }
+
+interface ThemeOptionProps {
+  themeKey: string;
+  themeName: string;
+  isSelected: boolean;
+  onSelect: (themeKey: string) => void;
+}
+
+// The swatches carry their theme's class, so var() resolves to that theme's
+// colours rather than the active one.
+const ThemeOption: React.FC<ThemeOptionProps> = ({
+  themeKey,
+  themeName,
+  isSelected,
+  onSelect,
+}) => (
+  <button
+    type='button'
+    aria-pressed={isSelected}
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onSelect(themeKey);
+    }}
+    className={`relative w-full cursor-pointer rounded-lg border p-3 text-left transition-all duration-300 ${
+      isSelected
+        ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
+        : 'border-tertiary bg-tertiary hover:border-[var(--text-color-variable)] hover:bg-[var(--tertiary-color)]'
+    } `}
+  >
+    <span className='flex items-center justify-between'>
+      <span className='block flex-1'>
+        <span className='mb-2 block text-sm font-medium text-secondary'>
+          {themeName}
+        </span>
+        <span className={`${themeKey} flex items-center gap-2`}>
+          <span
+            className='block h-4 w-4 rounded-full border border-gray-600 bg-[var(--primary-color)]'
+            title='Primary Color'
+          />
+          <span
+            className='block h-4 w-4 rounded-full border border-gray-600 bg-[var(--text-color-variable)]'
+            title='Accent Color'
+          />
+          <span
+            className='block h-4 w-4 rounded-full border border-gray-600 bg-[var(--tertiary-color)]'
+            title='Tertiary Color'
+          />
+        </span>
+      </span>
+
+      {isSelected && (
+        <span className='text-sm font-medium text-[var(--text-color-variable)]'>
+          ✓ Active
+        </span>
+      )}
+    </span>
+
+    <span
+      className={`${themeKey} absolute top-0 right-0 block h-full w-1 rounded-r-lg bg-linear-to-b from-[var(--text-color-variable)] to-[var(--primary-color)]`}
+    />
+  </button>
+);
 
 const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   isOpen,
@@ -25,7 +88,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
 
   const {
     volume,
-    handleVolumeChange,
+    setVolume,
     isFloatingBarVisible,
     floatingBarMode,
     setFloatingBarMode,
@@ -34,7 +97,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     currentTrack,
     selectTrack,
     isPlaying,
-  } = useMusicPlayer();
+  } = useMusicContext();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -142,7 +205,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   aria-pressed={activeTab === 'themes'}
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                     activeTab === 'themes'
-                      ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
+                      ? 'bg-[var(--text-color-variable)] text-primary shadow-lg'
                       : 'text-secondary hover:text-secondary'
                   }`}
                 >
@@ -153,7 +216,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   aria-pressed={activeTab === 'music'}
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                     activeTab === 'music'
-                      ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
+                      ? 'bg-[var(--text-color-variable)] text-primary shadow-lg'
                       : 'text-secondary hover:text-secondary'
                   }`}
                 >
@@ -167,74 +230,15 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
               {activeTab === 'themes' ? (
                 /* Themes Tab */
                 <div className='space-y-3 p-4'>
-                  {Object.entries(themes).map(([themeKey, themeData]) => {
-                    const colors = getThemePreviewColors(themeKey);
-                    const isSelected = theme === themeKey;
-
-                    return (
-                      <button
-                        key={themeKey}
-                        type='button'
-                        aria-pressed={isSelected}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleThemeChange(themeKey);
-                        }}
-                        className={`relative w-full cursor-pointer rounded-lg border p-3 text-left transition-all duration-300 ${
-                          isSelected
-                            ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
-                            : 'border-tertiary bg-tertiary hover:border-[var(--text-color-variable)] hover:bg-[var(--tertiary-color)]'
-                        } `}
-                      >
-                        <span className='flex items-center justify-between'>
-                          <span className='block flex-1'>
-                            <span className='mb-2 block text-sm font-medium text-secondary'>
-                              {themeData.name}
-                            </span>
-                            <span className='flex items-center gap-2'>
-                              {colors && (
-                                <>
-                                  <span
-                                    className='block h-4 w-4 rounded-full border border-gray-600'
-                                    style={{ backgroundColor: colors.primary }}
-                                    title='Primary Color'
-                                  />
-                                  <span
-                                    className='block h-4 w-4 rounded-full border border-gray-600'
-                                    style={{ backgroundColor: colors.accent }}
-                                    title='Accent Color'
-                                  />
-                                  <span
-                                    className='block h-4 w-4 rounded-full border border-gray-600'
-                                    style={{
-                                      backgroundColor: colors.secondary,
-                                    }}
-                                    title='Secondary Color'
-                                  />
-                                </>
-                              )}
-                            </span>
-                          </span>
-
-                          {isSelected && (
-                            <span className='text-sm font-medium text-[var(--text-color-variable)]'>
-                              ✓ Active
-                            </span>
-                          )}
-                        </span>
-
-                        {colors && (
-                          <span
-                            className='absolute top-0 right-0 block h-full w-1 rounded-r-lg'
-                            style={{
-                              background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
-                            }}
-                          />
-                        )}
-                      </button>
-                    );
-                  })}
+                  {Object.entries(themes).map(([themeKey, themeName]) => (
+                    <ThemeOption
+                      key={themeKey}
+                      themeKey={themeKey}
+                      themeName={themeName}
+                      isSelected={theme === themeKey}
+                      onSelect={handleThemeChange}
+                    />
+                  ))}
                 </div>
               ) : (
                 /* Music Tab */
@@ -281,7 +285,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                             aria-pressed={floatingBarMode === 'mini'}
                             className={`rounded-md px-3 py-1 text-xs transition-colors ${
                               floatingBarMode === 'mini'
-                                ? 'bg-[var(--text-color-variable)] text-secondary'
+                                ? 'bg-[var(--text-color-variable)] text-primary'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                           >
@@ -292,7 +296,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                             aria-pressed={floatingBarMode === 'standard'}
                             className={`rounded-md px-3 py-1 text-xs transition-colors ${
                               floatingBarMode === 'standard'
-                                ? 'bg-[var(--text-color-variable)] text-secondary'
+                                ? 'bg-[var(--text-color-variable)] text-primary'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                           >
@@ -329,9 +333,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                         step='0.1'
                         value={volume}
                         aria-label='Volume'
-                        onChange={(e) =>
-                          handleVolumeChange(parseFloat(e.target.value))
-                        }
+                        onChange={(e) => setVolume(parseFloat(e.target.value))}
                         className='slider h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-gray-600'
                         style={{
                           background: `linear-gradient(to right, var(--text-color-variable) 0%, var(--text-color-variable) ${
@@ -357,7 +359,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                           onClick={() => selectTrack(index)}
                           className={`w-full rounded-md p-2 text-left text-sm transition-colors ${
                             currentTrack === index
-                              ? 'bg-[var(--text-color-variable)] text-secondary'
+                              ? 'bg-[var(--text-color-variable)] text-primary'
                               : 'text-gray-300 hover:bg-gray-700 hover:text-secondary'
                           }`}
                         >
@@ -460,7 +462,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             aria-pressed={activeTab === 'themes'}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
               activeTab === 'themes'
-                ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
+                ? 'bg-[var(--text-color-variable)] text-primary shadow-lg'
                 : 'text-secondary hover:text-secondary'
             }`}
           >
@@ -471,7 +473,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             aria-pressed={activeTab === 'music'}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
               activeTab === 'music'
-                ? 'bg-[var(--text-color-variable)] text-secondary shadow-lg'
+                ? 'bg-[var(--text-color-variable)] text-primary shadow-lg'
                 : 'text-secondary hover:text-secondary'
             }`}
           >
@@ -484,72 +486,15 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
       <div className='max-h-80 overflow-y-auto'>
         {activeTab === 'themes' ? (
           <div className='space-y-3 p-4'>
-            {Object.entries(themes).map(([themeKey, themeData]) => {
-              const colors = getThemePreviewColors(themeKey);
-              const isSelected = theme === themeKey;
-
-              return (
-                <button
-                  key={themeKey}
-                  type='button'
-                  aria-pressed={isSelected}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleThemeChange(themeKey);
-                  }}
-                  className={`relative w-full cursor-pointer rounded-lg border p-3 text-left transition-all duration-300 ${
-                    isSelected
-                      ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
-                      : 'border-tertiary bg-tertiary hover:border-[var(--text-color-variable)] hover:bg-[var(--tertiary-color)]'
-                  } `}
-                >
-                  <span className='flex items-center justify-between'>
-                    <span className='block flex-1'>
-                      <span className='mb-2 block text-sm font-medium text-secondary'>
-                        {themeData.name}
-                      </span>
-                      <span className='flex items-center gap-2'>
-                        {colors && (
-                          <>
-                            <span
-                              className='block h-4 w-4 rounded-full border border-gray-600'
-                              style={{ backgroundColor: colors.primary }}
-                              title='Primary Color'
-                            />
-                            <span
-                              className='block h-4 w-4 rounded-full border border-gray-600'
-                              style={{ backgroundColor: colors.accent }}
-                              title='Accent Color'
-                            />
-                            <span
-                              className='block h-4 w-4 rounded-full border border-gray-600'
-                              style={{ backgroundColor: colors.secondary }}
-                              title='Secondary Color'
-                            />
-                          </>
-                        )}
-                      </span>
-                    </span>
-
-                    {isSelected && (
-                      <span className='text-sm font-medium text-[var(--text-color-variable)]'>
-                        ✓ Active
-                      </span>
-                    )}
-                  </span>
-
-                  {colors && (
-                    <span
-                      className='absolute top-0 right-0 block h-full w-1 rounded-r-lg'
-                      style={{
-                        background: `linear-gradient(to bottom, ${colors.accent}, ${colors.primary})`,
-                      }}
-                    />
-                  )}
-                </button>
-              );
-            })}
+            {Object.entries(themes).map(([themeKey, themeName]) => (
+              <ThemeOption
+                key={themeKey}
+                themeKey={themeKey}
+                themeName={themeName}
+                isSelected={theme === themeKey}
+                onSelect={handleThemeChange}
+              />
+            ))}
           </div>
         ) : (
           /* Music Tab for Desktop */
@@ -592,7 +537,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       aria-pressed={floatingBarMode === 'mini'}
                       className={`rounded-md px-3 py-1 text-xs transition-colors ${
                         floatingBarMode === 'mini'
-                          ? 'bg-[var(--text-color-variable)] text-secondary'
+                          ? 'bg-[var(--text-color-variable)] text-primary'
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
@@ -603,7 +548,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       aria-pressed={floatingBarMode === 'standard'}
                       className={`rounded-md px-3 py-1 text-xs transition-colors ${
                         floatingBarMode === 'standard'
-                          ? 'bg-[var(--text-color-variable)] text-secondary'
+                          ? 'bg-[var(--text-color-variable)] text-primary'
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
@@ -640,9 +585,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                   step='0.1'
                   value={volume}
                   aria-label='Volume'
-                  onChange={(e) =>
-                    handleVolumeChange(parseFloat(e.target.value))
-                  }
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
                   className='slider h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-gray-600'
                   style={{
                     background: `linear-gradient(to right, var(--text-color-variable) 0%, var(--text-color-variable) ${
@@ -668,7 +611,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     onClick={() => selectTrack(index)}
                     className={`w-full rounded-md p-2 text-left text-sm transition-colors ${
                       currentTrack === index
-                        ? 'bg-[var(--text-color-variable)] text-secondary'
+                        ? 'bg-[var(--text-color-variable)] text-primary'
                         : 'text-gray-300 hover:bg-gray-700 hover:text-secondary'
                     }`}
                   >

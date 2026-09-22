@@ -1,9 +1,7 @@
 'use client';
 import { Analytics } from '@vercel/analytics/next';
-import { track } from '@vercel/analytics';
-import { motion } from 'motion/react';
-import React, { useEffect } from 'react';
 
+import { ErrorShell } from '@/components/ErrorShell';
 import { MotionProvider } from '@/components/MotionProvider';
 
 export default function GlobalError({
@@ -13,24 +11,6 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // Same reporting as app/error.tsx. track() is a no-op until <Analytics />
-  // has run, which is why this route mounts its own below.
-  useEffect(() => {
-    console.error(error);
-    // Deferred by a tick on purpose. <Analytics /> assigns window.va in its own
-    // effect, and track() silently no-ops if that has not happened yet, so a
-    // crash during the first paint would report nothing. Every effect in the
-    // commit flushes before this timeout runs.
-    const timer = setTimeout(() => {
-      track('client_error', {
-        digest: error.digest ?? 'none',
-        message: error.message,
-        path: window.location.pathname,
-      });
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [error]);
-
   return (
     <html lang='en'>
       <body>
@@ -38,123 +18,15 @@ export default function GlobalError({
             MotionProvider and Analytics and needs its own of each. */}
         <Analytics />
         <MotionProvider>
-          <div className='relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-slate-900 px-4'>
-            {/* Background overlay */}
-            <div className='pointer-events-none absolute inset-0 z-20 h-full w-full bg-slate-900' />
-
-            {/* Content */}
-            <div className='relative z-30 mx-auto max-w-2xl text-center'>
-              {/* Critical Error Icon */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className='mb-8'
-              >
-                <div className='mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-red-600/30'>
-                  <svg
-                    className='h-16 w-16 text-red-500'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                    />
-                  </svg>
-                </div>
-              </motion.div>
-
-              {/* Main heading */}
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className='mb-6 text-4xl font-bold text-white md:text-6xl'
-              >
-                Critical Error
-              </motion.h1>
-
-              {/* Description */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className='mb-8 text-xl leading-relaxed text-neutral-300 md:text-2xl'
-              >
-                A critical error occurred that affected the entire application.
-                This is likely a temporary issue.
-              </motion.p>
-
-              {/* Action buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className='flex flex-col items-center justify-center gap-6 sm:flex-row'
-              >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={reset}
-                  className='rounded-lg bg-white px-10 py-4 text-lg font-bold text-slate-900 shadow-xl transition-colors duration-200 hover:bg-gray-100'
-                >
-                  Reload Application
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  // Hard navigation, not a router push: the React tree is
-                  // already broken here, and replace keeps the crashed page out
-                  // of history.
-                  onClick={() => window.location.replace('/')}
-                  className='rounded-lg border-2 border-white px-10 py-4 text-lg font-bold text-white transition-all duration-200 hover:bg-white hover:text-slate-900'
-                >
-                  Fresh Start
-                </motion.button>
-              </motion.div>
-
-              {/* Error ID for support */}
-              {error.digest && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className='mt-12 rounded-lg bg-slate-800/50 p-4'
-                >
-                  <p className='mb-2 text-sm text-neutral-400'>
-                    If this problem persists, please contact support with this
-                    error ID:
-                  </p>
-                  <code className='rounded bg-slate-800 px-3 py-1 font-mono text-sm text-red-300'>
-                    {error.digest}
-                  </code>
-                </motion.div>
-              )}
-
-              {/* Development error details */}
-              {process.env.NODE_ENV === 'development' && (
-                <motion.details
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
-                  className='mt-8 text-left'
-                >
-                  <summary className='mb-4 cursor-pointer text-sm text-neutral-400 hover:text-white'>
-                    Global Error Details (Development Only)
-                  </summary>
-                  <pre className='max-h-64 overflow-auto rounded-lg bg-slate-800 p-4 text-sm text-red-300'>
-                    {error.message}
-                    {error.stack}
-                  </pre>
-                </motion.details>
-              )}
-            </div>
-          </div>
+          <ErrorShell
+            error={error}
+            reset={reset}
+            title='Critical Error'
+            description='A critical error occurred that affected the entire application. This is likely a temporary issue.'
+            resetLabel='Reload Application'
+            homeLabel='Fresh Start'
+            hardNavigateHome
+          />
         </MotionProvider>
       </body>
     </html>

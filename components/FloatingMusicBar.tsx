@@ -2,7 +2,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useMusicPlayer } from '../hooks/useMusicPlayer';
+import { useMusicContext } from '@/context';
 
 interface IconProps {
   className?: string;
@@ -42,22 +42,19 @@ const Icons = {
   ),
 };
 
-interface TrackInfo {
-  title: string;
-}
-
 const FloatingMusicBar: React.FC = () => {
   const {
     isPlaying,
     isFloatingBarVisible,
     floatingBarMode,
     setFloatingBarMode,
-    getTrackInfo,
+    playlist,
+    currentTrack,
     isHydrated,
     togglePlay,
     nextTrack,
     previousTrack,
-  } = useMusicPlayer();
+  } = useMusicContext();
 
   const [shouldScrollTitle, setShouldScrollTitle] = useState<boolean>(false);
   const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
@@ -94,10 +91,10 @@ const FloatingMusicBar: React.FC = () => {
     setFloatingBarMode('hidden');
   };
 
-  // Get track info, but use defaults if not hydrated yet
-  const trackInfo: TrackInfo = isHydrated
-    ? getTrackInfo()
-    : { title: 'Deep Space' };
+  // Use a default title until hydrated
+  const trackTitle = isHydrated
+    ? (playlist[currentTrack]?.title ?? 'No Track')
+    : 'Deep Space';
 
   // Check if text overflows and needs scrolling
   useEffect(() => {
@@ -117,7 +114,7 @@ const FloatingMusicBar: React.FC = () => {
     // Also check on resize
     window.addEventListener('resize', checkOverflow, { passive: true });
     return () => window.removeEventListener('resize', checkOverflow);
-  }, [trackInfo.title, isHydrated]);
+  }, [trackTitle, isHydrated]);
 
   const closeDock = (): void => handleHideMusicBar();
 
@@ -215,14 +212,14 @@ const FloatingMusicBar: React.FC = () => {
                     ref={titleRef}
                     className='invisible absolute text-xs font-medium whitespace-nowrap'
                   >
-                    {trackInfo.title}
+                    {trackTitle}
                   </span>
                   <div
                     className={`text-xs leading-none font-medium whitespace-nowrap text-secondary transition-colors duration-200 group-hover:text-purple-400 ${shouldScrollTitle ? 'animate-scroll inline-block' : 'block'}`}
                   >
-                    {trackInfo.title}
+                    {trackTitle}
                     {shouldScrollTitle && (
-                      <span aria-hidden='true'>&nbsp;{trackInfo.title}</span>
+                      <span aria-hidden='true'>&nbsp;{trackTitle}</span>
                     )}
                   </div>
                 </div>

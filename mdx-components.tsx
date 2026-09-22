@@ -3,7 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-import { Button } from '@/components/ui/button';
 import { createSlugger } from '@/lib/slugify';
 
 /**
@@ -83,7 +82,7 @@ export function getMDXComponents(): MDXComponents {
     a: ({ href, children }) => (
       <Link
         href={href || '#'}
-        className='text-[var(--text-color-variable)] transition-all duration-200 hover:underline'
+        className='text-[var(--text-color-variable)] underline decoration-[var(--text-color-variable)]/40 underline-offset-2 transition-all duration-200 hover:decoration-[var(--text-color-variable)]'
       >
         {children}
       </Link>
@@ -147,8 +146,6 @@ export function getMDXComponents(): MDXComponents {
         {children}
       </td>
     ),
-    // Custom components that can be used in MDX
-    Button,
   };
 }
 

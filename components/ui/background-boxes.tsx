@@ -14,12 +14,13 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
     '#fde047',
     '#fca5a5',
     '#d8b4fe',
-    '#93c5fd',
     '#a5b4fc',
     '#c4b5fd',
   ];
   // Picked from the cell coordinates rather than Math.random so the hover
-  // colour is stable across renders and safe to compute during render.
+  // colour is stable across renders and safe to compute during render. Both
+  // strides are coprime with the eight colours, so every colour appears in
+  // every row and column.
   const getCellColor = (row: number, col: number) => {
     return colors[(row * 7 + col * 3) % colors.length];
   };

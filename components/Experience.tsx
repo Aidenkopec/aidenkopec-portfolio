@@ -9,10 +9,9 @@ import Image from 'next/image';
 
 import 'react-vertical-timeline-component/style.min.css';
 
-import { styles } from '../styles';
-import { experiences, type Experience } from '../constants';
-import SectionWrapper from '../hoc/SectionWrapper';
-import { textVariant } from '../utils';
+import { experiences, type Experience } from '@/constants';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { textVariant } from '@/utils';
 
 /** Renders the only markup the bullets use: <strong>. */
 const renderPoint = (point: string): React.ReactNode[] =>
@@ -30,16 +29,16 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
     <VerticalTimelineElement
       contentStyle={{
         background: 'var(--tertiary-color)',
-        color: '#ffffff',
+        color: 'var(--white-100)',
       }}
-      contentArrowStyle={{ borderRight: '7px solid  #232631' }}
+      contentArrowStyle={{ borderRight: '7px solid var(--tertiary-color)' }}
       date={experience.date}
       iconStyle={{ background: experience.iconBg }}
       icon={
         <div className='relative h-full w-full overflow-hidden rounded-full'>
           <Image
             src={experience.icon}
-            alt={`${experience.company_name} logo`}
+            alt={`${experience.companyName} logo`}
             fill
             sizes='60px'
             className='object-contain p-[15%]'
@@ -55,7 +54,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
           className='text-[16px] font-semibold text-secondary'
           style={{ margin: 0 }}
         >
-          {experience.company_name}
+          {experience.companyName}
         </p>
       </div>
 
@@ -63,7 +62,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
         {experience.points.map((point: string, index: number) => (
           <li
             key={`experience-point-${index}`}
-            className='-100 pl-1 text-[14px] tracking-wider text-secondary'
+            className='pl-1 text-[14px] tracking-wider text-secondary'
           >
             {renderPoint(point)}
           </li>
@@ -77,12 +76,8 @@ const ExperienceSection: React.FC = () => {
   return (
     <SectionWrapper idName='work' label='Work experience'>
       <motion.div variants={textVariant()}>
-        <p className={`${styles.sectionSubText} text-center`}>
-          What I have done so far
-        </p>
-        <h2 className={`${styles.sectionHeadText} text-center`}>
-          Work Experience.
-        </h2>
+        <p className='text-center section-sub-text'>What I have done so far</p>
+        <h2 className='text-center section-head-text'>Work Experience.</h2>
       </motion.div>
 
       <div className='mt-20 flex flex-col'>

@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
-
 @theme {
   /* Dynamic Color Palette - References our CSS variables */
   --color-primary: var(--primary-color);
@@ -18,6 +16,9 @@
   --color-gradient-end: var(--gradient-end);
 
   /* Background Patterns - Dynamic (now using WavyLines component) */
+
+  /* 475px, used by the typography utilities below */
+  --breakpoint-xs: 29.6875rem;
 
   /* Custom Spacing */
   --spacing-padding-x: 1.5rem; /* px-6 */
@@ -51,43 +52,18 @@
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* shadcn/ui variables - mapped to your theme system but preserving your main colors */
+  /* Consumed by the base layer below */
   --color-background: var(--primary-color);
   --color-foreground: var(--white-100);
-  --color-card: var(--tertiary-color);
-  --color-card-foreground: var(--white-100);
-  --color-popover: var(--tertiary-color);
-  --color-popover-foreground: var(--white-100);
-  --color-primary: var(--text-color-variable);
-  --color-primary-foreground: var(--white-100);
-  --color-secondary: var(--secondary-color);
-  --color-secondary-foreground: var(--primary-color);
-  --color-muted: var(--black-100);
-  --color-muted-foreground: var(--secondary-color);
-  --color-accent: var(--black-100);
-  --color-accent-foreground: var(--white-100);
-  --color-destructive: #ef4444;
   --color-border: var(--black-100);
-  --color-input: var(--black-100);
   --color-ring: var(--text-color-variable);
-  --color-chart-1: var(--text-color-variable);
-  --color-chart-2: var(--gradient-start);
-  --color-chart-3: var(--secondary-color);
-  --color-chart-4: var(--tertiary-color);
-  --color-chart-5: var(--black-100);
-  --color-sidebar: var(--tertiary-color);
-  --color-sidebar-foreground: var(--white-100);
-  --color-sidebar-primary: var(--text-color-variable);
-  --color-sidebar-primary-foreground: var(--white-100);
-  --color-sidebar-accent: var(--black-100);
-  --color-sidebar-accent-foreground: var(--white-100);
-  --color-sidebar-border: var(--black-100);
-  --color-sidebar-ring: var(--text-color-variable);
 }
 
-/* Dynamic Theme Variables */
-:root {
-  /* Default theme variables (Obsidian Black) */
+/* Theme values, defined only here. CustomizationMenu previews a theme by
+   putting its class on a swatch. :root holds obsidian's values as the fallback
+   until next-themes sets a class. */
+:root,
+.obsidian {
   --primary-color: #0a0a0a;
   --secondary-color: #ffffff;
   --tertiary-color: #1a1a1a;
@@ -97,10 +73,9 @@
   --text-color-variable: #ff6b6b;
   --gradient-start: #ff6b6b;
   --gradient-end: rgba(255, 107, 107, 0);
-  --radius: 0.625rem;
 }
 
-html.cosmicVoyage {
+.cosmicVoyage {
   --primary-color: #0a0514;
   --secondary-color: #ffffff;
   --tertiary-color: #1a0f2e;
@@ -112,7 +87,7 @@ html.cosmicVoyage {
   --gradient-end: rgba(168, 85, 247, 0);
 }
 
-html.glacierSapphire {
+.glacierSapphire {
   --primary-color: #07121a;
   --secondary-color: #ffffff;
   --tertiary-color: #0b2740;
@@ -124,7 +99,7 @@ html.glacierSapphire {
   --gradient-end: rgba(96, 165, 250, 0);
 }
 
-html.auroraJade {
+.auroraJade {
   --primary-color: #05110d;
   --secondary-color: #ffffff;
   --tertiary-color: #0f2c24;
@@ -137,11 +112,6 @@ html.auroraJade {
 }
 
 /* Custom Utilities */
-
-/* Minimal wave styling - no animations */
-.wave-path {
-  filter: blur(0.5px);
-}
 
 .dynamic-gradient {
   background: linear-gradient(
@@ -160,9 +130,7 @@ html.auroraJade {
 }
 
 .green-pink-gradient {
-  background: '#00cea8';
   background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
-  background: -webkit-linear-gradient(-90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
 }
 
 .shadow-card {
@@ -172,98 +140,97 @@ html.auroraJade {
     0 0 60px rgba(255, 107, 107, 0.1);
 }
 
-/* Responsive Utility Classes for Custom Styles */
-.hero-head-text {
+/* Typography and section padding, owned by Tailwind so they sort and layer
+   like any other utility. */
+@utility hero-head-text {
   font-weight: 900;
   color: white;
   font-size: var(--text-hero-head-base);
   line-height: 1.2;
   margin-top: 0.5rem;
-}
 
-@media (min-width: 475px) {
-  .hero-head-text {
+  @variant xs {
     font-size: var(--text-hero-head-xs);
   }
-}
-
-@media (min-width: 640px) {
-  .hero-head-text {
+  @variant sm {
     font-size: var(--text-hero-head-sm);
   }
-}
-
-@media (min-width: 1024px) {
-  .hero-head-text {
+  @variant lg {
     font-size: var(--text-hero-head-lg);
     line-height: var(--leading-hero-head-lg);
   }
 }
 
-.hero-sub-text {
+@utility hero-sub-text {
   color: #ffffff;
   font-weight: 500;
   font-size: var(--text-hero-sub-base);
   line-height: 1.5;
-}
 
-@media (min-width: 475px) {
-  .hero-sub-text {
+  @variant xs {
     font-size: var(--text-hero-sub-xs);
   }
-}
-
-@media (min-width: 640px) {
-  .hero-sub-text {
+  @variant sm {
     font-size: var(--text-hero-sub-sm);
   }
-}
-
-@media (min-width: 1024px) {
-  .hero-sub-text {
+  @variant lg {
     font-size: var(--text-hero-sub-lg);
     line-height: var(--leading-hero-sub-lg);
   }
 }
 
-.section-head-text {
+@utility section-head-text {
   color: white;
   font-weight: 900;
   font-size: var(--text-section-head-base);
-}
 
-@media (min-width: 475px) {
-  .section-head-text {
+  @variant xs {
     font-size: var(--text-section-head-xs);
   }
-}
-
-@media (min-width: 640px) {
-  .section-head-text {
+  @variant sm {
     font-size: var(--text-section-head-sm);
   }
-}
-
-@media (min-width: 768px) {
-  .section-head-text {
+  @variant md {
     font-size: var(--text-section-head-md);
   }
 }
 
-.section-sub-text {
+@utility section-sub-text {
   font-size: var(--text-section-sub-base);
   color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
 
-@media (min-width: 640px) {
-  .section-sub-text {
+  @variant sm {
     font-size: var(--text-section-sub-sm);
   }
 }
 
-/* Text Gradient Classes for Project Tags */
+@utility padding-x {
+  padding-left: var(--spacing-padding-x);
+  padding-right: var(--spacing-padding-x);
+
+  @variant sm {
+    padding-left: var(--spacing-padding-x-sm);
+    padding-right: var(--spacing-padding-x-sm);
+  }
+}
+
+@utility padding {
+  padding-left: var(--spacing-padding-x);
+  padding-right: var(--spacing-padding-x);
+  padding-top: var(--spacing-padding-y);
+  padding-bottom: var(--spacing-padding-combined);
+
+  @variant sm {
+    padding-left: var(--spacing-padding-x-sm);
+    padding-right: var(--spacing-padding-x-sm);
+    padding-top: var(--spacing-padding-y-sm);
+    padding-bottom: var(--spacing-padding-y-sm);
+  }
+}
+
+/* Text gradient for project tags */
 .blue-text-gradient {
   background: linear-gradient(90deg, #00d4ff 0%, #0099cc 100%);
   -webkit-background-clip: text;
@@ -272,113 +239,10 @@ html.auroraJade {
   color: #00d4ff;
 }
 
-.green-text-gradient {
-  background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: #00ff88;
-}
-
-.pink-text-gradient {
-  background: linear-gradient(90deg, #ff6b9d 0%, #c44569 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: #ff6b9d;
-}
-
-.orange-text-gradient {
-  background: linear-gradient(90deg, #ffa726 0%, #ff7043 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: #ffa726;
-}
-
-/* Project Tag Styling */
-.blue-text-gradient {
-  color: #00d4ff !important;
-}
-
-.green-text-gradient {
-  color: #00ff88 !important;
-}
-
-.pink-text-gradient {
-  color: #ff6b9d !important;
-}
-
-.orange-text-gradient {
-  color: #ffa726 !important;
-}
-
-/* Padding Utilities */
-.padding-x {
-  padding-left: var(--spacing-padding-x);
-  padding-right: var(--spacing-padding-x);
-}
-
-@media (min-width: 640px) {
-  .padding-x {
-    padding-left: var(--spacing-padding-x-sm);
-    padding-right: var(--spacing-padding-x-sm);
-  }
-}
-
-.padding-y {
-  padding-top: var(--spacing-padding-y);
-  padding-bottom: var(--spacing-padding-y);
-}
-
-@media (min-width: 640px) {
-  .padding-y {
-    padding-top: var(--spacing-padding-y-sm);
-    padding-bottom: var(--spacing-padding-y-sm);
-  }
-}
-
-.padding {
-  padding-left: var(--spacing-padding-x);
-  padding-right: var(--spacing-padding-x);
-  padding-top: var(--spacing-padding-y);
-  padding-bottom: var(--spacing-padding-combined);
-}
-
-@media (min-width: 640px) {
-  .padding {
-    padding-left: var(--spacing-padding-x-sm);
-    padding-right: var(--spacing-padding-x-sm);
-    padding-top: var(--spacing-padding-y-sm);
-    padding-bottom: var(--spacing-padding-y-sm);
-  }
-}
-
 body {
   background: var(--primary-color);
   color: var(--white-100);
   font-family: var(--font-sans);
-}
-
-/* Theme Color Utility Classes */
-.bg-tertiary {
-  background-color: var(--tertiary-color);
-}
-
-.bg-black-100 {
-  background-color: var(--black-100);
-}
-
-.bg-primary-color {
-  background-color: var(--primary-color);
-}
-
-.text-secondary {
-  color: var(--secondary-color);
-}
-
-.group:hover .group-hover\:text-\[var\(--text-color-variable\)\] {
-  color: var(--text-color-variable) !important;
 }
 
 /* shadcn/ui base layer - using your theme variables */
@@ -406,7 +270,6 @@ html {
   border-right: 6px solid transparent;
   border-top: 6px solid var(--secondary-color);
 }
-
 
 /* Respect the OS reduced motion setting for everything CSS can reach: the
    animate-pulse skeletons, the animate-spin loaders, every transition, and the

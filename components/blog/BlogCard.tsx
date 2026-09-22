@@ -183,7 +183,7 @@ export function BlogCard({
                 <motion.span
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className='inline-flex items-center rounded-full bg-[var(--text-color-variable)] px-2 py-0.5 text-xs font-medium text-secondary shadow-lg sm:px-2.5 sm:py-1 lg:px-3'
+                  className='inline-flex items-center rounded-full bg-[var(--text-color-variable)] px-2 py-0.5 text-xs font-medium text-primary shadow-lg sm:px-2.5 sm:py-1 lg:px-3'
                   whileHover={{ scale: 1.05 }}
                 >
                   {post.tags[0]}

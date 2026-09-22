@@ -27,11 +27,12 @@ export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
 
   const {
     filteredPosts,
-    categories,
-    selectedCategory,
-    setSelectedCategory,
+    tags,
+    selectedTag,
+    setSelectedTag,
     searchTerm,
     setSearchTerm,
+    clearFilters,
     resultCount,
     totalCount,
     isFiltered,
@@ -39,7 +40,7 @@ export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
 
   // Reset to page 1 when filters change. Adjusted during render rather than in
   // an effect, so the new page is used on this pass instead of a second one.
-  const filterKey = `${searchTerm}\u0000${selectedCategory ?? ''}`;
+  const filterKey = `${searchTerm}\u0000${selectedTag ?? ''}`;
   const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
   if (filterKey !== prevFilterKey) {
     setPrevFilterKey(filterKey);
@@ -58,6 +59,8 @@ export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
       <BlogHero
         postsCount={allPosts.length}
         recentPosts={allPosts}
+        searchResults={filteredPosts}
+        searchTerm={searchTerm}
         onSearch={setSearchTerm}
       />
 
@@ -91,9 +94,9 @@ export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
           id='blog-content'
         >
           <BlogCategories
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onCategorySelect={setSelectedCategory}
+            categories={tags}
+            selectedCategory={selectedTag}
+            onCategorySelect={setSelectedTag}
             resultCount={resultCount}
             totalCount={totalCount}
           />
@@ -151,11 +154,8 @@ export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
                 </p>
                 {isFiltered && (
                   <button
-                    onClick={() => {
-                      setSearchTerm('');
-                      setSelectedCategory(null);
-                    }}
-                    className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-4 py-2 text-secondary transition-colors hover:bg-[var(--text-color-variable)]/90'
+                    onClick={clearFilters}
+                    className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-4 py-2 text-primary transition-colors hover:bg-[var(--text-color-variable)]/90'
                   >
                     Clear filters
                   </button>

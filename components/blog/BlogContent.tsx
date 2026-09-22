@@ -100,17 +100,6 @@ export function BlogContent({
           margin-bottom: 1.5rem;
         }
 
-        .blog-content a {
-          color: var(--text-color-variable);
-          text-decoration: none;
-          transition: all 0.2s ease;
-        }
-
-        .blog-content a:hover {
-          text-decoration: underline;
-          color: var(--text-color-variable);
-        }
-
         .blog-content code {
           background-color: var(--black-100);
           color: var(--text-color-variable);

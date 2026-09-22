@@ -3,8 +3,7 @@
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
-import { styles } from '../styles';
-import { staggerContainer } from '../utils';
+import { staggerContainer } from '@/utils';
 
 interface SectionWrapperProps {
   children: ReactNode;
@@ -31,7 +30,7 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
       initial='hidden'
       whileInView='show'
       viewport={{ once: true, amount: 0 }}
-      className={`${styles.padding} relative z-0 mx-auto max-w-7xl`}
+      className='relative z-0 mx-auto max-w-7xl padding'
     >
       {children}
     </motion.section>

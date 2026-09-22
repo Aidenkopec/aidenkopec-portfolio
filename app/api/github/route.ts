@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { getGitHubData } from '../../../lib/github-service';
+import { getGitHubData } from '@/lib/github-service';
 
 const FIRST_GITHUB_YEAR = 2008;
 

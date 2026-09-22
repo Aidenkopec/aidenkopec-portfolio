@@ -3,16 +3,15 @@ import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useRef, useState } from 'react';
 
-import SectionWrapper from '../hoc/SectionWrapper';
-import { useCanRender3D } from '../hooks/useCanRender3D';
-import { useInViewport } from '../hooks/useInViewport';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { useCanRender3D } from '@/hooks/useCanRender3D';
+import { useInViewport } from '@/hooks/useInViewport';
 import {
   contactSchema,
   firstIssue,
   type ContactField,
-} from '../lib/contact-schema';
-import { styles } from '../styles';
-import { slideIn } from '../utils';
+} from '@/lib/contact-schema';
+import { slideIn } from '@/utils';
 
 import CanvasPlaceholder from './CanvasPlaceholder';
 
@@ -39,7 +38,6 @@ const EMPTY_FORM: FormData = {
 };
 
 const Contact: React.FC = () => {
-  const formRef = useRef<HTMLFormElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState<FormData>(EMPTY_FORM);
 
@@ -181,9 +179,7 @@ const Contact: React.FC = () => {
 
   return (
     <SectionWrapper idName='contact' label='Contact'>
-      <div
-        className={`flex flex-col-reverse gap-10 overflow-hidden xl:mt-12 xl:flex-row`}
-      >
+      <div className='flex flex-col-reverse gap-10 overflow-hidden xl:mt-12 xl:flex-row'>
         <motion.div
           variants={slideIn('left', 'tween', 0.2, 1)}
           className='flex-[0.75] rounded-2xl bg-black-100 p-8'
@@ -191,11 +187,10 @@ const Contact: React.FC = () => {
           {!submitSuccess ? (
             // Show Form
             <>
-              <p className={styles.sectionSubText}>Get in touch</p>
-              <h3 className={styles.sectionHeadText}>Contact.</h3>
+              <p className='section-sub-text'>Get in touch</p>
+              <h3 className='section-head-text'>Contact.</h3>
 
               <form
-                ref={formRef}
                 onSubmit={handleSubmit}
                 aria-busy={loading}
                 className='mt-12 flex flex-col gap-8'
@@ -274,7 +269,7 @@ const Contact: React.FC = () => {
 
                 <button
                   type='submit'
-                  className='w-fit rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-primary transition-colors outline-none hover:bg-tertiary/90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] disabled:opacity-50'
+                  className='w-fit rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] disabled:opacity-50'
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send'}
@@ -365,7 +360,7 @@ const Contact: React.FC = () => {
 
               <button
                 onClick={resetForm}
-                className='mb-4 rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-primary transition-colors outline-none hover:bg-tertiary/90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
+                className='mb-4 rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
               >
                 Send Another Message
               </button>

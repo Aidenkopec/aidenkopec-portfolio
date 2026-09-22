@@ -2,10 +2,9 @@
 import { motion } from 'framer-motion';
 import React from 'react';
 
-import { testimonials, type Testimonial } from '../constants';
-import SectionWrapper from '../hoc/SectionWrapper';
-import { styles } from '../styles';
-import { fadeIn, textVariant } from '../utils';
+import { testimonials, type Testimonial } from '@/constants';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { fadeIn, textVariant } from '@/utils';
 
 interface FeedbackCardProps extends Testimonial {
   index: number;
@@ -51,17 +50,15 @@ const Testimonials: React.FC = () => {
   return (
     <SectionWrapper label='Testimonials'>
       <section className='mt-12 rounded-[20px] bg-black-100'>
-        <div
-          className={`min-h-[300px] rounded-2xl bg-tertiary ${styles.padding}`}
-        >
+        <div className='min-h-[300px] rounded-2xl bg-tertiary padding'>
           <motion.div variants={textVariant()}>
-            <p className={styles.sectionSubText}>WHAT OTHERS SAY</p>
-            <h2 className={styles.sectionHeadText}>Testimonials.</h2>
+            <p className='section-sub-text'>WHAT OTHERS SAY</p>
+            <h2 className='section-head-text'>Testimonials.</h2>
           </motion.div>
         </div>
 
         {/* Mobile: 1 column stacked.  md+: 3 columns in a row. */}
-        <div className={`-mt-20 pb-14 ${styles.paddingX}`}>
+        <div className='-mt-20 padding-x pb-14'>
           <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
             {testimonials.map((t: Testimonial, index: number) => (
               <FeedbackCard key={t.name} index={index} {...t} />
