@@ -2,7 +2,7 @@
 import { motion } from 'motion/react';
 import Link from 'next/link';
 
-import { Boxes } from '@/components/ui/background-boxes';
+import { Boxes } from '@/components/ui/BackgroundBoxes';
 
 export default function NotFound() {
   return (

@@ -5,7 +5,7 @@ import React from 'react';
  * or not the canvas mounts.
  *
  * This file must never import from `components/canvas/` or `@react-three/*`.
- * `components/Loader.tsx` cannot serve this role because it pulls in drei, which
+ * `components/canvas/CanvasLoader.tsx` cannot serve this role because it pulls in drei, which
  * would drag three.js back into the initial bundle and defeat the lazy loading
  * it exists to cover.
  */

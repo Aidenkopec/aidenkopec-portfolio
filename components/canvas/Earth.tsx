@@ -5,7 +5,7 @@ import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { GLTF } from 'three-stdlib';
 
-import CanvasLoader from '@/components/Loader';
+import CanvasLoader from '@/components/canvas/CanvasLoader';
 
 type GLTFResult = GLTF & {
   nodes: Record<string, THREE.Mesh>;
