@@ -271,6 +271,16 @@ html {
   border-top: 6px solid var(--secondary-color);
 }
 
+/* A swarm slot's text fades out once the particles have formed over it. The
+   text stays in the DOM and selectable; components/swarm sets the attribute. */
+[data-swarm-slot] {
+  transition: color 1.2s ease;
+}
+
+[data-swarm-slot][data-swarm-formed] {
+  color: transparent;
+}
+
 /* Respect the OS reduced motion setting for everything CSS can reach: the
    animate-pulse skeletons, the animate-spin loaders, every transition, and the
    smooth scroll above.

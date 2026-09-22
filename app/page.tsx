@@ -8,14 +8,13 @@ import GitHubActivity from '@/components/GitHubActivity';
 import RecentBlogs from '@/components/RecentBlogs';
 import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
-import StarsBackdrop from '@/components/StarsBackdrop';
-import WavyLines from '@/components/canvas/WavyLines';
+import SwarmStage from '@/components/swarm/SwarmStage';
 
 export default function Home() {
   return (
     <div className='relative z-0 max-w-full overflow-x-hidden bg-primary'>
+      <SwarmStage />
       <div className='relative'>
-        <WavyLines className='-z-10' />
         <Navbar />
         <Hero />
       </div>
@@ -26,10 +25,7 @@ export default function Home() {
       <GitHubActivity />
       <RecentBlogs />
       <Testimonials />
-      <div className='relative z-0'>
-        <Contact />
-        <StarsBackdrop />
-      </div>
+      <Contact />
     </div>
   );
 }
