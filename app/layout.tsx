@@ -1,11 +1,12 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/next';
 
+import FloatingMusicBar from '@/components/FloatingMusicBar';
+import { MotionProvider } from '@/components/MotionProvider';
 import { GITHUB_URL } from '@/constants';
 import { themeKeys } from '@/constants/themes';
-import { MotionProvider } from '@/components/MotionProvider';
 import { MusicProvider } from '@/context/MusicContext';
 import './globals.css';
 
@@ -108,7 +109,10 @@ export default function RootLayout({
           enableSystem={false}
         >
           <MotionProvider>
-            <MusicProvider>{children}</MusicProvider>
+            <MusicProvider>
+              {children}
+              <FloatingMusicBar />
+            </MusicProvider>
           </MotionProvider>
         </ThemeProvider>
         <Analytics />

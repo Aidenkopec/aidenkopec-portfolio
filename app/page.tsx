@@ -8,7 +8,6 @@ import GitHubActivity from '@/components/GitHubActivity';
 import RecentBlogs from '@/components/RecentBlogs';
 import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
-import FloatingMusicBar from '@/components/FloatingMusicBar';
 import StarsBackdrop from '@/components/StarsBackdrop';
 import WavyLines from '@/components/canvas/WavyLines';
 
@@ -31,7 +30,6 @@ export default function Home() {
         <Contact />
         <StarsBackdrop />
       </div>
-      <FloatingMusicBar />
     </div>
   );
 }
