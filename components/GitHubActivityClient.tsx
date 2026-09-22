@@ -5,16 +5,15 @@ import { DateTime } from 'luxon';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { GITHUB_URL } from '../constants';
+import { GITHUB_URL } from '@/constants';
 import {
   formatCommitMessage,
   getContributionColor,
   type ContributionCalendar,
   type GitHubData,
-} from '../lib/github-utils';
-import { github } from '../public/assets';
-import { styles } from '../styles';
-import { fadeIn, textVariant } from '../utils';
+} from '@/lib/github-utils';
+import github from '@/public/assets/github.png';
+import { fadeIn, textVariant } from '@/utils';
 
 // Types for component props
 interface StatCardProps {
@@ -26,7 +25,7 @@ interface StatCardProps {
 }
 
 interface CommitGraphProps {
-  commitCalendar?: ContributionCalendar;
+  commitCalendar: ContributionCalendar | null;
   loading: boolean;
   selectedYear: string;
   setSelectedYear: (year: string) => void;
@@ -51,7 +50,7 @@ const StatCard: React.FC<StatCardProps> = ({
   loading,
 }) => (
   <motion.div
-    variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
+    variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
     className='min-w-[160px] flex-1'
   >
     <div className='transform-gpu rounded-xl border border-tertiary bg-tertiary p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
@@ -93,6 +92,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const handleYearChange = (year: string): void => {
     setSelectedYear(year);
@@ -100,7 +100,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     setDropdownOpen(false);
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside, or on Escape.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -111,12 +111,22 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setDropdownOpen(false);
+      // Escape leaves focus where it was, which is inside a subtree about to
+      // unmount, so hand it back to the trigger.
+      triggerRef.current?.focus();
+    };
+
     if (dropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [dropdownOpen]);
 
@@ -157,8 +167,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     );
   }
 
-  const weeks = commitCalendar?.weeks || [];
-  const total = commitCalendar?.totalContributions || 0;
+  const weeks = commitCalendar?.weeks ?? [];
 
   // Generate month labels using Luxon for proper Jan-Dec ordering
   const monthLabels: { label: string; span: number }[] = [];
@@ -166,14 +175,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     let currentMonth: string | null = null;
     let startWeek = 0;
     weeks.forEach((week, index) => {
-      let firstDayOfWeek: string | null = null;
-
-      // Find the first valid day in the week
-      if ('contributionDays' in week && week.contributionDays?.length > 0) {
-        firstDayOfWeek = week.contributionDays[0].date;
-      } else if (Array.isArray(week) && week.length > 0) {
-        firstDayOfWeek = week[0].date;
-      }
+      const firstDayOfWeek = week.contributionDays[0]?.date ?? null;
 
       if (firstDayOfWeek) {
         const firstDay = DateTime.fromISO(firstDayOfWeek);
@@ -207,21 +209,28 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     >
       <div className='mb-4 flex items-center justify-between'>
         <h4 className='text-[16px] font-semibold text-secondary'>
-          {total} contributions in{' '}
-          {selectedYear === 'last' ? 'the last year' : selectedYear}
+          {commitCalendar
+            ? `${commitCalendar.totalContributions} contributions in ${
+                selectedYear === 'last' ? 'the last year' : selectedYear
+              }`
+            : 'Contribution Activity'}
         </h4>
 
         {/* Custom Year Dropdown */}
         <div className='relative' ref={dropdownRef}>
           <button
+            ref={triggerRef}
             onClick={() => setDropdownOpen(!dropdownOpen)}
+            aria-expanded={dropdownOpen}
+            aria-label='Filter contributions by year'
             className='flex items-center justify-between gap-1.5 rounded-md border border-tertiary bg-black-100 px-2.5 py-1.5 text-xs font-medium text-secondary transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
           >
             <span className='flex items-center gap-1.5 text-[11px] sm:text-sm'>
-              📅 {selectedYear === 'last' ? 'Last year' : selectedYear}
+              <span aria-hidden='true'>📅</span>{' '}
+              {selectedYear === 'last' ? 'Last year' : selectedYear}
             </span>
-            <div
-              className={`chevron scale-75 transition-transform duration-150 ${
+            <span
+              className={`chevron block scale-75 transition-transform duration-150 ${
                 dropdownOpen ? 'rotate-180' : ''
               }`}
             />
@@ -234,23 +243,32 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                   <button
                     key={year}
                     onClick={() => handleYearChange(year.toString())}
+                    aria-pressed={selectedYear === year.toString()}
                     className={`w-full px-3 py-2 text-left text-xs font-medium text-secondary transition-colors duration-150 hover:bg-[var(--text-color-variable)]/10 hover:text-secondary sm:px-4 sm:py-2.5 sm:text-sm ${
                       selectedYear === year.toString()
                         ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                         : ''
                     }`}
                   >
-                    <div className='flex items-center gap-1.5 sm:gap-2'>
-                      <span className='text-[10px] sm:text-xs'>📅</span>
+                    <span className='flex items-center gap-1.5 sm:gap-2'>
+                      <span
+                        aria-hidden='true'
+                        className='text-[10px] sm:text-xs'
+                      >
+                        📅
+                      </span>
                       <span className='text-[11px] sm:text-sm'>
                         {year === 'last' ? 'Last year' : year}
                       </span>
                       {selectedYear === year.toString() && (
-                        <div className='ml-auto text-[10px] text-[var(--text-color-variable)] sm:text-xs'>
+                        <span
+                          aria-hidden='true'
+                          className='ml-auto text-[10px] text-[var(--text-color-variable)] sm:text-xs'
+                        >
                           ✓
-                        </div>
+                        </span>
                       )}
-                    </div>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -302,95 +320,55 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                 <div className='flex gap-[2px]'>
                   {weeks.map((week, weekIndex) => (
                     <div key={weekIndex} className='flex flex-col gap-[2px]'>
-                      {'contributionDays' in week
-                        ? week.contributionDays.map((day, dayIndex) => {
-                            const contributionLevel =
-                              day.contributionCount === 0
-                                ? 0
-                                : day.contributionCount <= 3
-                                  ? 1
-                                  : day.contributionCount <= 6
-                                    ? 2
-                                    : day.contributionCount <= 9
-                                      ? 3
-                                      : 4;
+                      {week.contributionDays.map((day, dayIndex) => {
+                        const contributionLevel =
+                          day.contributionCount === 0
+                            ? 0
+                            : day.contributionCount <= 3
+                              ? 1
+                              : day.contributionCount <= 6
+                                ? 2
+                                : day.contributionCount <= 9
+                                  ? 3
+                                  : 4;
 
-                            const date = DateTime.fromISO(day.date);
-                            const formattedDate = date.toLocaleString({
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            });
+                        const date = DateTime.fromISO(day.date);
+                        const formattedDate = date.toLocaleString({
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        });
 
-                            return (
-                              <motion.div
-                                key={`${weekIndex}-${dayIndex}`}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{
-                                  duration: 0.2,
-                                  delay: (weekIndex * 7 + dayIndex) * 0.001,
-                                }}
-                                className='hover:ring-opacity-50 h-3 w-3 cursor-pointer rounded-[2px] transition-all duration-200 hover:scale-110 hover:ring-2 hover:ring-[var(--text-color-variable)]'
-                                style={{
-                                  backgroundColor:
-                                    getContributionColor(contributionLevel),
-                                }}
-                                onMouseEnter={(e) =>
-                                  showTooltip(
-                                    e,
-                                    day.contributionCount === 0
-                                      ? 'No contributions'
-                                      : `${day.contributionCount} contribution${
-                                          day.contributionCount !== 1 ? 's' : ''
-                                        }`,
-                                    formattedDate,
-                                  )
-                                }
-                                onMouseLeave={hideTooltip}
-                              ></motion.div>
-                            );
-                          })
-                        : week.map((day, dayIndex) => {
-                            const date = DateTime.fromISO(day.date);
-                            const formattedDate = date.toLocaleString({
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            });
-
-                            return (
-                              <motion.div
-                                key={`${weekIndex}-${dayIndex}`}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{
-                                  duration: 0.2,
-                                  delay: (weekIndex * 7 + dayIndex) * 0.001,
-                                }}
-                                className='hover:ring-opacity-50 h-3 w-3 cursor-pointer rounded-[2px] transition-all duration-200 hover:scale-110 hover:ring-2 hover:ring-[var(--text-color-variable)]'
-                                style={{
-                                  backgroundColor: getContributionColor(
-                                    day.level,
-                                  ),
-                                }}
-                                onMouseEnter={(e) =>
-                                  showTooltip(
-                                    e,
-                                    day.count === 0
-                                      ? 'No contributions'
-                                      : `${day.count} contribution${
-                                          day.count !== 1 ? 's' : ''
-                                        }`,
-                                    formattedDate,
-                                  )
-                                }
-                                onMouseLeave={hideTooltip}
-                              ></motion.div>
-                            );
-                          })}
+                        return (
+                          <motion.div
+                            key={`${weekIndex}-${dayIndex}`}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{
+                              duration: 0.2,
+                              delay: (weekIndex * 7 + dayIndex) * 0.001,
+                            }}
+                            className='hover:ring-opacity-50 h-3 w-3 cursor-pointer rounded-[2px] transition-all duration-200 hover:scale-110 hover:ring-2 hover:ring-[var(--text-color-variable)]'
+                            style={{
+                              backgroundColor:
+                                getContributionColor(contributionLevel),
+                            }}
+                            onMouseEnter={(e) =>
+                              showTooltip(
+                                e,
+                                day.contributionCount === 0
+                                  ? 'No contributions'
+                                  : `${day.contributionCount} contribution${
+                                      day.contributionCount !== 1 ? 's' : ''
+                                    }`,
+                                formattedDate,
+                              )
+                            }
+                            onMouseLeave={hideTooltip}
+                          ></motion.div>
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
@@ -414,6 +392,8 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
                       ].map(({ level, label, range }) => (
                         <div
                           key={level}
+                          role='img'
+                          aria-label={`${label}: ${range} contributions`}
                           className='h-3 w-3 cursor-help rounded-[2px] transition-transform hover:scale-125'
                           style={{
                             backgroundColor: getContributionColor(level),
@@ -434,7 +414,9 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
         </div>
       ) : (
         <div className='py-4 text-center text-sm text-secondary'>
-          No contribution data available
+          {commitCalendar
+            ? 'No contributions in this period'
+            : 'Contribution data is unavailable right now'}
         </div>
       )}
 
@@ -500,8 +482,8 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
         loading={loading}
       />
       <StatCard
-        title='Years Active'
-        value={githubData.stats.contributionYears || '---'}
+        title='Years on GitHub'
+        value={githubData.stats.yearsOnGitHub ?? '---'}
         icon='📅'
         index={3}
         loading={loading}
@@ -514,16 +496,14 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
 const GitHubLink: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleGitHubClick = (): void => {
-    window.open(GITHUB_URL, '_blank');
-  };
-
   return (
-    <motion.button
-      onClick={handleGitHubClick}
+    <motion.a
+      href={GITHUB_URL}
+      target='_blank'
+      rel='noopener noreferrer'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg`}
+      className='group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg'
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
@@ -544,7 +524,7 @@ const GitHubLink: React.FC = () => {
       >
         ↗
       </div>
-    </motion.button>
+    </motion.a>
   );
 };
 
@@ -553,9 +533,8 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
 }) => {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<string>('last');
-  const [contributionData, setContributionData] = useState<
-    ContributionCalendar | undefined
-  >(githubData.commitCalendar);
+  const [contributionData, setContributionData] =
+    useState<ContributionCalendar | null>(githubData.commitCalendar);
   const [loading, setLoading] = useState(false);
   const availableYears = [
     'last',
@@ -569,11 +548,20 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
     try {
       const response = await fetch(`/api/github?year=${year}`);
       if (response.ok) {
-        const data = await response.json();
-        setContributionData(data.commitCalendar);
+        // The route returns the calendar and nothing else. Annotated because
+        // response.json() is `any`, and this is the one place untyped data
+        // crosses back into typed state.
+        const data: { commitCalendar: ContributionCalendar | null } =
+          await response.json();
+        setContributionData(data.commitCalendar ?? null);
+      } else {
+        // `selectedYear` has already moved, so keeping the old calendar would
+        // render last year's grid under this year's heading.
+        setContributionData(null);
       }
     } catch (error) {
       console.error('Error fetching contribution data:', error);
+      setContributionData(null);
     } finally {
       setLoading(false);
     }
@@ -583,7 +571,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
     <div className='mb-12 grid grid-cols-1 gap-8'>
       {/* Full Width - Contribution Graph */}
       <motion.div
-        variants={fadeIn('up', 'spring', 0.3, 0.75) as any}
+        variants={fadeIn('up', 'spring', 0.3, 0.75)}
         className='w-full'
       >
         <CommitGraph
@@ -598,7 +586,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
 
       {/* Open Source Activity Section */}
       <motion.div
-        variants={fadeIn('up', 'spring', 0.4, 0.75) as any}
+        variants={fadeIn('up', 'spring', 0.4, 0.75)}
         className='w-full'
       >
         <div className='transform-gpu rounded-xl border border-tertiary bg-tertiary p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
@@ -611,7 +599,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
               {githubData.commits.slice(0, 5).map((commit, index) => (
                 <motion.div
                   key={`${commit.sha || commit.date}-${index}`}
-                  variants={fadeIn('up', 'spring', index * 0.1, 0.75) as any}
+                  variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
                   className='rounded-lg border border-tertiary bg-black-100 p-3 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
                 >
                   <div className='mb-1 flex items-center gap-3'>
@@ -647,11 +635,11 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
 
 export const GitHubActivityHeader: React.FC = () => {
   return (
-    <motion.div variants={textVariant() as any}>
+    <motion.div variants={textVariant()}>
       <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between'>
         <div>
-          <p className={`${styles.sectionSubText}`}>Measured, not estimated</p>
-          <h2 className={`${styles.sectionHeadText}`}>GitHub Activity.</h2>
+          <p className='section-sub-text'>Measured, not estimated</p>
+          <h2 className='section-head-text'>GitHub Activity.</h2>
         </div>
         <GitHubLink />
       </div>

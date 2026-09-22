@@ -2,7 +2,7 @@
 import { motion } from 'motion/react';
 import Link from 'next/link';
 
-import { Boxes } from '@/components/ui/background-boxes';
+import { Boxes } from '@/components/ui/BackgroundBoxes';
 
 export default function NotFound() {
   return (
@@ -85,7 +85,7 @@ export default function NotFound() {
         >
           Need help? Feel free to{' '}
           <Link
-            href='/contact'
+            href='/#contact'
             className='underline transition-colors duration-200 hover:text-white'
           >
             contact me

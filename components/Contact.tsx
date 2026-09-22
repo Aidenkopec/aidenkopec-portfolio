@@ -1,30 +1,62 @@
 'use client';
 import { motion } from 'framer-motion';
-import React, { useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
+import React, { useEffect, useRef, useState } from 'react';
 
-import SectionWrapper from '../hoc/SectionWrapper';
-import { styles } from '../styles';
-import { slideIn } from '../utils';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { useCanRender3D } from '@/hooks/useCanRender3D';
+import { useInViewport } from '@/hooks/useInViewport';
+import {
+  contactSchema,
+  firstIssue,
+  type ContactField,
+} from '@/lib/contact-schema';
+import { slideIn } from '@/utils';
 
-import { EarthCanvas } from './canvas';
+import CanvasPlaceholder from './CanvasPlaceholder';
+
+// Loaded on demand so three.js stays out of the initial bundle, and only once
+// the section is approaching the viewport.
+const EarthCanvas = dynamic(() => import('./canvas/Earth'), {
+  ssr: false,
+  loading: () => <CanvasPlaceholder />,
+});
 
 interface FormData {
   name: string;
   email: string;
   message: string;
+  /** Honeypot: any value means an automated fill. */
+  website: string;
 }
 
+const EMPTY_FORM: FormData = {
+  name: '',
+  email: '',
+  message: '',
+  website: '',
+};
+
 const Contact: React.FC = () => {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [form, setForm] = useState<FormData>({
-    name: '',
-    email: '',
-    message: '',
-  });
+  const successRef = useRef<HTMLDivElement>(null);
+  const [form, setForm] = useState<FormData>(EMPTY_FORM);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  // Which input the current error belongs to, so only that one is marked
+  // invalid. Undefined for errors that belong to no single field, such as a
+  // failed request.
+  const [errorField, setErrorField] = useState<ContactField | undefined>(
+    undefined,
+  );
+
+  const canRender3D = useCanRender3D();
+  const {
+    ref: globeRef,
+    mounted: globeMounted,
+    paused: globePaused,
+  } = useInViewport<HTMLDivElement>(canRender3D);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -40,10 +72,18 @@ const Contact: React.FC = () => {
     // Clear error message when user starts typing
     if (errorMessage) {
       setErrorMessage('');
+      setErrorField(undefined);
     }
   };
 
   const triggerConfetti = () => {
+    // Canvas + requestAnimationFrame, so neither the reduced-motion CSS block
+    // nor MotionConfig reaches it. Checked inline rather than through a hook
+    // because this runs from an event handler.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
     // Trigger confetti effect from center of form area
     import('canvas-confetti').then((confetti) => {
       confetti.default({
@@ -57,61 +97,29 @@ const Contact: React.FC = () => {
     });
   };
 
+  // The success view replaces the form, so focus would otherwise be stranded on
+  // a button that no longer exists.
+  useEffect(() => {
+    if (submitSuccess) {
+      successRef.current?.focus();
+    }
+  }, [submitSuccess]);
+
   const resetForm = () => {
     setSubmitSuccess(false);
     setErrorMessage('');
-    setForm({
-      name: '',
-      email: '',
-      message: '',
-    });
+    setErrorField(undefined);
+    setForm(EMPTY_FORM);
   };
 
   const validateLocally = (): boolean => {
-    // Name validation
-    if (!form.name.trim()) {
-      setErrorMessage('Name is required');
+    const parsed = contactSchema.safeParse(form);
+    if (!parsed.success) {
+      const issue = firstIssue(parsed.error);
+      setErrorMessage(issue.message);
+      setErrorField(issue.field);
       return false;
     }
-
-    if (form.name.trim().length < 2) {
-      setErrorMessage('Name must be at least 2 characters');
-      return false;
-    }
-
-    if (form.name.trim().length > 100) {
-      setErrorMessage('Name must be less than 100 characters');
-      return false;
-    }
-
-    // Email validation
-    if (!form.email.trim()) {
-      setErrorMessage('Email is required');
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email.trim().toLowerCase())) {
-      setErrorMessage('Please provide a valid email address');
-      return false;
-    }
-
-    // Message validation
-    if (!form.message.trim()) {
-      setErrorMessage('Message is required');
-      return false;
-    }
-
-    if (form.message.trim().length < 10) {
-      setErrorMessage('Message must be at least 10 characters');
-      return false;
-    }
-
-    if (form.message.trim().length > 5000) {
-      setErrorMessage('Message must be less than 5000 characters');
-      return false;
-    }
-
     return true;
   };
 
@@ -120,6 +128,7 @@ const Contact: React.FC = () => {
   ): Promise<void> => {
     e.preventDefault();
     setErrorMessage('');
+    setErrorField(undefined);
     setSubmitSuccess(false);
 
     // Validate locally first
@@ -139,6 +148,7 @@ const Contact: React.FC = () => {
           name: form.name,
           email: form.email,
           message: form.message,
+          website: form.website,
         }),
       });
 
@@ -158,6 +168,7 @@ const Contact: React.FC = () => {
     } catch (error) {
       setLoading(false);
       console.error('Error sending message:', error);
+      setErrorField(undefined);
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -167,68 +178,98 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <SectionWrapper idName='contact'>
-      <div
-        className={`flex flex-col-reverse gap-10 overflow-hidden xl:mt-12 xl:flex-row`}
-      >
+    <SectionWrapper idName='contact' label='Contact'>
+      <div className='flex flex-col-reverse gap-10 overflow-hidden xl:mt-12 xl:flex-row'>
         <motion.div
-          variants={slideIn('left', 'tween', 0.2, 1) as any}
+          variants={slideIn('left', 'tween', 0.2, 1)}
           className='flex-[0.75] rounded-2xl bg-black-100 p-8'
         >
           {!submitSuccess ? (
             // Show Form
             <>
-              <p className={styles.sectionSubText}>Get in touch</p>
-              <h3 className={styles.sectionHeadText}>Contact.</h3>
+              <p className='section-sub-text'>Get in touch</p>
+              <h3 className='section-head-text'>Contact.</h3>
 
               <form
-                ref={formRef}
                 onSubmit={handleSubmit}
+                aria-busy={loading}
                 className='mt-12 flex flex-col gap-8'
               >
-                <label className='flex flex-col'>
+                {/* Honeypot. `hidden`, not sr-only, so it takes no gap slot. */}
+                <input
+                  type='text'
+                  name='website'
+                  value={form.website}
+                  onChange={handleChange}
+                  className='hidden'
+                  tabIndex={-1}
+                  autoComplete='off'
+                  aria-hidden='true'
+                />
+
+                <label htmlFor='contact-name' className='flex flex-col'>
                   <span className='mb-4 font-medium text-secondary'>
                     Your Name
                   </span>
                   <input
+                    id='contact-name'
                     type='text'
                     name='name'
                     value={form.name}
                     onChange={handleChange}
                     placeholder="What's your name?"
-                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary'
+                    required
+                    autoComplete='name'
+                    aria-invalid={errorField === 'name'}
+                    aria-describedby={
+                      errorField === 'name' ? 'contact-error' : undefined
+                    }
+                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
                   />
                 </label>
-                <label className='flex flex-col'>
+                <label htmlFor='contact-email' className='flex flex-col'>
                   <span className='mb-4 font-medium text-secondary'>
                     Your email
                   </span>
                   <input
+                    id='contact-email'
                     type='email'
                     name='email'
                     value={form.email}
                     onChange={handleChange}
                     placeholder="What's your email address?"
-                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary'
+                    required
+                    autoComplete='email'
+                    aria-invalid={errorField === 'email'}
+                    aria-describedby={
+                      errorField === 'email' ? 'contact-error' : undefined
+                    }
+                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
                   />
                 </label>
-                <label className='flex flex-col'>
+                <label htmlFor='contact-message' className='flex flex-col'>
                   <span className='mb-4 font-medium text-secondary'>
                     Your Message
                   </span>
                   <textarea
+                    id='contact-message'
                     rows={7}
                     name='message'
                     value={form.message}
                     onChange={handleChange}
                     placeholder='Please type your message'
-                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary'
+                    required
+                    aria-invalid={errorField === 'message'}
+                    aria-describedby={
+                      errorField === 'message' ? 'contact-error' : undefined
+                    }
+                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
                   />
                 </label>
 
                 <button
                   type='submit'
-                  className='w-fit rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-primary transition-colors outline-none hover:bg-tertiary/90 disabled:opacity-50'
+                  className='w-fit rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] disabled:opacity-50'
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send'}
@@ -237,6 +278,8 @@ const Contact: React.FC = () => {
                 {/* Error Message */}
                 {errorMessage && (
                   <motion.div
+                    id='contact-error'
+                    role='alert'
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
@@ -246,6 +289,7 @@ const Contact: React.FC = () => {
                       <div className='flex-shrink-0'>
                         <div className='flex h-8 w-8 items-center justify-center rounded-full bg-red-400'>
                           <svg
+                            aria-hidden='true'
                             className='h-5 w-5 text-secondary'
                             fill='none'
                             stroke='currentColor'
@@ -274,13 +318,17 @@ const Contact: React.FC = () => {
           ) : (
             // Show Success Message
             <motion.div
+              ref={successRef}
+              role='status'
+              tabIndex={-1}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              className='flex min-h-[500px] flex-col items-center justify-center text-center'
+              className='flex min-h-[500px] flex-col items-center justify-center text-center outline-none'
             >
               <div className='mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-green-400'>
                 <svg
+                  aria-hidden='true'
                   className='h-10 w-10 text-secondary'
                   fill='none'
                   stroke='currentColor'
@@ -312,7 +360,7 @@ const Contact: React.FC = () => {
 
               <button
                 onClick={resetForm}
-                className='mb-4 rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-primary transition-colors outline-none hover:bg-tertiary/90'
+                className='mb-4 rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
               >
                 Send Another Message
               </button>
@@ -325,10 +373,15 @@ const Contact: React.FC = () => {
         </motion.div>
 
         <motion.div
-          variants={slideIn('right', 'tween', 0.2, 1) as any}
+          ref={globeRef}
+          variants={slideIn('right', 'tween', 0.2, 1)}
           className='h-[350px] md:h-[550px] xl:h-auto xl:flex-1'
         >
-          <EarthCanvas />
+          {canRender3D && globeMounted ? (
+            <EarthCanvas paused={globePaused} />
+          ) : (
+            <CanvasPlaceholder />
+          )}
         </motion.div>
       </div>
     </SectionWrapper>

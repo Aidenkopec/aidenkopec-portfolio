@@ -55,7 +55,8 @@ export function BlogPagination({
   const visiblePages = getVisiblePages();
 
   return (
-    <motion.div
+    <motion.nav
+      aria-label='Pagination'
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
@@ -67,8 +68,8 @@ export function BlogPagination({
         disabled={currentPage === 1}
         className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 ${
           currentPage === 1
-            ? '/50 cursor-not-allowed bg-black-100/50 text-secondary'
-            : 'border border-black-100 bg-tertiary text-secondary hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)] hover:text-secondary'
+            ? 'cursor-not-allowed bg-black-100/50 text-secondary/50'
+            : 'border border-black-100 bg-tertiary text-secondary hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)] hover:text-primary'
         } `}
         whileHover={currentPage !== 1 ? { scale: 1.05 } : {}}
         whileTap={currentPage !== 1 ? { scale: 0.95 } : {}}
@@ -84,6 +85,7 @@ export function BlogPagination({
             return (
               <span
                 key={`ellipsis-${index}`}
+                aria-hidden='true'
                 className='px-3 py-2 text-secondary'
               >
                 ...
@@ -98,9 +100,11 @@ export function BlogPagination({
             <motion.button
               key={pageNumber}
               onClick={() => onPageChange(pageNumber)}
+              aria-label={`Page ${pageNumber}`}
+              aria-current={isActive ? 'page' : undefined}
               className={`h-10 w-10 rounded-lg text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-[var(--text-color-variable)] text-secondary shadow-[var(--text-color-variable)]/25 shadow-lg'
+                  ? 'bg-[var(--text-color-variable)] text-primary shadow-[var(--text-color-variable)]/25 shadow-lg'
                   : 'border border-black-100 bg-tertiary text-secondary hover:border-[var(--text-color-variable)]/30 hover:bg-[var(--text-color-variable)]/5 hover:text-secondary'
               } `}
               whileHover={{ scale: isActive ? 1 : 1.05 }}
@@ -121,8 +125,8 @@ export function BlogPagination({
         disabled={currentPage === totalPages}
         className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 ${
           currentPage === totalPages
-            ? '/50 cursor-not-allowed bg-black-100/50 text-secondary'
-            : 'border border-black-100 bg-tertiary text-secondary hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)] hover:text-secondary'
+            ? 'cursor-not-allowed bg-black-100/50 text-secondary/50'
+            : 'border border-black-100 bg-tertiary text-secondary hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)] hover:text-primary'
         } `}
         whileHover={currentPage !== totalPages ? { scale: 1.05 } : {}}
         whileTap={currentPage !== totalPages ? { scale: 0.95 } : {}}
@@ -130,6 +134,6 @@ export function BlogPagination({
         Next
         <ChevronRight className='h-4 w-4' />
       </motion.button>
-    </motion.div>
+    </motion.nav>
   );
 }

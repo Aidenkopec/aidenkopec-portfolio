@@ -6,18 +6,19 @@ import { BlogPost } from '@/lib/types';
 
 export function useBlogSearch(posts: BlogPost[]) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  // Get unique categories from posts
-  const categories = useMemo(() => {
-    const categorySet = new Set<string>();
+  // Unique tags across posts. The blog UI presents these as categories;
+  // BlogPost.category is a separate, display only field.
+  const tags = useMemo(() => {
+    const tagSet = new Set<string>();
     posts.forEach((post) => {
-      post.tags.forEach((tag) => categorySet.add(tag));
+      post.tags.forEach((tag) => tagSet.add(tag));
     });
-    return Array.from(categorySet).sort();
+    return Array.from(tagSet).sort();
   }, [posts]);
 
-  // Filter posts based on search term and category
+  // Filter posts based on search term and tag
   const filteredPosts = useMemo(() => {
     let filtered = posts;
 
@@ -33,32 +34,32 @@ export function useBlogSearch(posts: BlogPost[]) {
       );
     }
 
-    // Filter by category
-    if (selectedCategory) {
+    // Filter by tag
+    if (selectedTag) {
       filtered = filtered.filter((post) =>
         post.tags.some(
-          (tag) => tag.toLowerCase() === selectedCategory.toLowerCase(),
+          (tag) => tag.toLowerCase() === selectedTag.toLowerCase(),
         ),
       );
     }
 
     return filtered;
-  }, [posts, searchTerm, selectedCategory]);
+  }, [posts, searchTerm, selectedTag]);
 
   const clearFilters = () => {
     setSearchTerm('');
-    setSelectedCategory(null);
+    setSelectedTag(null);
   };
 
-  const isFiltered = searchTerm.trim() !== '' || selectedCategory !== null;
+  const isFiltered = searchTerm.trim() !== '' || selectedTag !== null;
 
   return {
     searchTerm,
     setSearchTerm,
-    selectedCategory,
-    setSelectedCategory,
+    selectedTag,
+    setSelectedTag,
     filteredPosts,
-    categories,
+    tags,
     clearFilters,
     isFiltered,
     resultCount: filteredPosts.length,

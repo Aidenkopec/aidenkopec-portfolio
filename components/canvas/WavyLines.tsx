@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
-import { useIsHydrated } from '../../hooks/useIsHydrated';
+import { useIsHydrated } from '@/hooks/useIsHydrated';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 type WavyLinesProps = {
   className?: string;
@@ -73,6 +74,10 @@ function generateWavePath(
 
 function WavyLines({ className = '', waveCount }: WavyLinesProps) {
   const mounted = useIsHydrated();
+  // SVG SMIL runs on its own timeline, so neither the reduced-motion CSS block
+  // nor MotionConfig reaches it. This is plain SVG, not WebGL, so it is also
+  // not behind useCanRender3D.
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [screenSize, setScreenSize] = useState<ScreenSize>('desktop');
   const [themeColors, setThemeColors] = useState(getThemeColors());
 
@@ -88,7 +93,7 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
     handleResize();
     updateThemeColors();
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
 
     // Listen for theme changes by observing CSS custom property changes
     const observer = new MutationObserver(updateThemeColors);
@@ -406,7 +411,7 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
         amplitudeIncrement: 15,
         baseFrequency: 0.8,
         frequencyIncrement: 0.25,
-        viewBox: '0 0 1000 700',
+        viewSize: [1000, 700] as const,
         strokeWidth: 1.5,
         verticalOffset: 0,
       };
@@ -418,7 +423,7 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
       amplitudeIncrement: 20,
       baseFrequency: 1.0,
       frequencyIncrement: 0.3,
-      viewBox: '0 0 1200 800',
+      viewSize: [1200, 800] as const,
       strokeWidth: 2,
       verticalOffset: 0,
     };
@@ -448,8 +453,10 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
     };
   });
 
-  const viewBoxDimensions = params.viewBox.split(' ').slice(2).map(Number);
-  const [viewWidth, viewHeight] = viewBoxDimensions;
+  // The numbers are the source of truth and the viewBox string is derived from
+  // them. Parsing them back out of a string is what made both possibly
+  // undefined, for values that are literals a few lines above.
+  const [viewWidth, viewHeight] = params.viewSize;
 
   return (
     <div
@@ -459,19 +466,21 @@ function WavyLines({ className = '', waveCount }: WavyLinesProps) {
       <svg
         className='absolute inset-0 h-full w-full'
         preserveAspectRatio='none'
-        viewBox={params.viewBox}
+        viewBox={`0 0 ${viewWidth} ${viewHeight}`}
         xmlns='http://www.w3.org/2000/svg'
       >
         <defs>
           {/* Premium mesh gradient - primary aurora */}
           <linearGradient id='waveGradient1' x1='0%' y1='0%' x2='100%' y2='0%'>
             <stop offset='0%' stopColor={themeColors.primary} stopOpacity='0'>
-              <animate
-                attributeName='stopOpacity'
-                values='0;0.2;0'
-                dur='8s'
-                repeatCount='indefinite'
-              />
+              {!prefersReducedMotion && (
+                <animate
+                  attributeName='stopOpacity'
+                  values='0;0.2;0'
+                  dur='8s'
+                  repeatCount='indefinite'
+                />
+              )}
             </stop>
             <stop
               offset='20%'

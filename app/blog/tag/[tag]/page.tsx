@@ -12,6 +12,11 @@ interface TagPageProps {
   params: Promise<{ tag: string }>;
 }
 
+// 404s unknown tags at routing. Without it they answer 200 with not-found
+// content, because notFound() runs inside the Suspense boundary below and lands
+// after the response has already started. Same fix as app/blog/[slug]/page.tsx.
+export const dynamicParams = false;
+
 // Generate static params for all tags
 export async function generateStaticParams() {
   const tags = await getAllBlogTags();
@@ -43,6 +48,12 @@ export async function generateMetadata({
     title: `Posts tagged "${tagName}" - Aiden Kopec`,
     description: `Browse all blog posts tagged with "${tagName}". Insights about software development, AI tools, and modern web technologies.`,
     keywords: [tagName, 'blog', 'software development', 'aiden kopec'],
+    // `tag` is already the slug form that `getAllBlogTags` and the sitemap emit.
+    // Without this the root layout's `alternates` is inherited whole and every
+    // tag page declares the homepage as its canonical.
+    alternates: {
+      canonical: `/blog/tag/${tag}`,
+    },
     openGraph: {
       title: `Posts tagged "${tagName}" - Aiden Kopec`,
       description: `Browse all blog posts tagged with "${tagName}". Insights about software development, AI tools, and modern web technologies.`,
@@ -54,7 +65,8 @@ export async function generateMetadata({
 
 function TagPageSkeleton() {
   return (
-    <div className='mx-auto max-w-6xl'>
+    <div role='status' aria-live='polite' className='mx-auto max-w-6xl'>
+      <span className='sr-only'>Loading tagged posts</span>
       {/* Header Skeleton */}
       <div className='mb-12'>
         <div className='mb-6 h-4 w-24 rounded bg-black-100'></div>
@@ -138,7 +150,7 @@ async function TagPageContent({ tag }: { tag: string }) {
       <div className='mt-16 text-center'>
         <Link
           href='/blog'
-          className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium text-secondary transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
+          className='inline-flex items-center gap-2 rounded-lg bg-[var(--text-color-variable)] px-6 py-3 font-medium text-primary transition-all duration-200 hover:bg-[var(--text-color-variable)]/80'
         >
           <ArrowLeft className='h-4 w-4' />
           View All Posts
@@ -152,9 +164,9 @@ export default async function TagPage({ params }: TagPageProps) {
   const { tag } = await params;
 
   return (
-    <main className='bg-primary-color relative min-h-screen'>
+    <main className='relative min-h-screen bg-primary'>
       <BlogNavbar />
-      <div className='padding pt-24'>
+      <div className='padding'>
         <Suspense fallback={<TagPageSkeleton />}>
           <TagPageContent tag={tag} />
         </Suspense>

@@ -1,40 +1,40 @@
 import type { StaticImageData } from 'next/image';
 
 // Technology icons - Static imports for Next.js optimization
-import aws from '../public/technologies/aws.png';
-import docker from '../public/technologies/docker.png';
-import nodejs from '../public/technologies/nodejs.png';
-import postgres from '../public/technologies/postgresql.png';
-import python from '../public/technologies/python.png';
-import react from '../public/technologies/reactjs.png';
-import tailwind from '../public/technologies/tailwind.png';
-import typescript from '../public/technologies/typescript.png';
-import vue from '../public/technologies/vue-three.png';
-import bullmq from '../public/technologies/bullmq.png';
-import nextjs from '../public/technologies/nextjs.png';
-import redis from '../public/technologies/redis.png';
+import aws from '@/public/technologies/aws.png';
+import docker from '@/public/technologies/docker.png';
+import nodejs from '@/public/technologies/nodejs.png';
+import postgres from '@/public/technologies/postgresql.png';
+import python from '@/public/technologies/python.png';
+import react from '@/public/technologies/reactjs.png';
+import tailwind from '@/public/technologies/tailwind.png';
+import typescript from '@/public/technologies/typescript.png';
+import vue from '@/public/technologies/vue-three.png';
+import bullmq from '@/public/technologies/bullmq.png';
+import nextjs from '@/public/technologies/nextjs.png';
+import redis from '@/public/technologies/redis.png';
 
 // Company logos - Static imports
-import evans from '../public/companies/evans-consoles-logo.jpeg';
-import idotogetherlogo from '../public/companies/idotogether-logo.webp';
-import launchcode from '../public/companies/launchcode.png';
-import opit from '../public/companies/opit-logo.png';
-import solvexlogo from '../public/companies/solvex-logo.svg';
+import evans from '@/public/companies/evans-consoles-logo.jpeg';
+import idotogetherlogo from '@/public/companies/idotogether-logo.webp';
+import launchcode from '@/public/companies/launchcode.png';
+import opit from '@/public/companies/opit-logo.png';
+import solvexlogo from '@/public/companies/solvex-logo.svg';
 
 // Project images - Static imports
-import hennessy from '../public/projects/hennessy.webp';
-import idotogether from '../public/projects/idotogether.webp';
-import pdconstruction from '../public/projects/pd-construction.webp';
-import portfolioSite from '../public/projects/portfolio.webp';
-import profileCard from '../public/projects/profile-card.webp';
-import spartatech from '../public/projects/sparta-tech.webp';
-import treeline from '../public/projects/treeline.webp';
+import hennessy from '@/public/projects/hennessy.webp';
+import idotogether from '@/public/projects/idotogether.webp';
+import pdconstruction from '@/public/projects/pd-construction.webp';
+import portfolioSite from '@/public/projects/portfolio.webp';
+import profileCard from '@/public/projects/profile-card.webp';
+import spartatech from '@/public/projects/sparta-tech.webp';
+import treeline from '@/public/projects/treeline.webp';
 
 // Service icons (engineering focus) - Static imports
-import backendAutomationErp from '../public/engineering-focus/backendAutomationErp.png';
-import devopsInfrastructure from '../public/engineering-focus/devopsInfrastructure.png';
-import frontendDeveloper from '../public/engineering-focus/frontendDeveloper.png';
-import fullStackDeveloper from '../public/engineering-focus/fullStackDeveloper.png';
+import backendAutomationErp from '@/public/engineering-focus/backendAutomationErp.png';
+import devopsInfrastructure from '@/public/engineering-focus/devopsInfrastructure.png';
+import frontendDeveloper from '@/public/engineering-focus/frontendDeveloper.png';
+import fullStackDeveloper from '@/public/engineering-focus/fullStackDeveloper.png';
 
 // Type definitions
 interface NavLink {
@@ -44,18 +44,18 @@ interface NavLink {
 
 interface Service {
   title: string;
-  icon: any;
+  icon: StaticImageData;
 }
 
 interface Technology {
   name: string;
-  icon: any;
+  icon: StaticImageData;
 }
 
 interface Experience {
   title: string;
-  company_name: string;
-  icon: any;
+  companyName: string;
+  icon: StaticImageData;
   iconBg: string;
   date: string;
   points: string[];
@@ -165,7 +165,7 @@ const technologies: Technology[] = [
 const experiences: Experience[] = [
   {
     title: 'Full-Stack Developer',
-    company_name: 'Evans Consoles',
+    companyName: 'Evans Consoles',
     icon: evans,
     iconBg: '#FFFFFF',
     date: 'January 2024 - Present',
@@ -181,7 +181,7 @@ const experiences: Experience[] = [
   },
   {
     title: 'Full-Stack Developer',
-    company_name: 'iDoTogether',
+    companyName: 'iDoTogether',
     icon: idotogetherlogo,
     iconBg: '#FDFBF7',
     date: 'July 2025 - Present',
@@ -193,7 +193,7 @@ const experiences: Experience[] = [
   },
   {
     title: 'Full-Stack Developer (Contract)',
-    company_name: 'Solvex Digital',
+    companyName: 'Solvex Digital',
     icon: solvexlogo,
     iconBg: '#FFFFFF',
     date: 'November 2024 - August 2026',
@@ -203,7 +203,7 @@ const experiences: Experience[] = [
   },
   {
     title: 'Technology Consultant (Contract)',
-    company_name: 'One Piece IT',
+    companyName: 'One Piece IT',
     icon: opit,
     iconBg: '#383E56',
     date: 'May 2023 - December 2023',
@@ -213,7 +213,7 @@ const experiences: Experience[] = [
   },
   {
     title: 'Software Developer Intern',
-    company_name: 'Launchcode',
+    companyName: 'Launchcode',
     icon: launchcode,
     iconBg: '#383E56',
     date: 'April 2022 - December 2022',
@@ -405,4 +405,14 @@ const projects: Project[] = [
 ];
 
 export { experiences, projects, services, technologies, testimonials };
-export type { Project, ProjectLink, ProjectMetric, ProjectTier };
+export type {
+  Experience,
+  NavLink,
+  Project,
+  ProjectLink,
+  ProjectMetric,
+  ProjectTier,
+  Service,
+  Technology,
+  Testimonial,
+};

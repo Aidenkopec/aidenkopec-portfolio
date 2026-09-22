@@ -7,10 +7,12 @@ import Image from 'next/image';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { type Project, type ProjectLink, type ProjectTier } from '../constants';
-import { github } from '../public/assets';
-import { styles } from '../styles';
-import { fadeIn, textVariant } from '../utils';
+import { type Project, type ProjectLink, type ProjectTier } from '@/constants';
+import { useCanRender3D } from '@/hooks/useCanRender3D';
+import { useInViewport } from '@/hooks/useInViewport';
+import { useIsSmallViewport } from '@/hooks/useIsSmallViewport';
+import github from '@/public/assets/github.png';
+import { fadeIn, textVariant } from '@/utils';
 
 // Loaded on demand so three.js stays out of the initial bundle and the WebGL
 // context is only created once the section is actually approaching the viewport.
@@ -31,22 +33,6 @@ const shortestDelta = (delta: number, count: number): number => {
   const half = count / 2;
   return ((((delta + half) % count) + count) % count) - half;
 };
-
-function supportsWebGL(): boolean {
-  try {
-    const canvas = document.createElement('canvas');
-    const context =
-      canvas.getContext('webgl2') ||
-      (canvas.getContext('webgl') as WebGLRenderingContext | null);
-    if (!context) return false;
-    // Release the probe context immediately. The homepage already runs close to
-    // the browser's active-context ceiling.
-    context.getExtension('WEBGL_lose_context')?.loseContext();
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 const StackChips: React.FC<{ stack: string[]; className?: string }> = ({
   stack,
@@ -185,8 +171,9 @@ const ProjectDetail: React.FC<{
     );
     if (focusable.length === 0) return;
 
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
+    // The length check above guarantees both ends exist.
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
     const current = document.activeElement;
 
     if (event.shiftKey && (current === first || !dialog.contains(current))) {
@@ -371,11 +358,21 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   const dragOffset = useRef(0);
 
   const [detailIndex, setDetailIndex] = useState<number | null>(null);
-  const [mode, setMode] = useState<'ring' | 'strip' | null>(null);
-  const [canvasMounted, setCanvasMounted] = useState(false);
-  const [paused, setPaused] = useState(true);
 
-  const stageRef = useRef<HTMLDivElement>(null);
+  // Both false on the server and the first client paint, so the strip is what
+  // gets prerendered. See the comment on the render branch below.
+  const canRender3D = useCanRender3D();
+  const isSmallViewport = useIsSmallViewport();
+  // The ring is driven by dragging, which is a poor fit for a phone, so the
+  // strip stays the small viewport path even where WebGL is available.
+  const showRing = canRender3D && !isSmallViewport;
+  const mode = showRing ? 'ring' : 'strip';
+  const {
+    ref: stageRef,
+    mounted: canvasMounted,
+    paused,
+  } = useInViewport<HTMLDivElement>(showRing);
+
   const drag = useRef<{
     pointerId: number;
     startX: number;
@@ -386,7 +383,9 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   } | null>(null);
 
   const activeIndex = ((cursor % count) + count) % count;
-  const active = projects[activeIndex];
+  // activeIndex is cursor wrapped into [0, count), so it always indexes a
+  // project. `projects` comes from constants and is never empty.
+  const active = projects[activeIndex]!;
 
   const setCursorTo = useCallback((next: number) => {
     cursorRef.current = next;
@@ -405,48 +404,6 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
     },
     [count, setCursorTo],
   );
-
-  // Pick the render path once, then follow viewport and preference changes.
-  useEffect(() => {
-    const small = window.matchMedia('(max-width: 767px)');
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    const decide = () =>
-      setMode(
-        small.matches || reduced.matches || !supportsWebGL() ? 'strip' : 'ring',
-      );
-
-    decide();
-    small.addEventListener('change', decide);
-    reduced.addEventListener('change', decide);
-
-    return () => {
-      small.removeEventListener('change', decide);
-      reduced.removeEventListener('change', decide);
-    };
-  }, []);
-
-  // Hold a WebGL context only while the section is being looked at.
-  useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage || mode !== 'ring') return;
-
-    const mountObserver = new IntersectionObserver(
-      ([entry]) => setCanvasMounted(entry.isIntersecting),
-      { rootMargin: '250px 0px' },
-    );
-    const renderObserver = new IntersectionObserver(([entry]) =>
-      setPaused(!entry.isIntersecting),
-    );
-
-    mountObserver.observe(stage);
-    renderObserver.observe(stage);
-
-    return () => {
-      mountObserver.disconnect();
-      renderObserver.disconnect();
-    };
-  }, [mode]);
 
   // Settling is driven off `drag.current` alone rather than an event, so a lost
   // or never-delivered pointerup can recover through the same path.
@@ -539,16 +496,14 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
 
   return (
     <>
-      <motion.div variants={textVariant() as any}>
-        <p className={`${styles.sectionSubText}`}>
-          My work &amp; contributions
-        </p>
-        <h2 className={`${styles.sectionHeadText}`}>Projects &amp; Code.</h2>
+      <motion.div variants={textVariant()}>
+        <p className='section-sub-text'>My work &amp; contributions</p>
+        <h2 className='section-head-text'>Projects &amp; Code.</h2>
       </motion.div>
 
-      {/* `mode` is null until the effect above decides, so the server HTML and
-          the first client paint are the strip. It is the path that works without
-          JS, without WebGL, and on a phone. */}
+      {/* Both gates read false until after hydration, so the server HTML and
+          the first client paint are the strip. It is the path that works
+          without JS, without WebGL, under reduced motion, and on a phone. */}
       {mode !== 'ring' ? (
         <div className='mt-8'>
           <ProjectStrip projects={projects} onOpenDetail={setDetailIndex} />
@@ -585,7 +540,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
           </div>
 
           <motion.div
-            variants={fadeIn('up', 'spring', 0.1, 0.75) as any}
+            variants={fadeIn('up', 'spring', 0.1, 0.75)}
             className='mt-5 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between'
           >
             <div className='min-w-0'>
@@ -683,7 +638,8 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
       <AnimatePresence>
         {detailIndex !== null && (
           <ProjectDetail
-            project={projects[detailIndex]}
+            // detailIndex is only ever set from activeIndex, already wrapped.
+            project={projects[detailIndex]!}
             onClose={() => setDetailIndex(null)}
           />
         )}

@@ -4,15 +4,15 @@ import Image from 'next/image';
 import React from 'react';
 import Tilt from 'react-parallax-tilt';
 
-import { services } from '../constants';
-import SectionWrapper from '../hoc/SectionWrapper';
-import { styles } from '../styles';
-import { fadeIn, textVariant } from '../utils';
+import { services, type Service } from '@/constants';
+import SectionWrapper from '@/components/layout/SectionWrapper';
+import { fadeIn, textVariant } from '@/utils';
 
-interface ServiceCardProps {
+// Extends the constants type rather than restating it: `icon: string` here was
+// wrong, the values are static image imports, and the `any` on the map below was
+// what let the mismatch through the spread.
+interface ServiceCardProps extends Service {
   index: number;
-  title: string;
-  icon: string;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
@@ -24,8 +24,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
     className='w-full'
   >
     <motion.div
-      variants={fadeIn('right', 'spring', index * 0.5, 0.75) as any}
-      className='green-pink-gradient w-full rounded-[20px] p-[1px] shadow-card'
+      variants={fadeIn('right', 'spring', index * 0.5, 0.75)}
+      className='green-pink-gradient shadow-card w-full rounded-[20px] p-[1px]'
     >
       <div className='flex min-h-[280px] flex-col items-center justify-evenly rounded-[20px] bg-tertiary px-6 py-5 sm:px-12'>
         <Image
@@ -60,14 +60,14 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ index, title, icon }) => (
 
 const About: React.FC = () => {
   return (
-    <SectionWrapper idName='about'>
-      <motion.div variants={textVariant() as any}>
-        <p className={styles.sectionSubText}>Introduction</p>
-        <h2 className={styles.sectionHeadText}>Overview.</h2>
+    <SectionWrapper idName='about' label='About'>
+      <motion.div variants={textVariant()}>
+        <p className='section-sub-text'>Introduction</p>
+        <h2 className='section-head-text'>Overview.</h2>
       </motion.div>
 
       <motion.p
-        variants={fadeIn('up', 'spring', 0.1, 1) as any}
+        variants={fadeIn('up', 'spring', 0.1, 1)}
         className='mt-4 max-w-3xl text-[17px] leading-[30px] text-secondary'
       >
         I&apos;m a Full-Stack Developer who transforms complex business
@@ -94,7 +94,7 @@ const About: React.FC = () => {
       </motion.p>
 
       <div className='mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:gap-8'>
-        {services.map((service: any, index: number) => (
+        {services.map((service, index) => (
           <ServiceCard key={service.title} index={index} {...service} />
         ))}
       </div>

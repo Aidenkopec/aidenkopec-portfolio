@@ -1,13 +1,13 @@
 import { DateTime } from 'luxon';
+import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 
 import 'server-only';
 import {
   Commit,
-  CommitDay,
-  CommitWeek,
   ContributionCalendar,
   GitHubData,
+  GitHubResult,
   GitHubRepository,
   GitHubUser,
 } from './github-utils';
@@ -17,22 +17,17 @@ const GITHUB_USERNAME = 'Aidenkopec';
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-// Cached fetch helper with Next.js explicit caching
-const githubFetch = cache(async (url: string, options?: RequestInit) => {
+// Uncached transport. React.cache would never hit here because both GraphQL
+// call sites pass a fresh options object, and Next's data cache ignores POST,
+// so caching lives on fetchGitHubSnapshot instead.
+const githubFetch = async (url: string, options?: RequestInit) => {
   const headers: HeadersInit = {
     'User-Agent': 'GitHub-Portfolio-App',
     ...(GITHUB_TOKEN && { Authorization: `token ${GITHUB_TOKEN}` }),
     ...(options?.headers || {}),
   };
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-    next: {
-      revalidate: 3600, // 1 hour cache
-      tags: ['github-data'],
-    },
-  });
+  const response = await fetch(url, { ...options, headers });
 
   if (!response.ok) {
     console.error(
@@ -44,7 +39,25 @@ const githubFetch = cache(async (url: string, options?: RequestInit) => {
   }
 
   return response.json();
-});
+};
+
+// Strips the private account fields the authenticated /user endpoint returns.
+function toPublicUser(data: GitHubUser | null): GitHubUser | null {
+  if (!data) return null;
+  return {
+    login: data.login,
+    avatar_url: data.avatar_url,
+    html_url: data.html_url,
+    name: data.name,
+    company: data.company,
+    location: data.location,
+    bio: data.bio,
+    public_repos: data.public_repos,
+    followers: data.followers,
+    following: data.following,
+    created_at: data.created_at,
+  };
+}
 
 // GitHub service functions with React.cache for deduplication
 const fetchUserData = cache(async (): Promise<GitHubUser | null> => {
@@ -54,14 +67,14 @@ const fetchUserData = cache(async (): Promise<GitHubUser | null> => {
   const data = await githubFetch(url);
   if (!data && GITHUB_TOKEN) {
     url = `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}`;
-    return await githubFetch(url);
+    return toPublicUser(await githubFetch(url));
   }
-  return data;
+  return toPublicUser(data);
 });
 
 const fetchRepositories = cache(async (): Promise<GitHubRepository[]> => {
   const url = GITHUB_TOKEN
-    ? `${GITHUB_API_BASE}/user/repos?visibility=all&affiliation=owner&sort=updated&per_page=100`
+    ? `${GITHUB_API_BASE}/user/repos?visibility=public&affiliation=owner&sort=updated&per_page=100`
     : `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
 
   const data = await githubFetch(url);
@@ -167,24 +180,38 @@ const fetchRecentCommits = cache(async (): Promise<Commit[]> => {
   }
 });
 
-const fetchContributionCalendar = cache(
-  async (year?: string): Promise<ContributionCalendar> => {
-    if (!GITHUB_TOKEN) {
-      const commits = await fetchRecentCommits();
-      return generateCommitGraph(commits, year);
-    }
+// Four digit year to that calendar year, anything else to a rolling 365 days,
+// matching generateCommitGraph.
+function contributionRange(year?: string): { from: string; to: string } {
+  if (year && /^\d{4}$/.test(year)) {
+    return {
+      from: `${year}-01-01T00:00:00Z`,
+      to: `${year}-12-31T23:59:59Z`,
+    };
+  }
+  const today = DateTime.utc();
+  return {
+    from: today.minus({ days: 364 }).startOf('day').toISO(),
+    to: today.toISO(),
+  };
+}
 
-    let contributionsCollectionArgs = '';
-    if (year && year !== 'last') {
-      const fromDate = `${year}-01-01T00:00:00Z`;
-      const toDate = `${year}-12-31T23:59:59Z`;
-      contributionsCollectionArgs = `(from: "${fromDate}", to: "${toDate}")`;
-    }
+// Returns null rather than a synthesised graph when the calendar is unavailable.
+// The only other source is fetchRecentCommits, which is capped at 5 commits, so
+// anything built from it would be presented as a year's contributions while being
+// off by orders of magnitude.
+const fetchContributionCalendar = cache(
+  async (year?: string): Promise<ContributionCalendar | null> => {
+    if (!GITHUB_TOKEN) return null;
+
+    // Always explicit: GitHub's one year default applies to omitted arguments,
+    // not to null ones.
+    const { from, to } = contributionRange(year);
 
     const query = `
-      query {
+      query($from: DateTime!, $to: DateTime!) {
         viewer {
-          contributionsCollection${contributionsCollectionArgs} {
+          contributionsCollection(from: $from, to: $to) {
             contributionCalendar {
               totalContributions
               weeks {
@@ -204,96 +231,36 @@ const fetchContributionCalendar = cache(
       const data = await githubFetch(`${GITHUB_API_BASE}/graphql`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, variables: { from, to } }),
       });
 
       if (data?.data?.viewer?.contributionsCollection?.contributionCalendar) {
         return data.data.viewer.contributionsCollection.contributionCalendar;
       }
-      const commits = await fetchRecentCommits();
-      return generateCommitGraph(commits, year);
+      console.error('GitHub returned no contribution calendar');
+      return null;
     } catch (error) {
       console.error('Error in fetchContributionCalendar:', error);
-      const commits = await fetchRecentCommits();
-      return generateCommitGraph(commits, year);
+      return null;
     }
   },
 );
 
-function generateCommitGraph(
-  commits: Commit[],
-  year?: string,
-): ContributionCalendar {
-  const weeks: CommitWeek[] = [];
-  let startDate: DateTime;
-  let endDate: DateTime;
-
-  if (year && year !== 'last') {
-    // Use calendar year boundaries (Jan 1 - Dec 31)
-    startDate = DateTime.fromObject({ year: parseInt(year), month: 1, day: 1 });
-    endDate = DateTime.fromObject({ year: parseInt(year), month: 12, day: 31 });
-  } else {
-    // For "last" year, use rolling 365 days
-    const today = DateTime.now();
-    startDate = today.minus({ days: 364 });
-    endDate = today;
-  }
-
-  // Start from the first Sunday of the date range to align with GitHub's grid
-  const firstSunday = startDate.startOf('week').minus({ days: 1 }); // Luxon week starts Monday, get Sunday before
-  const lastDate = endDate.endOf('day');
-
-  let currentDate = firstSunday;
-
-  while (currentDate <= lastDate) {
-    const weekDays: CommitDay[] = [];
-
-    // Generate 7 days for each week
-    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-      const dayDate = currentDate.plus({ days: dayOffset });
-
-      // Only include days that are within our actual date range
-      if (dayDate >= startDate && dayDate <= endDate) {
-        const dayCommits = commits.filter((commit) => {
-          const commitDate = DateTime.fromISO(commit.date);
-          return commitDate.hasSame(dayDate, 'day');
-        });
-
-        weekDays.push({
-          date:
-            dayDate.toISODate() ||
-            dayDate.toISO() ||
-            dayDate.toFormat('yyyy-MM-dd'),
-          count: dayCommits.length,
-          level: getContributionLevel(dayCommits.length),
-        });
-      }
-    }
-
-    if (weekDays.length > 0) {
-      weeks.push(weekDays);
-    }
-
-    currentDate = currentDate.plus({ weeks: 1 });
-  }
-
-  return {
-    weeks,
-    totalContributions: commits.length,
-  };
-}
-
-function getContributionLevel(count: number): number {
-  if (count === 0) return 0;
-  if (count <= 3) return 1;
-  if (count <= 6) return 2;
-  if (count <= 9) return 3;
-  return 4;
-}
-
-// Main function to get all GitHub data, callable from Server Components
-export const getGitHubData = cache(
-  async (year: string = 'last'): Promise<GitHubData> => {
+// One cached fan out for the whole section, so both halves of the dashboard
+// share a single snapshot instead of each doing its own four request fan out.
+//
+// Deliberately unstable_cache rather than the newer 'use cache' directive.
+// 'use cache' requires the cacheComponents flag, which also removes support for
+// dynamicParams and would turn every nonexistent blog URL into a soft 200 (see
+// app/blog/[slug]/page.tsx). unstable_cache also persists across deployments and
+// serverless instances, which 'use cache' does not: its key includes the build
+// id and it falls back to per instance memory.
+//
+// Returns null rather than throwing so a GitHub outage degrades the section
+// instead of failing the render. The revalidate window is what keeps a failed
+// snapshot from sticking around, since null is cached too.
+const fetchGitHubSnapshot = unstable_cache(
+  async (year: string): Promise<GitHubData | null> => {
     try {
       const [userData, repositories, commits, commitCalendar] =
         await Promise.all([
@@ -304,9 +271,8 @@ export const getGitHubData = cache(
         ]);
 
       if (!userData || repositories.length === 0) {
-        throw new Error(
-          'Failed to fetch essential GitHub data (user or repos)',
-        );
+        console.error('GitHub snapshot missing essential data (user or repos)');
+        return null;
       }
 
       const totalStars = repositories.reduce(
@@ -317,40 +283,40 @@ export const getGitHubData = cache(
         (sum, repo) => sum + repo.forks_count,
         0,
       );
-      const createdAt = new Date(userData.created_at || '2022-01-10');
-      const contributionYears =
-        new Date().getFullYear() - createdAt.getFullYear();
+      // Whole elapsed years, not a calendar-year subtraction: an account created
+      // in December 2024 is not "2 years on GitHub" in January 2026. null when
+      // GitHub did not send created_at, so the UI can say so instead of guessing.
+      const yearsOnGitHub = userData.created_at
+        ? Math.floor(
+            DateTime.now().diff(DateTime.fromISO(userData.created_at), 'years')
+              .years,
+          )
+        : null;
 
       return {
         user: userData,
-        repositories: repositories.slice(0, 6),
         commits: commits.slice(0, 5),
         commitCalendar,
         stats: {
           totalStars,
           totalForks,
-          contributionYears,
+          yearsOnGitHub,
         },
       };
     } catch (error) {
-      console.error('Error in getGitHubData:', error);
-      // Return a structured error state or a fallback object
-      return {
-        user: null,
-        repositories: [],
-        commits: [],
-        commitCalendar: { totalContributions: 0, weeks: [] },
-        stats: {
-          totalStars: 0,
-          totalForks: 0,
-          contributionYears: 0,
-        },
-      };
+      console.error('GitHub snapshot failed:', error);
+      return null;
     }
   },
+  ['github-snapshot'],
+  { tags: ['github-data'], revalidate: 900 },
 );
 
-// Preload function for early data fetching
-export const preloadGitHubData = (year?: string) => {
-  void getGitHubData(year);
-};
+// Main entry point, callable from Server Components. React.cache deduplicates
+// the two dashboard sections within a single render.
+export const getGitHubData = cache(
+  async (year: string = 'last'): Promise<GitHubResult> => {
+    const data = await fetchGitHubSnapshot(year);
+    return data ? { ok: true, data } : { ok: false };
+  },
+);

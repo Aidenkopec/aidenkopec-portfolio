@@ -36,6 +36,9 @@ export const UserAcknowledgmentEmail = ({
           </Text>
           <Text style={footer}>
             This is an automated response to confirm receipt of your message.
+            You, or someone using this address, submitted the contact form at
+            aidenkopec.com. If that wasn&apos;t you, no action is needed and you
+            will not be emailed again.
           </Text>
         </Section>
       </Container>

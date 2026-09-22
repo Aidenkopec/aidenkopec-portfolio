@@ -40,13 +40,13 @@ export function BlogHeader({ post }: BlogHeaderProps) {
         <div className='mb-6 flex items-center gap-2'>
           {/* Category Badge */}
           {post.category && (
-            <span className='rounded-full bg-[var(--text-color-variable)]/20 px-2.5 py-1 text-xs font-medium text-[var(--text-color-variable)]'>
+            <span className='rounded-full px-2.5 py-1 text-xs font-medium text-[var(--text-color-variable)] ring-1 ring-[var(--text-color-variable)]/40 ring-inset'>
               {post.category}
             </span>
           )}
           {/* Featured Badge */}
           {post.featured && (
-            <span className='rounded-full bg-[var(--text-color-variable)] px-2.5 py-1 text-xs font-medium text-secondary'>
+            <span className='rounded-full bg-[var(--text-color-variable)] px-2.5 py-1 text-xs font-medium text-primary'>
               Featured
             </span>
           )}
