@@ -517,6 +517,42 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   }
 }
 
+/* GitHub: the ring on the day of the commit the readout is showing. */
+.commit-marker {
+  fill: none;
+  stroke: var(--text-color-variable);
+  stroke-width: 1;
+  animation: readout-in 0.5s ease both;
+}
+
+.commit-marker-echo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: commit-ping 2.4s ease-out infinite;
+}
+
+@keyframes commit-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.readout-in {
+  animation: readout-in 0.5s ease both;
+}
+
+@keyframes readout-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
 /* A quiet text link used beside section titles. */
 .chart-link {
   display: inline-flex;

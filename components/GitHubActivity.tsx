@@ -26,19 +26,11 @@ const GitHubStatsSkeleton = () => (
 );
 
 const GitHubDashboardSkeleton = () => (
-  <div role='status' aria-live='polite' className='mt-16 space-y-16'>
+  <div role='status' aria-live='polite' className='mt-16 space-y-6'>
     <span className='sr-only'>Loading GitHub activity</span>
-    <div className='space-y-6'>
-      <div className='h-7 w-64 animate-pulse rounded bg-white-100/5' />
-      <div className='h-[118px] animate-pulse rounded-lg bg-white-100/5' />
-    </div>
-    <div>
-      {[...Array(3)].map((_, i) => (
-        <div key={i} className='border-t border-[var(--chart-faint)] py-4'>
-          <div className='h-4 w-3/4 animate-pulse rounded bg-white-100/5' />
-        </div>
-      ))}
-    </div>
+    <div className='h-7 w-64 animate-pulse rounded bg-white-100/5' />
+    <div className='h-[118px] animate-pulse rounded-lg bg-white-100/5' />
+    <div className='h-4 w-1/2 animate-pulse rounded bg-white-100/5' />
   </div>
 );
 

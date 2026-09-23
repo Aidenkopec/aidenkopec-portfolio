@@ -1,13 +1,21 @@
 'use client';
 
-import { ArrowUpRight, Check, ChevronDown } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { DateTime } from 'luxon';
 import React, { useEffect, useRef, useState } from 'react';
 
 import SectionHeader from '@/components/chart/SectionHeader';
 import { GITHUB_URL } from '@/constants';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import {
   formatCommitMessage,
+  type Commit,
   type ContributionCalendar,
   type GitHubData,
 } from '@/lib/github-utils';
@@ -17,13 +25,14 @@ const CELL = 14;
 const MONTH_ROW = 20;
 
 // Brightness of a day's star by contribution level, from faint dust to a
-// star with a halo in the theme's accent.
+// star with a halo in the theme's accent. Halos stay under half a cell so
+// neighbouring busy days never bleed into each other.
 const STAR = [
   { r: 0.9, opacity: 0.18, halo: 0 },
   { r: 1.6, opacity: 0.6, halo: 0 },
   { r: 2.3, opacity: 0.85, halo: 0 },
-  { r: 3, opacity: 1, halo: 7 },
-  { r: 3.6, opacity: 1, halo: 10 },
+  { r: 2.8, opacity: 1, halo: 5 },
+  { r: 3.3, opacity: 1, halo: 6.5 },
 ] as const;
 
 const LEVELS = [
@@ -51,7 +60,7 @@ const Star: React.FC<{ level: number; x: number; y: number }> = ({
           cy={y}
           r={star.halo}
           fill='var(--text-color-variable)'
-          opacity={level === 4 ? 0.3 : 0.16}
+          opacity={level === 4 ? 0.26 : 0.16}
         />
       )}
       <circle
@@ -62,6 +71,107 @@ const Star: React.FC<{ level: number; x: number; y: number }> = ({
         opacity={star.opacity}
       />
     </>
+  );
+};
+
+// A target ring on the day of the commit the readout is showing.
+const CommitMarker: React.FC<{ x: number; y: number }> = ({ x, y }) => (
+  <g className='commit-marker' pointerEvents='none'>
+    <circle cx={x} cy={y} r={6.5} />
+    <circle cx={x} cy={y} r={6.5} className='commit-marker-echo' />
+    <path
+      d={`M${x - 11} ${y}h3M${x + 8} ${y}h3M${x} ${y - 11}v3M${x} ${y + 8}v3`}
+    />
+  </g>
+);
+
+const ROTATE_MS = 4000;
+
+interface CommitReadoutProps {
+  commits: Commit[];
+  active: number;
+  onStep: (step: number) => void;
+  onPause: (paused: boolean) => void;
+  stepping: boolean;
+}
+
+// The latest public commits, one at a time, like a telemetry line.
+const CommitReadout: React.FC<CommitReadoutProps> = ({
+  commits,
+  active,
+  onStep,
+  onPause,
+  stepping,
+}) => {
+  const commit = commits[active];
+  if (!commit) {
+    return (
+      <p className='text-[13px] text-white-100/55'>
+        No recent public commits. The chart above shows all activity.
+      </p>
+    );
+  }
+
+  const sha = commit.sha.substring(0, 7);
+
+  return (
+    <div
+      role='group'
+      aria-label='Recent public commits'
+      className='flex min-h-11 min-w-0 items-center gap-3 text-[13px]'
+      onPointerEnter={() => onPause(true)}
+      onPointerLeave={() => onPause(false)}
+      onFocus={() => onPause(true)}
+      onBlur={() => onPause(false)}
+    >
+      <span aria-hidden='true' className='relative flex h-2 w-2 shrink-0'>
+        <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--text-color-variable)] opacity-60' />
+        <span className='relative inline-flex h-2 w-2 rounded-full bg-[var(--text-color-variable)]' />
+      </span>
+
+      <p key={active} className='readout-in flex min-w-0 items-baseline gap-3'>
+        <span className='max-w-[45%] shrink-0 truncate font-medium text-white-100'>
+          {commit.repo}
+        </span>
+        <span className='min-w-0 truncate text-white-100/70'>
+          {formatCommitMessage(commit.message, 80)}
+        </span>
+        <time
+          dateTime={commit.date}
+          className='hidden shrink-0 text-white-100/45 sm:inline'
+        >
+          {DateTime.fromISO(commit.date).toRelative()}
+        </time>
+        <a
+          href={`${GITHUB_URL}/${commit.repo}/commit/${commit.sha}`}
+          target='_blank'
+          rel='noopener noreferrer'
+          aria-label={`Commit ${sha} on GitHub`}
+          className='shrink-0 font-mono text-[var(--text-color-variable)] hover:underline focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
+        >
+          {sha}
+        </a>
+      </p>
+
+      {stepping && commits.length > 1 && (
+        <span className='-my-3 flex shrink-0'>
+          <button
+            onClick={() => onStep(-1)}
+            aria-label='Previous commit'
+            className='flex h-11 w-8 items-center justify-center text-white-100/55 hover:text-white-100 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
+          >
+            <ChevronLeft aria-hidden='true' className='h-4 w-4' />
+          </button>
+          <button
+            onClick={() => onStep(1)}
+            aria-label='Next commit'
+            className='flex h-11 w-8 items-center justify-center text-white-100/55 hover:text-white-100 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
+          >
+            <ChevronRight aria-hidden='true' className='h-4 w-4' />
+          </button>
+        </span>
+      )}
+    </div>
   );
 };
 
@@ -78,6 +188,10 @@ interface SkyChartProps {
   selectedYear: string;
   availableYears: (string | number)[];
   onYearChange: (year: string) => void;
+  /** Day to ring on the chart, as an ISO date. */
+  markedDate: string | null;
+  /** Shown beside the brightness key. */
+  readout: React.ReactNode;
 }
 
 // The contribution calendar as a star field: a column per week, a row per
@@ -88,6 +202,8 @@ const SkyChart: React.FC<SkyChartProps> = ({
   selectedYear,
   availableYears,
   onYearChange,
+  markedDate,
+  readout,
 }) => {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -153,6 +269,8 @@ const SkyChart: React.FC<SkyChartProps> = ({
   // label.
   if (months.length > 1 && weeks.length - months.at(-1)!.w < 3) months.pop();
   if (months.length > 1 && months[1]!.w - months[0]!.w < 3) months.shift();
+
+  const marked = days.find((day) => day.date === markedDate);
 
   const width = weeks.length * CELL;
   const height = MONTH_ROW + 7 * CELL;
@@ -252,7 +370,7 @@ const SkyChart: React.FC<SkyChartProps> = ({
           >
             <svg
               viewBox={`0 0 ${width} ${height}`}
-              className='block h-auto w-full'
+              className='block h-auto w-full overflow-visible'
               style={{ minWidth: width }}
               role='img'
               aria-label={`Contribution chart: ${commitCalendar?.totalContributions ?? 0} contributions in ${period}`}
@@ -286,10 +404,30 @@ const SkyChart: React.FC<SkyChartProps> = ({
                   </g>
                 );
               })}
+
+              {marked && (
+                <CommitMarker
+                  key={marked.date}
+                  x={marked.w * CELL + CELL / 2}
+                  y={MONTH_ROW + marked.d * CELL + CELL / 2}
+                />
+              )}
             </svg>
           </div>
+        </>
+      ) : (
+        <p className='mt-6 text-sm text-white-100/70'>
+          {commitCalendar
+            ? 'No contributions in this period'
+            : 'Contribution data is unavailable right now'}
+        </p>
+      )}
 
-          <div className='mt-4 flex items-center justify-end gap-3 text-[12px] text-white-100/55'>
+      <div className='mt-4 flex flex-wrap items-center justify-between gap-x-8 gap-y-3'>
+        <div className='min-w-0 basis-full sm:flex-1 sm:basis-0'>{readout}</div>
+
+        {!loading && weeks.length > 0 && (
+          <div className='ml-auto flex shrink-0 items-center gap-3 text-[12px] text-white-100/55'>
             <span>Fewer</span>
             <svg
               width={5 * 22}
@@ -304,14 +442,8 @@ const SkyChart: React.FC<SkyChartProps> = ({
             </svg>
             <span>More</span>
           </div>
-        </>
-      ) : (
-        <p className='mt-6 text-sm text-white-100/70'>
-          {commitCalendar
-            ? 'No contributions in this period'
-            : 'Contribution data is unavailable right now'}
-        </p>
-      )}
+        )}
+      </div>
 
       {tooltip && (
         <div
@@ -405,55 +537,45 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
     }
   };
 
+  const commits = githubData.commits.slice(0, 5);
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    if (reduced || paused || commits.length < 2) return;
+    const id = setInterval(
+      () => setActive((i) => (i + 1) % commits.length),
+      ROTATE_MS,
+    );
+    return () => clearInterval(id);
+  }, [reduced, paused, commits.length]);
+
+  const step = (by: number) =>
+    setActive((i) => (i + by + commits.length) % commits.length);
+
+  const commit = commits[active];
+  const markedDate = commit ? DateTime.fromISO(commit.date).toISODate() : null;
+
   return (
-    <div className='mt-16 space-y-16'>
+    <div className='mt-16'>
       <SkyChart
         commitCalendar={contributionData}
         loading={loading}
         selectedYear={selectedYear}
         availableYears={availableYears}
         onYearChange={fetchContributionData}
+        markedDate={markedDate}
+        readout={
+          <CommitReadout
+            commits={commits}
+            active={active}
+            onStep={step}
+            onPause={setPaused}
+            stepping={reduced}
+          />
+        }
       />
-
-      <div>
-        <h3 className='text-[17px] text-white-100/80'>Recent public commits</h3>
-
-        {githubData.commits && githubData.commits.length > 0 ? (
-          <ol className='mt-4'>
-            {githubData.commits.slice(0, 5).map((commit, index) => (
-              <li
-                key={`${commit.sha || commit.date}-${index}`}
-                className='flex flex-col gap-1 border-t border-[var(--chart-faint)] py-4 sm:flex-row sm:items-baseline sm:gap-6'
-              >
-                <span className='shrink-0 text-[14px] font-medium text-white-100 sm:w-44 sm:truncate'>
-                  {commit.repo}
-                </span>
-                <span className='min-w-0 flex-1 truncate text-[15px] text-white-100/70'>
-                  {formatCommitMessage(commit.message, 80)}
-                </span>
-                <span className='flex shrink-0 items-baseline gap-4 text-[13px] text-white-100/50'>
-                  <time dateTime={commit.date}>
-                    {DateTime.fromISO(commit.date).toRelative()}
-                  </time>
-                  <a
-                    href={`${GITHUB_URL}/${commit.repo}/commit/${commit.sha}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    aria-label={`Commit ${commit.sha.substring(0, 7)} on GitHub`}
-                    className='font-mono text-[var(--text-color-variable)] hover:underline focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
-                  >
-                    {commit.sha.substring(0, 7)}
-                  </a>
-                </span>
-              </li>
-            ))}
-          </ol>
-        ) : (
-          <p className='mt-4 border-t border-[var(--chart-faint)] pt-4 text-sm text-white-100/70'>
-            No recent public commits. The chart above shows all activity.
-          </p>
-        )}
-      </div>
     </div>
   );
 };
