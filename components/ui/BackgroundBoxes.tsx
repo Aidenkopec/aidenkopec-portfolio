@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 const BoxesCore = () => {
   const rows = new Array(150).fill(1);

@@ -147,7 +147,7 @@ const CommitReadout: React.FC<CommitReadoutProps> = ({
           target='_blank'
           rel='noopener noreferrer'
           aria-label={`Commit ${sha} on GitHub`}
-          className='shrink-0 font-mono text-[var(--text-color-variable)] hover:underline focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
+          className='shrink-0 font-mono text-[var(--text-color-variable)] hover:underline focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none max-lg:relative max-lg:after:absolute max-lg:after:-inset-x-2 max-lg:after:-inset-y-3'
         >
           {sha}
         </a>
@@ -210,6 +210,9 @@ const SkyChart: React.FC<SkyChartProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const tooltipTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => () => clearTimeout(tooltipTimer.current), []);
 
   // Where the chart scrolls sideways on a phone, open on the latest weeks.
   useEffect(() => {
@@ -242,12 +245,12 @@ const SkyChart: React.FC<SkyChartProps> = ({
     };
 
     if (dropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('pointerdown', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('pointerdown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [dropdownOpen]);
@@ -275,8 +278,10 @@ const SkyChart: React.FC<SkyChartProps> = ({
   const width = weeks.length * CELL;
   const height = MONTH_ROW + 7 * CELL;
 
-  // One handler for the whole chart rather than one per day.
+  // One handler for the whole chart rather than one per day. Touch has no
+  // hover, so a tap shows the day briefly instead; a drag scrolls the chart.
   const handlePointerMove = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (event.pointerType === 'touch' && event.type !== 'pointerdown') return;
     const target = (event.target as Element).closest<SVGElement>('[data-day]');
     const day = target ? days[Number(target.dataset.day)] : undefined;
     if (!target || !day) {
@@ -366,6 +371,7 @@ const SkyChart: React.FC<SkyChartProps> = ({
         <>
           <div
             ref={scrollRef}
+            onScroll={() => setTooltip(null)}
             className='scrollbar-hide -mx-2 mt-6 overflow-x-auto px-2 pb-2'
           >
             <svg
@@ -375,7 +381,15 @@ const SkyChart: React.FC<SkyChartProps> = ({
               role='img'
               aria-label={`Contribution chart: ${commitCalendar?.totalContributions ?? 0} contributions in ${period}`}
               onPointerMove={handlePointerMove}
-              onPointerLeave={() => setTooltip(null)}
+              onPointerLeave={(event) => {
+                if (event.pointerType !== 'touch') setTooltip(null);
+              }}
+              onPointerDown={(event) => {
+                if (event.pointerType !== 'touch') return;
+                handlePointerMove(event);
+                clearTimeout(tooltipTimer.current);
+                tooltipTimer.current = setTimeout(() => setTooltip(null), 2000);
+              }}
             >
               {months.map(({ label, w }) => (
                 <text

@@ -30,7 +30,6 @@
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.47.0",
     "luxon": "^3.7.2",
-    "motion": "^13.4.0",
     "next": "16.3.5",
     "next-mdx-remote": "^6.0.0",
     "next-themes": "^0.4.6",
@@ -44,9 +43,6 @@
   },
   "overrides": {
     "@types/three": "0.168.0",
-    "stats-gl": {
-      "three": "0.168.0"
-    },
     "three": "0.168.0"
   },
   "devDependencies": {

@@ -24,7 +24,7 @@ export function BlogHeader({ post }: BlogHeaderProps) {
       >
         <Link
           href='/blog'
-          className='inline-flex items-center gap-2 text-sm text-secondary transition-colors hover:text-secondary'
+          className='inline-flex items-center gap-2 text-sm text-secondary transition-colors hover:text-secondary max-lg:min-h-11'
         >
           <ArrowLeft className='h-4 w-4' />
           Back to blog
@@ -90,7 +90,7 @@ export function BlogHeader({ post }: BlogHeaderProps) {
               <Link
                 key={tag}
                 href={`/blog/tag/${tagSlug(tag)}`}
-                className='inline-flex items-center gap-1 rounded-full bg-black-100 px-3 py-1 text-sm text-secondary transition-all duration-200 hover:bg-black-200 hover:text-secondary'
+                className='inline-flex items-center gap-1 rounded-full bg-black-100 px-3 py-1 text-sm text-secondary transition-all duration-200 hover:bg-black-200 hover:text-secondary max-lg:relative max-lg:after:absolute max-lg:after:-inset-y-2'
               >
                 <Tag className='h-3 w-3' />
                 {tag}

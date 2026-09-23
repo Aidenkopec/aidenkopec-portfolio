@@ -64,7 +64,7 @@ const RecentBlogsClient: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
             <li key={post.slug}>
               <Link
                 href={`/blog/${post.slug}`}
-                className='transmission group grid gap-5 border-t border-[var(--chart-faint)] py-8 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] md:grid-cols-[10rem_1fr_auto] md:gap-10 md:py-10'
+                className='transmission group grid gap-5 border-t border-[var(--chart-faint)] py-8 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] md:grid-cols-[10rem_1fr_auto] md:gap-10 md:py-10 md:max-lg:grid-cols-[10rem_1fr]'
               >
                 <div className='flex items-center gap-4 text-[14px] text-white-100/55 md:flex-col md:items-start md:gap-2'>
                   <time dateTime={post.date}>{formatDate(post.date)}</time>
@@ -88,7 +88,7 @@ const RecentBlogsClient: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
                 </div>
 
                 {cover && (
-                  <div className='relative aspect-video w-full overflow-hidden rounded-lg border border-[var(--chart-faint)] md:w-72'>
+                  <div className='relative aspect-video w-full overflow-hidden rounded-lg border border-[var(--chart-faint)] md:w-72 md:max-lg:col-start-2'>
                     <Image
                       src={cover}
                       alt=''

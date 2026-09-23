@@ -148,7 +148,7 @@ const FloatingMusicBar: React.FC = () => {
             <div className='flex items-center gap-1.5 rounded-full border border-gray-800/50 bg-black/80 px-2.5 py-1.5 shadow-lg backdrop-blur-md transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl'>
               <button
                 type='button'
-                className='flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 transition-all duration-300 ease-out hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30'
+                className='flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 transition-all duration-300 ease-out hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30 sm:h-7 sm:w-7'
                 onClick={handleShowMusicBar}
                 title='Show full music controls'
                 aria-label='Show full music controls'
@@ -158,8 +158,7 @@ const FloatingMusicBar: React.FC = () => {
 
               <button
                 onClick={togglePlay}
-                className='rounded-full p-1.5 transition-all duration-200 hover:scale-110 hover:bg-white/10 hover:shadow-md active:scale-95'
-                style={{ minWidth: '36px', minHeight: '36px' }}
+                className='min-h-11 min-w-11 rounded-full p-1.5 transition-all duration-200 hover:scale-110 hover:bg-white/10 hover:shadow-md active:scale-95 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-9 sm:min-w-9'
                 title={isPlaying ? 'Pause' : 'Play'}
                 aria-label='Play music'
                 aria-pressed={isPlaying}
@@ -217,8 +216,7 @@ const FloatingMusicBar: React.FC = () => {
             <div className='flex flex-shrink-0 items-center gap-0.5'>
               <button
                 onClick={previousTrack}
-                className='rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 active:scale-95 sm:p-1.5'
-                style={{ minWidth: '28px', minHeight: '28px' }}
+                className='min-h-9 min-w-9 rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 active:scale-95 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-7 sm:min-w-7 sm:p-1.5'
                 title='Previous Track'
                 aria-label='Previous track'
               >
@@ -227,8 +225,7 @@ const FloatingMusicBar: React.FC = () => {
 
               <button
                 onClick={togglePlay}
-                className='mx-0.5 rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 hover:shadow-md active:scale-95 sm:p-1.5'
-                style={{ minWidth: '32px', minHeight: '32px' }}
+                className='mx-0.5 min-h-11 min-w-11 rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 hover:shadow-md active:scale-95 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-8 sm:min-w-8 sm:p-1.5'
                 title={isPlaying ? 'Pause' : 'Play'}
                 aria-label='Play music'
                 aria-pressed={isPlaying}
@@ -242,8 +239,7 @@ const FloatingMusicBar: React.FC = () => {
 
               <button
                 onClick={nextTrack}
-                className='rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 active:scale-95 sm:p-1.5'
-                style={{ minWidth: '28px', minHeight: '28px' }}
+                className='min-h-9 min-w-9 rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 active:scale-95 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-7 sm:min-w-7 sm:p-1.5'
                 title='Next Track'
                 aria-label='Next track'
               >
@@ -253,8 +249,7 @@ const FloatingMusicBar: React.FC = () => {
 
             <button
               onClick={handleHideMusicBar}
-              className='flex-shrink-0 p-0.5 opacity-60 transition-all duration-300 hover:rotate-90 hover:text-red-400 hover:opacity-100 sm:p-1'
-              style={{ minWidth: '20px', minHeight: '20px' }}
+              className='min-h-9 min-w-9 flex-shrink-0 p-0.5 opacity-60 transition-all duration-300 hover:rotate-90 hover:text-red-400 hover:opacity-100 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-5 sm:min-w-5 sm:p-1'
               title='Hide music player'
               aria-label='Hide music player'
             >

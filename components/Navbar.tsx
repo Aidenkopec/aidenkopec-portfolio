@@ -4,12 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { navLinks } from '@/constants';
 import { HEAD } from '@/components/chart/FlightPath';
+import { useDismiss } from '@/hooks/useDismiss';
 
 import CustomizationMenu from './CustomizationMenu';
-
-// The homepage sections, in route order. Blog is a separate page, so it sits
-// off the route.
-const routeLinks = navLinks.filter((nav) => nav.id !== 'blog');
 
 /**
  * Tracks the reader along the homepage route. Returns the index of the last
@@ -22,7 +19,7 @@ function useRouteProgress(strip: React.RefObject<HTMLElement | null>) {
 
   useEffect(() => {
     // Each section's first waypoint is its title's stop on the flight path.
-    const stops = routeLinks.map((nav) => {
+    const stops = navLinks.map((nav) => {
       const section = document.getElementById(nav.id);
       return section?.querySelector<HTMLElement>('[data-waypoint]') ?? section;
     });
@@ -92,6 +89,7 @@ const Navbar: React.FC = () => {
   const [customizationMenuMobile, setCustomizationMenuMobile] =
     useState<boolean>(false);
   const stripRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const reached = useRouteProgress(stripRef);
 
   useEffect(() => {
@@ -121,6 +119,8 @@ const Navbar: React.FC = () => {
   };
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  useDismiss(toggle, mobileMenuRef, closeMobileMenu);
 
   return (
     <nav
@@ -157,12 +157,12 @@ const Navbar: React.FC = () => {
             ref={stripRef}
             data-flying={reached >= 0 ? '' : undefined}
             className='nav-route relative'
-            style={{ '--stops': routeLinks.length } as React.CSSProperties}
+            style={{ '--stops': navLinks.length } as React.CSSProperties}
           >
             <span aria-hidden='true' className='nav-route-course' />
             <span aria-hidden='true' className='nav-route-flown' />
             <ol className='nav-route-grid relative list-none'>
-              {routeLinks.map((nav, index) => (
+              {navLinks.map((nav, index) => (
                 <li key={nav.id}>
                   <a
                     href={`#${nav.id}`}
@@ -220,13 +220,16 @@ const Navbar: React.FC = () => {
           </div>
         </div>
 
-        <div className='flex flex-1 items-center justify-end md:hidden'>
+        <div
+          ref={mobileMenuRef}
+          className='flex flex-1 items-center justify-end md:hidden'
+        >
           <button
             type='button'
             aria-label='Toggle menu'
             aria-expanded={toggle}
             aria-controls='mobile-menu'
-            className={`relative z-[100] flex h-10 w-10 items-center justify-center rounded-full border transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-color-variable)] ${
+            className={`relative z-[100] flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-color-variable)] ${
               toggle
                 ? 'border-[var(--text-color-variable)] text-[var(--text-color-variable)]'
                 : 'border-[var(--chart-line)] text-white-100/80'
@@ -259,7 +262,7 @@ const Navbar: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <ol className='nav-route-vertical list-none'>
-              {routeLinks.map((nav, index) => (
+              {navLinks.map((nav, index) => (
                 <li key={nav.id}>
                   <a
                     href={`#${nav.id}`}
@@ -277,10 +280,10 @@ const Navbar: React.FC = () => {
               ))}
             </ol>
 
-            <div className='mt-4 flex flex-col gap-4 border-t border-[var(--chart-line)] pt-5'>
+            <div className='mt-4 flex flex-col border-t border-[var(--chart-line)] pt-3'>
               <Link
                 href='/blog'
-                className='nav-label hover:text-white-100'
+                className='nav-label flex min-h-11 items-center hover:text-white-100'
                 onClick={closeMobileMenu}
               >
                 Blog
@@ -288,7 +291,7 @@ const Navbar: React.FC = () => {
               <button
                 type='button'
                 aria-expanded={customizationMenuMobile}
-                className={`nav-label flex items-center gap-3 text-left hover:text-white-100 ${
+                className={`nav-label flex min-h-11 items-center gap-3 text-left hover:text-white-100 ${
                   customizationMenuMobile
                     ? 'text-[var(--text-color-variable)]'
                     : ''

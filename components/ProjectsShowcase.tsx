@@ -58,7 +58,7 @@ const ProjectLinkButton: React.FC<{ link: ProjectLink; primary?: boolean }> = ({
     href={link.href}
     target='_blank'
     rel='noreferrer noopener'
-    className={`group/link inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] focus-visible:outline-none ${
+    className={`group/link inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] focus-visible:outline-none max-lg:min-h-11 ${
       primary
         ? 'border-[var(--text-color-variable)]/60 bg-[var(--text-color-variable)]/10 text-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/20'
         : 'border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] text-[var(--secondary-color)] hover:border-[var(--text-color-variable)] hover:text-[var(--text-color-variable)]'
@@ -570,7 +570,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
                   onClick={() => goTo(index)}
                   aria-label={`Show ${project.name}`}
                   aria-current={index === activeIndex}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                  className={`h-1.5 rounded-full transition-all duration-300 max-lg:relative max-lg:after:absolute max-lg:after:-inset-x-1 max-lg:after:-inset-y-4 ${
                     index === activeIndex
                       ? 'w-6 bg-[var(--text-color-variable)]'
                       : 'w-1.5 bg-[var(--secondary-color)]/30 hover:bg-[var(--secondary-color)]/60'

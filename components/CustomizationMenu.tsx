@@ -117,14 +117,14 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
       // Add a small delay before attaching click outside handler
       // This prevents immediate closing when the modal is first opened
       const timer = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('pointerdown', handleClickOutside);
       }, 100);
 
       document.addEventListener('keydown', handleEscape);
 
       return () => {
         clearTimeout(timer);
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('pointerdown', handleClickOutside);
         document.removeEventListener('keydown', handleEscape);
       };
     }
@@ -172,7 +172,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
         <div className='fixed inset-0 z-[9999] flex items-start justify-center pt-20 sm:pt-24'>
           <div
             ref={menuRef}
-            className='flex h-[500px] w-[90%] max-w-md animate-slideDown flex-col overflow-hidden rounded-2xl border border-[var(--chart-line)] bg-black-100 shadow-2xl sm:w-[90%] sm:animate-scaleIn'
+            className='flex h-[min(500px,calc(100dvh-8rem))] w-[90%] max-w-md animate-slideDown flex-col overflow-hidden rounded-2xl border border-[var(--chart-line)] bg-black-100 shadow-2xl sm:w-[90%] sm:animate-scaleIn'
           >
             {/* Header */}
             <div className='flex-shrink-0 border-b border-tertiary p-4'>
@@ -182,7 +182,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 </h3>
                 <button
                   onClick={onClose}
-                  className='rounded-lg p-1 text-2xl leading-none text-secondary transition-all hover:bg-tertiary hover:text-secondary'
+                  className='-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-2xl leading-none text-secondary transition-all hover:bg-tertiary hover:text-secondary'
                   aria-label='Close menu'
                 >
                   ×
@@ -250,7 +250,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                         role='switch'
                         aria-checked={isFloatingBarVisible}
                         aria-label='Show music dock'
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors after:absolute after:-inset-2.5 ${
                           isFloatingBarVisible
                             ? 'bg-[var(--text-color-variable)]'
                             : 'bg-gray-600'
@@ -274,7 +274,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                           <button
                             onClick={() => setFloatingBarMode('mini')}
                             aria-pressed={floatingBarMode === 'mini'}
-                            className={`rounded-md px-3 py-1 text-xs transition-colors ${
+                            className={`min-h-11 rounded-md px-4 text-xs transition-colors ${
                               floatingBarMode === 'mini'
                                 ? 'bg-[var(--text-color-variable)] text-primary'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -285,7 +285,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                           <button
                             onClick={() => setFloatingBarMode('standard')}
                             aria-pressed={floatingBarMode === 'standard'}
-                            className={`rounded-md px-3 py-1 text-xs transition-colors ${
+                            className={`min-h-11 rounded-md px-4 text-xs transition-colors ${
                               floatingBarMode === 'standard'
                                 ? 'bg-[var(--text-color-variable)] text-primary'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'

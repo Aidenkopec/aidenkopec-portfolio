@@ -716,6 +716,14 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   opacity: 1;
 }
 
+/* No hover on touch, so the waveforms just play. */
+@media (hover: none) {
+  .signal rect {
+    animation-play-state: running;
+    opacity: 1;
+  }
+}
+
 @keyframes signal {
   from {
     transform: scaleY(1);

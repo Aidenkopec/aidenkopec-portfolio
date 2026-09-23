@@ -1,8 +1,9 @@
 'use client';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import CustomizationMenu from '@/components/CustomizationMenu';
+import { useDismiss } from '@/hooks/useDismiss';
 
 const BlogNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -11,6 +12,7 @@ const BlogNavbar: React.FC = () => {
   const [customizationMenuMobile, setCustomizationMenuMobile] =
     useState<boolean>(false);
   const [toggle, setToggle] = useState<boolean>(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +36,8 @@ const BlogNavbar: React.FC = () => {
       setCustomizationMenuMobile(false);
     }
   };
+
+  useDismiss(toggle, mobileMenuRef, () => setMobileMenuOpen(false));
 
   const blogNavLinks = [
     { id: 'home', title: 'Home', href: '/' },
@@ -138,7 +142,10 @@ const BlogNavbar: React.FC = () => {
         </div>
 
         {/* Enhanced Mobile Menu Button */}
-        <div className='flex flex-1 items-center justify-end gap-4 sm:hidden'>
+        <div
+          ref={mobileMenuRef}
+          className='flex flex-1 items-center justify-end gap-4 sm:hidden'
+        >
           <button
             aria-label='Toggle menu'
             aria-expanded={toggle}
@@ -204,12 +211,8 @@ const BlogNavbar: React.FC = () => {
 
             <ul className='relative z-10 flex flex-1 list-none flex-col items-start justify-end gap-2'>
               {/* Enhanced Navigation Links */}
-              {blogNavLinks.map((nav, index) => (
-                <li
-                  key={nav.id}
-                  className='group w-full'
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
+              {blogNavLinks.map((nav) => (
+                <li key={nav.id} className='group w-full'>
                   <Link
                     href={nav.href}
                     className='relative block w-full cursor-pointer overflow-hidden rounded-lg px-4 py-3 text-secondary transition-all duration-300 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'

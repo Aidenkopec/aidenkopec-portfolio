@@ -81,6 +81,8 @@ interface Project {
 // Social links
 export const GITHUB_URL = 'https://github.com/Aidenkopec';
 
+// The homepage sections, in route order. Blog is a separate page, so the
+// navbar links it on its own, off the route.
 export const navLinks: NavLink[] = [
   {
     id: 'about',
@@ -93,10 +95,6 @@ export const navLinks: NavLink[] = [
   {
     id: 'contact',
     title: 'Contact',
-  },
-  {
-    id: 'blog',
-    title: 'Blog',
   },
 ];
 
@@ -444,7 +442,6 @@ const projects: Project[] = [
 export { experiences, projects, services, technologies };
 export type {
   Experience,
-  NavLink,
   Project,
   ProjectLink,
   ProjectTier,

@@ -179,7 +179,7 @@ export function BlogHero({
                     value={searchTerm}
                     onChange={(e) => onSearch(e.target.value)}
                     aria-label='Search articles'
-                    className='w-full rounded-lg border border-black-100 bg-black-100 py-2.5 pr-4 pl-10 text-sm text-secondary placeholder-secondary transition-all focus:border-transparent focus:ring-2 focus:ring-[var(--text-color-variable)] focus:outline-none'
+                    className='w-full rounded-lg border border-black-100 bg-black-100 py-2.5 pr-4 pl-10 text-sm text-secondary placeholder-secondary transition-all focus:border-transparent focus:ring-2 focus:ring-[var(--text-color-variable)] focus:outline-none max-lg:text-base'
                     placeholder='Search articles...'
                   />
                 </div>
@@ -247,7 +247,7 @@ export function BlogHero({
                 >
                   <Link
                     href='#blog-content'
-                    className='inline-flex items-center text-sm font-medium text-[var(--text-color-variable)] transition-colors hover:text-[var(--text-color-variable)]/80'
+                    className='inline-flex items-center text-sm font-medium text-[var(--text-color-variable)] transition-colors hover:text-[var(--text-color-variable)]/80 max-lg:min-h-11'
                   >
                     View all articles
                     <ArrowRight className='ml-1 h-3 w-3' />
