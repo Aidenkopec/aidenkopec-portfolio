@@ -30,11 +30,7 @@ const ThemeOption: React.FC<ThemeOptionProps> = ({
   <button
     type='button'
     aria-pressed={isSelected}
-    onClick={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onSelect(themeKey);
-    }}
+    onClick={() => onSelect(themeKey)}
     className={`relative w-full cursor-pointer rounded-lg border p-3 text-left transition-all duration-300 ${
       isSelected
         ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
@@ -121,22 +117,17 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
       // Add a small delay before attaching click outside handler
       // This prevents immediate closing when the modal is first opened
       const timer = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('pointerdown', handleClickOutside);
       }, 100);
 
       document.addEventListener('keydown', handleEscape);
 
       return () => {
         clearTimeout(timer);
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('pointerdown', handleClickOutside);
         document.removeEventListener('keydown', handleEscape);
       };
     }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
   }, [isOpen, onClose, isFullScreen]);
 
   // Effect specifically for body scroll
@@ -157,7 +148,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     setTheme(themeKey);
     // Small delay for visual feedback before closing
     setTimeout(() => {
-      if (activeTab === 'themes' && !isFullScreen) {
+      if (!isFullScreen) {
         onClose();
       }
     }, 300);
@@ -166,14 +157,14 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   if (!isOpen || !mounted) return null;
 
   // Mobile fullscreen overlay mode
-  if (isFullScreen || isMobile) {
+  if (isMobile) {
     return (
       <>
         {/* Backdrop. Escape already closes the menu, so this is a pointer
             convenience rather than the only dismissal path. */}
         <div
           aria-hidden='true'
-          className='animate-fadeIn fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm'
+          className='fixed inset-0 z-[9998] animate-fadeIn bg-black/60 backdrop-blur-sm'
           onClick={onClose}
         />
 
@@ -181,17 +172,17 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
         <div className='fixed inset-0 z-[9999] flex items-start justify-center pt-20 sm:pt-24'>
           <div
             ref={menuRef}
-            className='animate-slideDown sm:animate-scaleIn flex h-[500px] w-[90%] max-w-md flex-col overflow-hidden rounded-2xl border border-tertiary bg-black-100 shadow-2xl sm:w-[90%]'
+            className='flex h-[min(500px,calc(100dvh-8rem))] w-[90%] max-w-md animate-slideDown flex-col overflow-hidden rounded-2xl border border-[var(--chart-line)] bg-black-100 shadow-2xl sm:w-[90%] sm:animate-scaleIn'
           >
             {/* Header */}
             <div className='flex-shrink-0 border-b border-tertiary p-4'>
               <div className='mb-3 flex items-center justify-between'>
-                <h3 className='text-lg font-semibold text-secondary'>
+                <h3 className='font-display text-2xl text-white-100 italic'>
                   Customizations
                 </h3>
                 <button
                   onClick={onClose}
-                  className='rounded-lg p-1 text-2xl leading-none text-secondary transition-all hover:bg-tertiary hover:text-secondary'
+                  className='-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-2xl leading-none text-secondary transition-all hover:bg-tertiary hover:text-secondary'
                   aria-label='Close menu'
                 >
                   ×
@@ -259,7 +250,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                         role='switch'
                         aria-checked={isFloatingBarVisible}
                         aria-label='Show music dock'
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors after:absolute after:-inset-2.5 ${
                           isFloatingBarVisible
                             ? 'bg-[var(--text-color-variable)]'
                             : 'bg-gray-600'
@@ -283,7 +274,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                           <button
                             onClick={() => setFloatingBarMode('mini')}
                             aria-pressed={floatingBarMode === 'mini'}
-                            className={`rounded-md px-3 py-1 text-xs transition-colors ${
+                            className={`min-h-11 rounded-md px-4 text-xs transition-colors ${
                               floatingBarMode === 'mini'
                                 ? 'bg-[var(--text-color-variable)] text-primary'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -294,7 +285,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                           <button
                             onClick={() => setFloatingBarMode('standard')}
                             aria-pressed={floatingBarMode === 'standard'}
-                            className={`rounded-md px-3 py-1 text-xs transition-colors ${
+                            className={`min-h-11 rounded-md px-4 text-xs transition-colors ${
                               floatingBarMode === 'standard'
                                 ? 'bg-[var(--text-color-variable)] text-primary'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -387,35 +378,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       ))}
                     </div>
                   </div>
-
-                  {/* Music Controls Info */}
-                  <div className='rounded-lg bg-tertiary p-3'>
-                    <h4 className='mb-2 text-sm font-medium text-secondary'>
-                      Controls
-                    </h4>
-                    <div className='space-y-1 text-xs text-gray-400'>
-                      <div className='flex justify-between'>
-                        <span>Play/Pause</span>
-                        <span className='text-gray-300'>Spacebar or Click</span>
-                      </div>
-                      <div className='flex justify-between'>
-                        <span>Next Track</span>
-                        <span className='text-gray-300'>
-                          Ctrl + → or Swipe Left
-                        </span>
-                      </div>
-                      <div className='flex justify-between'>
-                        <span>Previous Track</span>
-                        <span className='text-gray-300'>
-                          Ctrl + ← or Swipe Right
-                        </span>
-                      </div>
-                      <div className='flex justify-between'>
-                        <span>Expand Dock</span>
-                        <span className='text-gray-300'>Click Music Icon</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               )}
             </div>
@@ -438,13 +400,13 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   return (
     <div
       ref={menuRef}
-      className='absolute top-full right-0 z-[9999] mt-2 w-96 overflow-hidden rounded-xl border border-tertiary bg-black-100 shadow-2xl'
+      className='absolute top-full right-0 z-[9999] mt-2 w-96 overflow-hidden rounded-xl border border-[var(--chart-line)] bg-black-100 shadow-2xl'
     >
       {/* Original desktop menu content remains the same */}
       {/* Header with tabs */}
       <div className='border-b border-tertiary p-4'>
         <div className='mb-3 flex items-center justify-between'>
-          <h3 className='text-lg font-semibold text-secondary'>
+          <h3 className='font-display text-2xl text-white-100 italic'>
             Customizations
           </h3>
           <button
@@ -639,31 +601,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                 ))}
               </div>
             </div>
-
-            {/* Music Controls Info */}
-            <div className='rounded-lg bg-tertiary p-3'>
-              <h4 className='mb-2 text-sm font-medium text-secondary'>
-                Controls
-              </h4>
-              <div className='space-y-1 text-xs text-gray-400'>
-                <div className='flex justify-between'>
-                  <span>Play/Pause</span>
-                  <span className='text-gray-300'>Spacebar or Click</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Next Track</span>
-                  <span className='text-gray-300'>Ctrl + → or Swipe Left</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Previous Track</span>
-                  <span className='text-gray-300'>Ctrl + ← or Swipe Right</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Expand Dock</span>
-                  <span className='text-gray-300'>Click Music Icon</span>
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </div>
@@ -676,68 +613,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             : 'Music dock settings persist across sessions'}
         </p>
       </div>
-
-      {/* Custom slider styles */}
-      <style>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          height: 16px;
-          width: 16px;
-          border-radius: 50%;
-          background: var(--text-color-variable);
-          cursor: pointer;
-          box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
-        }
-
-        .slider::-moz-range-thumb {
-          height: 16px;
-          width: 16px;
-          border-radius: 50%;
-          background: var(--text-color-variable);
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slideDown {
-          from { 
-            transform: translateY(-20px);
-            opacity: 0;
-          }
-          to { 
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        @keyframes scaleIn {
-          from { 
-            transform: scale(0.95);
-            opacity: 0;
-          }
-          to { 
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out;
-        }
-
-        .animate-scaleIn {
-          animation: scaleIn 0.2s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

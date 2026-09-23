@@ -1,11 +1,11 @@
 import { Analytics } from '@vercel/analytics/next';
-import type { Metadata, Viewport } from 'next';
+import type { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { EB_Garamond, Geist, Geist_Mono } from 'next/font/google';
 
-import FloatingMusicBar from '@/components/FloatingMusicBar';
-import { InlineScript } from '@/components/InlineScript';
-import { MotionProvider } from '@/components/MotionProvider';
+import FloatingMusicBar from '@/components/layout/FloatingMusicBar';
+import { InlineScript } from '@/components/ui/InlineScript';
+import { MotionProvider } from '@/components/providers/MotionProvider';
 import { SWARM_INTRO_SCRIPT } from '@/components/swarm/introScript';
 import { GITHUB_URL } from '@/constants';
 import { themeKeys } from '@/constants/themes';
@@ -22,10 +22,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-};
+// Section titles, set like the labels on an old star atlas.
+const ebGaramond = EB_Garamond({
+  variable: '--font-eb-garamond',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://aidenkopec.com'),
@@ -102,7 +104,7 @@ export default function RootLayout({
         <InlineScript html={SWARM_INTRO_SCRIPT} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ebGaramond.variable} antialiased`}
       >
         <script
           type='application/ld+json'

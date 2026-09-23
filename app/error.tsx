@@ -1,5 +1,5 @@
 'use client';
-import { ErrorShell } from '@/components/ErrorShell';
+import { ErrorShell } from '@/components/layout/ErrorShell';
 
 export default function Error({
   error,

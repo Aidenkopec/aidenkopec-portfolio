@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function BlogPostLoading() {
   return (
     <div
@@ -138,7 +136,7 @@ export default function BlogPostLoading() {
           {/* Main Content Area */}
           <div className='lg:col-span-3'>
             {/* Article Content Skeleton */}
-            <div className='prose prose-lg prose-invert max-w-none'>
+            <div>
               {/* Paragraph skeletons */}
               {[...Array(8)].map((_, i) => (
                 <div key={i} className='mb-6 space-y-3'>

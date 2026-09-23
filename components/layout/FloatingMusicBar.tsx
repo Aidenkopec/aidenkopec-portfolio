@@ -1,5 +1,5 @@
 'use client';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { useMusicContext } from '@/context';
@@ -57,33 +57,26 @@ const FloatingMusicBar: React.FC = () => {
   } = useMusicContext();
 
   const [shouldScrollTitle, setShouldScrollTitle] = useState<boolean>(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
   const titleRef = useRef<HTMLSpanElement>(null);
+  // Phones start with the dock hidden, once. After that the mode is the
+  // user's choice, so picking Full or Compact in the menu sticks.
+  const autoHidden = useRef(false);
 
-  // Detect mobile device and set initial mode
   useEffect(() => {
     const checkMobile = () => {
-      const isMobileDevice = window.innerWidth <= 768; // Standard mobile breakpoint
-
-      // Only auto-hide on mobile if user hasn't interacted yet
-      if (
-        isMobileDevice &&
-        !hasUserInteracted &&
-        floatingBarMode !== 'hidden'
-      ) {
-        setFloatingBarMode('hidden');
-      }
+      if (autoHidden.current || window.innerWidth > 768) return;
+      autoHidden.current = true;
+      setFloatingBarMode('hidden');
     };
 
     checkMobile();
     window.addEventListener('resize', checkMobile, { passive: true });
 
     return () => window.removeEventListener('resize', checkMobile);
-  }, [floatingBarMode, setFloatingBarMode, hasUserInteracted]);
+  }, [setFloatingBarMode]);
 
-  // Track user interactions to prevent auto-hiding after they've used the music bar
   const handleShowMusicBar = () => {
-    setHasUserInteracted(true);
+    autoHidden.current = true;
     setFloatingBarMode('standard');
   };
 
@@ -115,8 +108,6 @@ const FloatingMusicBar: React.FC = () => {
     window.addEventListener('resize', checkOverflow, { passive: true });
     return () => window.removeEventListener('resize', checkOverflow);
   }, [trackTitle, isHydrated]);
-
-  const closeDock = (): void => handleHideMusicBar();
 
   // Hidden state - show small button
   if (!isFloatingBarVisible || floatingBarMode === 'hidden') {
@@ -157,7 +148,7 @@ const FloatingMusicBar: React.FC = () => {
             <div className='flex items-center gap-1.5 rounded-full border border-gray-800/50 bg-black/80 px-2.5 py-1.5 shadow-lg backdrop-blur-md transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl'>
               <button
                 type='button'
-                className='flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 transition-all duration-300 ease-out hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30'
+                className='flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 transition-all duration-300 ease-out hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30 sm:h-7 sm:w-7'
                 onClick={handleShowMusicBar}
                 title='Show full music controls'
                 aria-label='Show full music controls'
@@ -167,8 +158,7 @@ const FloatingMusicBar: React.FC = () => {
 
               <button
                 onClick={togglePlay}
-                className='rounded-full p-1.5 transition-all duration-200 hover:scale-110 hover:bg-white/10 hover:shadow-md active:scale-95'
-                style={{ minWidth: '36px', minHeight: '36px' }}
+                className='min-h-11 min-w-11 rounded-full p-1.5 transition-all duration-200 hover:scale-110 hover:bg-white/10 hover:shadow-md active:scale-95 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-9 sm:min-w-9'
                 title={isPlaying ? 'Pause' : 'Play'}
                 aria-label='Play music'
                 aria-pressed={isPlaying}
@@ -193,87 +183,80 @@ const FloatingMusicBar: React.FC = () => {
         className='flex justify-center px-2 py-3'
         style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
       >
-        <AnimatePresence>
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className='pointer-events-auto relative w-auto'
-          >
-            <div className='flex items-center gap-1.5 rounded-full border border-gray-800/50 bg-black/80 px-2.5 py-1.5 shadow-lg backdrop-blur-md transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl sm:gap-2 sm:px-3 sm:py-1.5'>
-              <div className='flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 transition-all duration-300 ease-out hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30 sm:h-8 sm:w-8'>
-                <Icons.music className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
-              </div>
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className='pointer-events-auto relative w-auto'
+        >
+          <div className='flex items-center gap-1.5 rounded-full border border-gray-800/50 bg-black/80 px-2.5 py-1.5 shadow-lg backdrop-blur-md transition-all duration-300 ease-out hover:scale-105 hover:shadow-xl sm:gap-2 sm:px-3 sm:py-1.5'>
+            <div className='flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 transition-all duration-300 ease-out hover:rotate-12 hover:shadow-lg hover:shadow-purple-500/30 sm:h-8 sm:w-8'>
+              <Icons.music className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
+            </div>
 
-              <div className='group flex w-20 min-w-0 flex-col sm:w-24'>
-                <div className='relative flex h-4 items-center overflow-hidden'>
-                  <span
-                    ref={titleRef}
-                    className='invisible absolute text-xs font-medium whitespace-nowrap'
-                  >
-                    {trackTitle}
-                  </span>
-                  <div
-                    className={`text-xs leading-none font-medium whitespace-nowrap text-secondary transition-colors duration-200 group-hover:text-purple-400 ${shouldScrollTitle ? 'animate-scroll inline-block' : 'block'}`}
-                  >
-                    {trackTitle}
-                    {shouldScrollTitle && (
-                      <span aria-hidden='true'>&nbsp;{trackTitle}</span>
-                    )}
-                  </div>
+            <div className='group flex w-20 min-w-0 flex-col sm:w-24'>
+              <div className='relative flex h-4 items-center overflow-hidden'>
+                <span
+                  ref={titleRef}
+                  className='invisible absolute text-xs font-medium whitespace-nowrap'
+                >
+                  {trackTitle}
+                </span>
+                <div
+                  className={`text-xs leading-none font-medium whitespace-nowrap text-secondary transition-colors duration-200 group-hover:text-purple-400 ${shouldScrollTitle ? 'animate-scroll inline-block' : 'block'}`}
+                >
+                  {trackTitle}
+                  {shouldScrollTitle && (
+                    <span aria-hidden='true'>&nbsp;{trackTitle}</span>
+                  )}
                 </div>
               </div>
+            </div>
 
-              <div className='flex flex-shrink-0 items-center gap-0.5'>
-                <button
-                  onClick={previousTrack}
-                  className='rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 active:scale-95 sm:p-1.5'
-                  style={{ minWidth: '28px', minHeight: '28px' }}
-                  title='Previous Track'
-                  aria-label='Previous track'
-                >
-                  <Icons.skipPrevious className='h-3 w-3 text-secondary sm:h-3.5 sm:w-3.5' />
-                </button>
-
-                <button
-                  onClick={togglePlay}
-                  className='mx-0.5 rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 hover:shadow-md active:scale-95 sm:p-1.5'
-                  style={{ minWidth: '32px', minHeight: '32px' }}
-                  title={isPlaying ? 'Pause' : 'Play'}
-                  aria-label='Play music'
-                  aria-pressed={isPlaying}
-                >
-                  {isPlaying ? (
-                    <Icons.pause className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
-                  ) : (
-                    <Icons.play className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
-                  )}
-                </button>
-
-                <button
-                  onClick={nextTrack}
-                  className='rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 active:scale-95 sm:p-1.5'
-                  style={{ minWidth: '28px', minHeight: '28px' }}
-                  title='Next Track'
-                  aria-label='Next track'
-                >
-                  <Icons.skipNext className='h-3 w-3 text-secondary sm:h-3.5 sm:w-3.5' />
-                </button>
-              </div>
+            <div className='flex flex-shrink-0 items-center gap-0.5'>
+              <button
+                onClick={previousTrack}
+                className='min-h-9 min-w-9 rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 active:scale-95 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-7 sm:min-w-7 sm:p-1.5'
+                title='Previous Track'
+                aria-label='Previous track'
+              >
+                <Icons.skipPrevious className='h-3 w-3 text-secondary sm:h-3.5 sm:w-3.5' />
+              </button>
 
               <button
-                onClick={closeDock}
-                className='flex-shrink-0 p-0.5 opacity-60 transition-all duration-300 hover:rotate-90 hover:text-red-400 hover:opacity-100 sm:p-1'
-                style={{ minWidth: '20px', minHeight: '20px' }}
-                title='Hide music player'
-                aria-label='Hide music player'
+                onClick={togglePlay}
+                className='mx-0.5 min-h-11 min-w-11 rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 hover:shadow-md active:scale-95 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-8 sm:min-w-8 sm:p-1.5'
+                title={isPlaying ? 'Pause' : 'Play'}
+                aria-label='Play music'
+                aria-pressed={isPlaying}
               >
-                <Icons.close className='h-3 w-3 sm:h-3.5 sm:w-3.5' />
+                {isPlaying ? (
+                  <Icons.pause className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
+                ) : (
+                  <Icons.play className='h-3.5 w-3.5 text-secondary sm:h-4 sm:w-4' />
+                )}
+              </button>
+
+              <button
+                onClick={nextTrack}
+                className='min-h-9 min-w-9 rounded-full p-1 transition-all duration-200 hover:scale-110 hover:bg-white/10 active:scale-95 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-7 sm:min-w-7 sm:p-1.5'
+                title='Next Track'
+                aria-label='Next track'
+              >
+                <Icons.skipNext className='h-3 w-3 text-secondary sm:h-3.5 sm:w-3.5' />
               </button>
             </div>
-          </motion.div>
-        </AnimatePresence>
+
+            <button
+              onClick={handleHideMusicBar}
+              className='min-h-9 min-w-9 flex-shrink-0 p-0.5 opacity-60 transition-all duration-300 hover:rotate-90 hover:text-red-400 hover:opacity-100 max-sm:flex max-sm:items-center max-sm:justify-center sm:min-h-5 sm:min-w-5 sm:p-1'
+              title='Hide music player'
+              aria-label='Hide music player'
+            >
+              <Icons.close className='h-3 w-3 sm:h-3.5 sm:w-3.5' />
+            </button>
+          </div>
+        </motion.div>
       </div>
 
       {/* Scrolling text animations */}

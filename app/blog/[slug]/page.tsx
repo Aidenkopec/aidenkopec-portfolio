@@ -48,7 +48,7 @@ export async function generateMetadata({
     title: `${post.title} - Aiden Kopec`,
     description: post.description,
     keywords: [...post.tags, 'blog', 'software development', 'aiden kopec'],
-    authors: [{ name: post.author?.name || 'Aiden Kopec' }],
+    authors: [{ name: post.author.name }],
     // Without this the root layout's `alternates` is inherited whole and every
     // post declares the homepage as its canonical, while the sitemap submits
     // this URL. Relative, so it composes with the root's `metadataBase`.
@@ -60,7 +60,7 @@ export async function generateMetadata({
       description: post.description,
       type: 'article',
       publishedTime: post.date,
-      authors: [post.author?.name || 'Aiden Kopec'],
+      authors: [post.author.name],
       tags: post.tags,
       url: `https://aidenkopec.com/blog/${post.slug}`,
       images: post.coverImage
@@ -155,7 +155,7 @@ function blogPostingSchema(post: BlogPost) {
     keywords: post.tags,
     author: {
       '@type': 'Person',
-      name: post.author?.name || 'Aiden Kopec',
+      name: post.author.name,
       url: 'https://aidenkopec.com',
     },
     mainEntityOfPage: {

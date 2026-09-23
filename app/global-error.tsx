@@ -1,8 +1,8 @@
 'use client';
 import { Analytics } from '@vercel/analytics/next';
 
-import { ErrorShell } from '@/components/ErrorShell';
-import { MotionProvider } from '@/components/MotionProvider';
+import { ErrorShell } from '@/components/layout/ErrorShell';
+import { MotionProvider } from '@/components/providers/MotionProvider';
 
 export default function GlobalError({
   error,

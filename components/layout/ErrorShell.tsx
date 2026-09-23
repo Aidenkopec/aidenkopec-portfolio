@@ -1,6 +1,6 @@
 'use client';
 import { track } from '@vercel/analytics';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect } from 'react';
 

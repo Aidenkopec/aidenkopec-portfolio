@@ -7,10 +7,9 @@ import { cn } from '@/lib/utils';
 interface BlogShareProps {
   slug: string;
   title: string;
-  className?: string;
 }
 
-export function BlogShare({ slug, title, className }: BlogShareProps) {
+export function BlogShare({ slug, title }: BlogShareProps) {
   const [isCopied, setIsCopied] = useState(false);
 
   // Base URL of the website (this would be configured properly in production)
@@ -99,7 +98,7 @@ export function BlogShare({ slug, title, className }: BlogShareProps) {
   };
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className='w-full'>
       <h3 className='mb-4 text-center text-lg font-semibold text-secondary lg:text-left'>
         Share this article
       </h3>

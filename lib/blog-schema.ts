@@ -36,7 +36,6 @@ export const blogFrontmatterSchema = z.object({
   author: z
     .object({
       name: z.string(),
-      avatar: z.string().optional(),
     })
     .default({ name: 'Aiden Kopec' }),
   excerpt: z.string().optional(),

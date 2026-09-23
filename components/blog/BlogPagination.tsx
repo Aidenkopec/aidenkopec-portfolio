@@ -7,14 +7,12 @@ interface BlogPaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  className?: string;
 }
 
 export function BlogPagination({
   currentPage,
   totalPages,
   onPageChange,
-  className = '',
 }: BlogPaginationProps) {
   if (totalPages <= 1) return null;
 
@@ -60,7 +58,7 @@ export function BlogPagination({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className={`mt-12 flex items-center justify-center gap-2 ${className}`}
+      className='mt-12 flex items-center justify-center gap-2'
     >
       {/* Previous Button */}
       <motion.button

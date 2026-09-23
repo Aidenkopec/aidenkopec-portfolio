@@ -9,14 +9,14 @@ import { BlogShare } from './BlogShare';
 
 interface BlogContentProps {
   children: React.ReactNode;
-  headings?: BlogHeading[];
-  title?: string;
-  slug?: string;
+  headings: BlogHeading[];
+  title: string;
+  slug: string;
 }
 
 export function BlogContent({
   children,
-  headings = [],
+  headings,
   title,
   slug,
 }: BlogContentProps) {
@@ -38,16 +38,14 @@ export function BlogContent({
             <div className='sticky top-32'>
               <BlogToc headings={headings} className='mb-6' />
               {/* Share Component */}
-              {slug && title && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className='rounded-lg border border-black-200 bg-tertiary p-6'
-                >
-                  <BlogShare slug={slug} title={title} />
-                </motion.div>
-              )}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className='rounded-lg border border-black-200 bg-tertiary p-6'
+              >
+                <BlogShare slug={slug} title={title} />
+              </motion.div>
             </div>
           </div>
         )}
@@ -57,7 +55,7 @@ export function BlogContent({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className={`prose prose-lg prose-invert max-w-none rounded-xl border border-black-200 bg-tertiary p-8 ${
+          className={`rounded-xl border border-black-200 bg-tertiary p-8 ${
             headings.length > 0 ? 'lg:col-span-8' : 'lg:col-span-12'
           }`}
         >
@@ -66,24 +64,18 @@ export function BlogContent({
       </div>
 
       {/* Mobile Share Component - Displayed at the bottom for mobile only */}
-      {slug && title && (
-        <div className='mt-12 lg:hidden'>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className='rounded-lg border border-black-200 bg-tertiary p-6'
-          >
-            <BlogShare slug={slug} title={title} />
-          </motion.div>
-        </div>
-      )}
+      <div className='mt-12 lg:hidden'>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className='rounded-lg border border-black-200 bg-tertiary p-6'
+        >
+          <BlogShare slug={slug} title={title} />
+        </motion.div>
+      </div>
 
       <style jsx global>{`
-        .blog-content {
-          /* Override prose styles to match your theme */
-        }
-
         .blog-content h1,
         .blog-content h2,
         .blog-content h3,
@@ -191,65 +183,6 @@ export function BlogContent({
             transparent
           );
           margin: 3rem 0;
-        }
-
-        /* Syntax highlighting adjustments */
-        .blog-content .token.comment,
-        .blog-content .token.prolog,
-        .blog-content .token.doctype,
-        .blog-content .token.cdata {
-          color: #6272a4;
-        }
-
-        .blog-content .token.punctuation {
-          color: #f8f8f2;
-        }
-
-        .blog-content .token.property,
-        .blog-content .token.tag,
-        .blog-content .token.constant,
-        .blog-content .token.symbol,
-        .blog-content .token.deleted {
-          color: #ff79c6;
-        }
-
-        .blog-content .token.boolean,
-        .blog-content .token.number {
-          color: #bd93f9;
-        }
-
-        .blog-content .token.selector,
-        .blog-content .token.attr-name,
-        .blog-content .token.string,
-        .blog-content .token.char,
-        .blog-content .token.builtin,
-        .blog-content .token.inserted {
-          color: #50fa7b;
-        }
-
-        .blog-content .token.operator,
-        .blog-content .token.entity,
-        .blog-content .token.url,
-        .blog-content .language-css .token.string,
-        .blog-content .style .token.string,
-        .blog-content .token.variable {
-          color: #f8f8f2;
-        }
-
-        .blog-content .token.atrule,
-        .blog-content .token.attr-value,
-        .blog-content .token.function,
-        .blog-content .token.class-name {
-          color: #f1fa8c;
-        }
-
-        .blog-content .token.keyword {
-          color: #8be9fd;
-        }
-
-        .blog-content .token.regex,
-        .blog-content .token.important {
-          color: #ffb86c;
         }
       `}</style>
     </>

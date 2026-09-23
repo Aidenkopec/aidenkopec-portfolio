@@ -13,61 +13,37 @@ const GitHubStatsSkeleton = () => (
   <div
     role='status'
     aria-live='polite'
-    className='mt-8 mb-12 flex flex-wrap justify-center gap-4'
+    className='mt-12 grid grid-cols-2 gap-y-8 border-t border-[var(--chart-faint)] pt-8 md:grid-cols-4'
   >
     <span className='sr-only'>Loading GitHub stats</span>
     {[...Array(4)].map((_, i) => (
-      <div key={i} className='min-w-[160px] flex-1'>
-        <div className='rounded-xl glass p-4'>
-          <div className='mb-2 flex items-center justify-between'>
-            <div className='h-6 w-6 animate-pulse rounded bg-gray-600'></div>
-            <div className='h-6 w-6 animate-pulse rounded bg-gray-600'></div>
-          </div>
-          <div className='h-3 w-16 animate-pulse rounded bg-gray-600'></div>
-        </div>
+      <div key={i} className='space-y-3'>
+        <div className='h-12 w-20 animate-pulse rounded bg-white-100/5' />
+        <div className='h-3 w-28 animate-pulse rounded bg-white-100/5' />
       </div>
     ))}
   </div>
 );
 
 const GitHubDashboardSkeleton = () => (
-  <div
-    role='status'
-    aria-live='polite'
-    className='mb-12 grid grid-cols-1 gap-8'
-  >
+  <div role='status' aria-live='polite' className='mt-16 space-y-6'>
     <span className='sr-only'>Loading GitHub activity</span>
-    <div className='w-full rounded-xl glass p-4'>
-      <div className='mb-4 h-6 w-48 animate-pulse rounded bg-gray-600'></div>
-      <div className='h-32 animate-pulse rounded bg-gray-600'></div>
-    </div>
-    <div className='flex flex-col gap-8 lg:flex-row'>
-      {[...Array(2)].map((_, i) => (
-        <div key={i} className='flex-1 rounded-xl glass p-4'>
-          <div className='mb-4 h-6 w-32 animate-pulse rounded bg-gray-600'></div>
-          <div className='space-y-3'>
-            {[...Array(3)].map((_, j) => (
-              <div
-                key={j}
-                className='h-16 animate-pulse rounded bg-gray-600'
-              ></div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+    <div className='h-7 w-64 animate-pulse rounded bg-white-100/5' />
+    <div className='h-[118px] animate-pulse rounded-lg bg-white-100/5' />
+    <div className='h-4 w-1/2 animate-pulse rounded bg-white-100/5' />
   </div>
 );
 
 // Rendered instead of fabricating zeros when GitHub is unreachable.
 function GitHubUnavailable() {
   return (
-    <div className='rounded-2xl glass p-8 text-center'>
-      <p className='text-lg font-semibold text-secondary'>
-        GitHub activity is temporarily unavailable
+    <div className='mt-12 border-t border-[var(--chart-faint)] pt-8'>
+      <p className='text-[17px] text-white-100'>
+        GitHub activity is unavailable right now.
       </p>
-      <p className='mt-2 text-sm text-secondary/70'>
-        The data could not be loaded right now. Please check back shortly.
+      <p className='mt-2 text-sm text-white-100/60'>
+        The GitHub API did not respond. This section fills in again on the next
+        refresh.
       </p>
     </div>
   );

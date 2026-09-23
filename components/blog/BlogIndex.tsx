@@ -57,7 +57,6 @@ export function BlogIndex({ allPosts, featuredPosts }: BlogIndexProps) {
     <>
       {/* Hero Section */}
       <BlogHero
-        postsCount={allPosts.length}
         recentPosts={allPosts}
         searchResults={filteredPosts}
         searchTerm={searchTerm}

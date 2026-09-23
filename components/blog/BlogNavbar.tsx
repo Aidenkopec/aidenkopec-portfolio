@@ -1,8 +1,9 @@
 'use client';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import CustomizationMenu from '@/components/CustomizationMenu';
+import CustomizationMenu from '@/components/layout/CustomizationMenu';
+import { useDismiss } from '@/hooks/useDismiss';
 
 const BlogNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -11,6 +12,7 @@ const BlogNavbar: React.FC = () => {
   const [customizationMenuMobile, setCustomizationMenuMobile] =
     useState<boolean>(false);
   const [toggle, setToggle] = useState<boolean>(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +36,8 @@ const BlogNavbar: React.FC = () => {
       setCustomizationMenuMobile(false);
     }
   };
+
+  useDismiss(toggle, mobileMenuRef, () => setMobileMenuOpen(false));
 
   const blogNavLinks = [
     { id: 'home', title: 'Home', href: '/' },
@@ -138,7 +142,10 @@ const BlogNavbar: React.FC = () => {
         </div>
 
         {/* Enhanced Mobile Menu Button */}
-        <div className='flex flex-1 items-center justify-end gap-4 sm:hidden'>
+        <div
+          ref={mobileMenuRef}
+          className='flex flex-1 items-center justify-end gap-4 sm:hidden'
+        >
           <button
             aria-label='Toggle menu'
             aria-expanded={toggle}
@@ -188,9 +195,6 @@ const BlogNavbar: React.FC = () => {
           </button>
 
           {/* Enhanced Mobile Dropdown Menu */}
-          {/* The handler only stops a click inside the panel from reaching the
-              document listener that closes the menu. Not an affordance. */}
-          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
           <div
             id='blog-mobile-menu'
             className={`${
@@ -198,7 +202,6 @@ const BlogNavbar: React.FC = () => {
                 ? 'hidden scale-95 opacity-0'
                 : 'flex scale-100 opacity-100'
             } black-gradient absolute top-20 right-0 z-50 mx-4 my-2 min-w-[240px] rounded-2xl border border-[var(--text-color-variable)]/20 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-out`}
-            onClick={(e) => e.stopPropagation()}
           >
             {/* Animated gradient background */}
             <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-[var(--text-color-variable)]/5 to-transparent' />
@@ -208,12 +211,8 @@ const BlogNavbar: React.FC = () => {
 
             <ul className='relative z-10 flex flex-1 list-none flex-col items-start justify-end gap-2'>
               {/* Enhanced Navigation Links */}
-              {blogNavLinks.map((nav, index) => (
-                <li
-                  key={nav.id}
-                  className='group w-full'
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
+              {blogNavLinks.map((nav) => (
+                <li key={nav.id} className='group w-full'>
                   <Link
                     href={nav.href}
                     className='relative block w-full cursor-pointer overflow-hidden rounded-lg px-4 py-3 text-secondary transition-all duration-300 hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
@@ -237,10 +236,7 @@ const BlogNavbar: React.FC = () => {
                       ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                       : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
                   }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
+                  onClick={() => {
                     if (!customizationMenuMobile) {
                       // Opening customization menu
                       setToggle(false); // Close mobile dropdown first

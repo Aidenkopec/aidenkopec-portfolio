@@ -11,14 +11,17 @@ import { type Project, type ProjectLink, type ProjectTier } from '@/constants';
 import { useCanRender3D } from '@/hooks/useCanRender3D';
 import { useInViewport } from '@/hooks/useInViewport';
 import { useIsSmallViewport } from '@/hooks/useIsSmallViewport';
+import SectionHeader from '@/components/chart/SectionHeader';
 import github from '@/public/assets/github.png';
-import { fadeIn, textVariant } from '@/utils';
 
 // Loaded on demand so three.js stays out of the initial bundle and the WebGL
 // context is only created once the section is actually approaching the viewport.
-const ProjectRingCanvas = dynamic(() => import('./canvas/ProjectRing'), {
-  ssr: false,
-});
+const ProjectRingCanvas = dynamic(
+  () => import('@/components/canvas/ProjectRing'),
+  {
+    ssr: false,
+  },
+);
 
 const TIER_LABEL: Record<ProjectTier, string> = {
   featured: 'Featured',
@@ -58,7 +61,7 @@ const ProjectLinkButton: React.FC<{ link: ProjectLink; primary?: boolean }> = ({
     href={link.href}
     target='_blank'
     rel='noreferrer noopener'
-    className={`group/link inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] focus-visible:outline-none ${
+    className={`group/link inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] focus-visible:outline-none max-lg:min-h-11 ${
       primary
         ? 'border-[var(--text-color-variable)]/60 bg-[var(--text-color-variable)]/10 text-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/20'
         : 'border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] text-[var(--secondary-color)] hover:border-[var(--text-color-variable)] hover:text-[var(--text-color-variable)]'
@@ -79,8 +82,9 @@ const ProjectLinkButton: React.FC<{ link: ProjectLink; primary?: boolean }> = ({
   </a>
 );
 
+// Set like a label on a star chart rather than a pill.
 const TierBadge: React.FC<{ tier: ProjectTier }> = ({ tier }) => (
-  <span className='inline-flex w-fit items-center rounded-full bg-[var(--text-color-variable)]/10 px-2.5 py-1 text-[11px] font-medium text-[var(--text-color-variable)]'>
+  <span className='w-fit font-display text-[17px] text-[var(--text-color-variable)] italic'>
     {TIER_LABEL[tier]}
   </span>
 );
@@ -298,13 +302,13 @@ const ProjectStrip: React.FC<{
   projects: Project[];
   onOpenDetail: (index: number) => void;
 }> = ({ projects, onOpenDetail }) => (
-  <div className='-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-6 pb-4 sm:-mx-16 sm:px-16'>
+  <div className='-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-6 pb-4 max-sm:-ml-12 max-sm:pl-12 sm:-mx-16 sm:px-16'>
     {projects.map((project, index) => (
       <article
         key={project.slug}
-        className='flex w-[85%] shrink-0 snap-center flex-col overflow-hidden rounded-xl glass sm:w-[60%]'
+        className='flex w-[85%] shrink-0 snap-center flex-col overflow-hidden rounded-xl border border-[var(--chart-faint)] bg-[var(--primary-color)]/60 backdrop-blur-md sm:w-[60%]'
       >
-        <div className='relative aspect-[16/10] w-full border-b border-[var(--black-100)]'>
+        <div className='relative aspect-[16/10] w-full border-b border-[var(--chart-faint)]'>
           <Image
             src={project.image}
             alt={`${project.name} screenshot`}
@@ -317,7 +321,7 @@ const ProjectStrip: React.FC<{
 
         <div className='flex flex-1 flex-col p-5'>
           <TierBadge tier={project.tier} />
-          <h3 className='mt-3 text-[18px] font-bold text-[var(--white-100)]'>
+          <h3 className='mt-1 font-display text-[26px] leading-tight text-[var(--white-100)] italic'>
             {project.name}
           </h3>
           <p className='mt-2 text-[14px] leading-[23px] text-secondary'>
@@ -426,7 +430,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   }, [setCursorTo]);
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (mode !== 'ring' || !event.isPrimary || event.button !== 0) return;
+    if (!event.isPrimary || event.button !== 0) return;
     drag.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -481,7 +485,6 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (mode !== 'ring') return;
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
       step(-1);
@@ -496,16 +499,16 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
 
   return (
     <>
-      <motion.div variants={textVariant()}>
-        <p className='section-sub-text'>My work &amp; contributions</p>
-        <h2 className='section-head-text'>Projects &amp; Code.</h2>
-      </motion.div>
+      <SectionHeader
+        title='Projects'
+        intro='Client work, products I run, and a few experiments.'
+      />
 
       {/* Both gates read false until after hydration, so the server HTML and
           the first client paint are the strip. It is the path that works
           without JS, without WebGL, under reduced motion, and on a phone. */}
       {mode !== 'ring' ? (
-        <div className='mt-8'>
+        <div className='mt-10'>
           <ProjectStrip projects={projects} onOpenDetail={setDetailIndex} />
         </div>
       ) : (
@@ -522,11 +525,11 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
             onLostPointerCapture={settleDrag}
             onKeyDown={onKeyDown}
             style={{ touchAction: 'pan-y' }}
-            className='project-stage relative mt-4 h-[clamp(280px,calc(100svh-500px),560px)] w-full cursor-grab rounded-2xl select-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none active:cursor-grabbing'
+            className='project-stage relative mt-8 h-[clamp(280px,calc(100svh-500px),560px)] w-full cursor-grab rounded-2xl select-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none active:cursor-grabbing'
           >
             {/* Side panels dissolve into the dust instead of meeting an edge. */}
             <div className='absolute inset-0 [mask-image:linear-gradient(to_right,transparent,#000_14%,#000_86%,transparent)]'>
-              {mode === 'ring' && canvasMounted && (
+              {canvasMounted && (
                 <ProjectRingCanvas
                   projects={projects}
                   cursorRef={cursorRef}
@@ -561,10 +564,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
             </button>
           </div>
 
-          <motion.div
-            variants={fadeIn('up', 'spring', 0.1, 0.75)}
-            className='relative z-10 mx-auto -mt-16 w-full max-w-3xl rounded-2xl glass px-6 py-4 text-center sm:px-10 sm:py-5'
-          >
+          <div className='relative z-10 mx-auto -mt-16 w-full max-w-3xl rounded-2xl border border-[var(--chart-faint)] bg-[var(--primary-color)]/70 px-6 py-4 text-center backdrop-blur-md sm:px-10 sm:py-5'>
             <div className='flex items-center justify-center gap-2'>
               {projects.map((project, index) => (
                 <button
@@ -573,7 +573,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
                   onClick={() => goTo(index)}
                   aria-label={`Show ${project.name}`}
                   aria-current={index === activeIndex}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                  className={`h-1.5 rounded-full transition-all duration-300 max-lg:relative max-lg:after:absolute max-lg:after:-inset-x-1 max-lg:after:-inset-y-4 ${
                     index === activeIndex
                       ? 'w-6 bg-[var(--text-color-variable)]'
                       : 'w-1.5 bg-[var(--secondary-color)]/30 hover:bg-[var(--secondary-color)]/60'
@@ -594,7 +594,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
                 className='mt-3 flex flex-col items-center'
               >
                 <TierBadge tier={active.tier} />
-                <h3 className='mt-2 text-[26px] leading-tight font-black text-[var(--white-100)] sm:text-[32px]'>
+                <h3 className='mt-1 font-display text-[32px] leading-tight text-[var(--white-100)] italic sm:text-[40px]'>
                   {active.name}
                 </h3>
                 <p className='mt-1 max-w-xl text-[15px] leading-[24px] text-secondary'>
@@ -624,7 +624,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
                 </div>
               </motion.div>
             </AnimatePresence>
-          </motion.div>
+          </div>
         </>
       )}
 

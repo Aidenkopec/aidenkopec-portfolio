@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
 @theme {
   /* Dynamic Color Palette - References our CSS variables */
@@ -9,11 +8,6 @@
   --color-black-100: var(--black-100);
   --color-black-200: var(--black-200);
   --color-white-100: var(--white-100);
-
-  /* Text and Accent Colors */
-  --color-text-color-variable: var(--text-color-variable);
-  --color-gradient-start: var(--gradient-start);
-  --color-gradient-end: var(--gradient-end);
 
   /* 475px, used by the typography utilities below */
   --breakpoint-xs: 29.6875rem;
@@ -41,18 +35,41 @@
   --text-section-head-sm: 3.125rem; /* 50px */
   --text-section-head-md: 3.75rem; /* 60px */
 
-  --text-section-sub-base: 0.875rem; /* 14px */
-  --text-section-sub-sm: 1.125rem; /* 18px */
-
   /* Font Families */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-eb-garamond), ui-serif, Georgia, serif;
 
   /* Consumed by the base layer below */
   --color-background: var(--primary-color);
   --color-foreground: var(--white-100);
   --color-border: var(--black-100);
   --color-ring: var(--text-color-variable);
+
+  /* CustomizationMenu entrances */
+  --animate-fadeIn: fadeIn 0.2s ease-out;
+  --animate-slideDown: slideDown 0.3s ease-out;
+  --animate-scaleIn: scaleIn 0.2s ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+  }
 }
 
 /* Theme values, defined only here. CustomizationMenu previews a theme by
@@ -68,7 +85,6 @@
   --white-100: #ffffff;
   --text-color-variable: #ff6b6b;
   --gradient-start: #ff6b6b;
-  --gradient-end: rgba(255, 107, 107, 0);
 }
 
 .cosmicVoyage {
@@ -80,7 +96,6 @@
   --white-100: #f8f5ff;
   --text-color-variable: #a855f7;
   --gradient-start: #a855f7;
-  --gradient-end: rgba(168, 85, 247, 0);
 }
 
 .glacierSapphire {
@@ -92,7 +107,6 @@
   --white-100: #ffffff;
   --text-color-variable: #60a5fa;
   --gradient-start: #60a5fa;
-  --gradient-end: rgba(96, 165, 250, 0);
 }
 
 .auroraJade {
@@ -104,7 +118,23 @@
   --white-100: #ffffff;
   --text-color-variable: #2dd4bf;
   --gradient-start: #2dd4bf;
-  --gradient-end: rgba(45, 212, 191, 0);
+}
+
+/* The homepage is drawn as a star chart over the swarm. These derive from the
+   theme, so every theme gets them for free. */
+:root {
+  --chart-line: color-mix(in srgb, var(--text-color-variable) 35%, transparent);
+  --chart-faint: color-mix(in srgb, var(--white-100) 9%, transparent);
+  --star: var(--white-100);
+  /* Where the flight path runs, measured from a section's content edge. It
+     sits in the middle of the section's left padding. */
+  --rail: -28px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --rail: -32px;
+  }
 }
 
 /* Custom Utilities */
@@ -175,15 +205,15 @@
   }
 }
 
-@utility section-sub-text {
-  font-size: var(--text-section-sub-base);
-  color: #ffffff;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  @variant sm {
-    font-size: var(--text-section-sub-sm);
-  }
+/* Section titles on the homepage, lettered like an atlas label. */
+@utility chart-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--white-100);
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
 }
 
 @utility padding-x {
@@ -219,36 +249,13 @@
   border: 1px solid rgb(255 255 255 / 0.08);
 }
 
-/* Accent gradient hairline around a glass card. A masked ring rather than a
-   padded gradient shell, so the translucent fill never shows the gradient. */
-@utility glass-edge {
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    background: linear-gradient(
-      135deg,
-      var(--text-color-variable),
-      transparent 55%,
-      color-mix(in srgb, var(--text-color-variable) 50%, transparent)
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-}
-
 body {
   background: var(--primary-color);
   color: var(--white-100);
   font-family: var(--font-sans);
+  /* next/font puts the font's variable on <body>, below the :root where
+     @theme declares this, so it is resolved again here. */
+  --font-display: var(--font-eb-garamond), ui-serif, Georgia, serif;
 }
 
 /* shadcn/ui base layer - using your theme variables */
@@ -275,6 +282,27 @@ html {
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-top: 6px solid var(--secondary-color);
+}
+
+/* CustomizationMenu volume sliders. */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--text-color-variable);
+  cursor: pointer;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+}
+
+.slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--text-color-variable);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 }
 
 /* A swarm slot's text fades out once the particles have formed over it. The
@@ -346,6 +374,178 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   pointer-events: none;
 }
 
+/* The navbar. In the components layer so Tailwind utilities can still
+   override it. */
+@layer components {
+  /* Navbar copy, lettered like the hero's tagline. */
+  .nav-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    margin-right: -0.28em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--white-100) 55%, transparent);
+    transition: color 0.3s ease;
+  }
+
+  /* The homepage sections as stops on a course line, with a probe that tracks
+     the flight path. components/layout/Navbar sets --route-at: the index of the last
+     stop passed plus the fraction of the way to the next. */
+  .nav-route {
+    --col: 5.5rem;
+    --ring: 9px;
+    /* Height of the ring row, and so where the course line runs. */
+    --ring-row: 1.25rem;
+    --route-at: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .nav-route {
+      --col: 7rem;
+    }
+  }
+
+  .nav-route-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--stops), var(--col));
+  }
+
+  .nav-route-course,
+  .nav-route-flown {
+    position: absolute;
+    bottom: calc(var(--ring-row) / 2);
+    left: calc(var(--col) / 2);
+    height: 1px;
+  }
+
+  /* The route ahead, dotted like the flight path's planned course. */
+  .nav-route-course {
+    right: calc(var(--col) / 2);
+    background: repeating-linear-gradient(
+      to right,
+      var(--chart-line) 0 1px,
+      transparent 1px 6px
+    );
+  }
+
+  .nav-route-flown {
+    width: calc(var(--route-at) * var(--col));
+    background: var(--text-color-variable);
+    box-shadow: 0 0 6px
+      color-mix(in srgb, var(--text-color-variable) 60%, transparent);
+  }
+
+  .nav-route-probe {
+    position: absolute;
+    bottom: calc(var(--ring-row) / 2);
+    left: calc((var(--route-at) + 0.5) * var(--col));
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: var(--star);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--text-color-variable) 35%, transparent),
+      0 0 14px var(--text-color-variable);
+    transform: translate(-50%, 50%);
+    transition: opacity 0.3s ease;
+  }
+
+  .nav-route:not([data-flying]) .nav-route-flown,
+  .nav-route:not([data-flying]) .nav-route-probe {
+    opacity: 0;
+  }
+
+  .nav-stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .nav-stop-ring-row {
+    display: grid;
+    place-items: center;
+    height: var(--ring-row);
+  }
+
+  /* A small copy of .waypoint. */
+  .nav-stop-ring {
+    position: relative;
+    width: var(--ring, 9px);
+    height: var(--ring, 9px);
+    border-radius: 9999px;
+    border: 1px solid var(--chart-line);
+    background: var(--primary-color);
+    transition:
+      border-color 0.6s ease,
+      box-shadow 0.6s ease;
+  }
+
+  .nav-stop-ring::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: inherit;
+    background: var(--chart-faint);
+    transition: background-color 0.6s ease;
+  }
+
+  [data-reached] .nav-stop-ring {
+    border-color: var(--text-color-variable);
+    box-shadow: 0 0 10px
+      color-mix(in srgb, var(--text-color-variable) 60%, transparent);
+  }
+
+  [data-reached] .nav-stop-ring::after {
+    background: var(--text-color-variable);
+  }
+
+  a:hover .nav-stop-ring,
+  a:focus-visible .nav-stop-ring {
+    border-color: var(--text-color-variable);
+  }
+
+  .nav-stop:hover .nav-label,
+  .nav-stop:focus-visible .nav-label,
+  .nav-stop[aria-current] .nav-label {
+    color: var(--white-100);
+  }
+
+  /* Blog leaves the route, so it gets a dash that draws in, not a ring. */
+  .nav-stop-dash {
+    width: 1.25rem;
+    height: 1px;
+    background: var(--text-color-variable);
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.6, 0, 0.2, 1);
+  }
+
+  .nav-stop:hover .nav-stop-dash,
+  .nav-stop:focus-visible .nav-stop-dash {
+    transform: scaleX(1);
+  }
+
+  /* On phones the route runs down the menu, through each ring. */
+  .nav-route-vertical {
+    position: relative;
+  }
+
+  .nav-route-vertical::before {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    left: 4px;
+    width: 1px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--chart-line) 0 1px,
+      transparent 1px 6px
+    );
+  }
+}
+
 /* A soft glow where the swarm draws the contact galaxy. On its own it stands
    in for the galaxy without WebGL; under the dust it reads as the core's
    light. */
@@ -355,6 +555,246 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
     color-mix(in srgb, var(--text-color-variable) 14%, transparent),
     transparent 70%
   );
+}
+
+/* A stop on the flight path. components/chart/FlightPath threads the path
+   through every [data-waypoint] and marks the ones it has passed. */
+.waypoint {
+  position: absolute;
+  left: var(--rail);
+  top: 0.55em;
+  width: 15px;
+  height: 15px;
+  border-radius: 9999px;
+  border: 1px solid var(--chart-line);
+  background: var(--primary-color);
+  transform: translate(-50%, -50%);
+  transition:
+    border-color 0.6s ease,
+    box-shadow 0.6s ease;
+}
+
+.waypoint::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  background: var(--chart-faint);
+  transition: background-color 0.6s ease;
+}
+
+.waypoint[data-reached] {
+  border-color: var(--text-color-variable);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--text-color-variable) 12%, transparent),
+    0 0 22px color-mix(in srgb, var(--text-color-variable) 60%, transparent);
+}
+
+.waypoint[data-reached]::after {
+  background: var(--text-color-variable);
+}
+
+/* Overview: the services as constellations. Lines draw in once the plate is
+   in view (data-in-view, set by components/chart/Constellations). */
+.constellation-edge {
+  stroke: var(--chart-line);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition:
+    stroke-dashoffset 1.6s cubic-bezier(0.6, 0, 0.2, 1) calc(var(--i) * 0.3s),
+    stroke 0.3s ease,
+    stroke-width 0.3s ease;
+}
+
+[data-in-view] .constellation-edge {
+  stroke-dashoffset: 0;
+}
+
+.constellation-star circle {
+  fill: var(--star);
+  transition:
+    fill 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.constellation-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 17px;
+  fill: color-mix(in srgb, var(--white-100) 65%, transparent);
+  transition: fill 0.3s ease;
+}
+
+.constellation:hover .constellation-edge {
+  stroke: var(--text-color-variable);
+  stroke-width: 1.5;
+}
+
+.constellation:hover .constellation-star circle:first-child {
+  fill: var(--text-color-variable);
+  opacity: 0.4;
+}
+
+.constellation:hover .constellation-label {
+  fill: var(--white-100);
+}
+
+/* Experience: each job is a planet on the path. */
+.planet {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  box-shadow:
+    0 0 0 4px var(--primary-color),
+    0 0 0 5px var(--chart-line);
+  transition: box-shadow 0.6s ease;
+}
+
+.planet[data-reached] {
+  box-shadow:
+    0 0 0 4px var(--primary-color),
+    0 0 0 5px var(--text-color-variable),
+    0 0 28px color-mix(in srgb, var(--text-color-variable) 55%, transparent);
+}
+
+@media (min-width: 768px) {
+  .planet {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* The jobs still running carry a slow moon. Phones have no room for it
+   beside the title. */
+.planet-orbit {
+  position: absolute;
+  inset: -14px;
+  border-radius: 9999px;
+  border: 1px dashed var(--chart-line);
+  animation: orbit 24s linear infinite;
+}
+
+.planet-orbit::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 9999px;
+  background: var(--star);
+  box-shadow: 0 0 8px var(--text-color-variable);
+}
+
+@media (max-width: 767px) {
+  .planet-orbit {
+    display: none;
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Writing: each post's waveform plays while the post is hovered or focused. */
+.signal rect {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: signal 0.9s ease-in-out infinite alternate;
+  animation-play-state: paused;
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+}
+
+.transmission:hover .signal rect,
+.transmission:focus-visible .signal rect {
+  animation-play-state: running;
+  opacity: 1;
+}
+
+/* No hover on touch, so the waveforms just play. */
+@media (hover: none) {
+  .signal rect {
+    animation-play-state: running;
+    opacity: 1;
+  }
+}
+
+@keyframes signal {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0.25);
+  }
+}
+
+/* GitHub: the ring on the day of the commit the readout is showing. */
+.commit-marker {
+  fill: none;
+  stroke: var(--text-color-variable);
+  stroke-width: 1;
+  animation: readout-in 0.5s ease both;
+}
+
+.commit-marker-echo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: commit-ping 2.4s ease-out infinite;
+}
+
+@keyframes commit-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.readout-in {
+  animation: readout-in 0.5s ease both;
+}
+
+@keyframes readout-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* A quiet text link used beside section titles. */
+.chart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--white-100);
+  text-decoration: underline;
+  text-decoration-color: var(--chart-line);
+  text-underline-offset: 6px;
+  transition:
+    color 0.3s ease,
+    text-decoration-color 0.3s ease;
+}
+
+.chart-link:hover {
+  color: var(--text-color-variable);
+  text-decoration-color: var(--text-color-variable);
+}
+
+.chart-link:focus-visible {
+  outline: 2px solid var(--text-color-variable);
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
 /* Accent light behind the ring's front panel, where the eye lands first. */
@@ -412,7 +852,8 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   align-items: center;
   justify-content: center;
   gap: 0.875rem;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--chart-faint);
   outline: none;
   transition:
     transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -443,7 +884,7 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   mask-composite: exclude;
 }
 
-/* A faint wash of the same light across the glass. */
+/* A faint wash of the same light across the cell. */
 .tech-tile::after {
   background: radial-gradient(
     260px circle at var(--mx) var(--my),
@@ -552,7 +993,7 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
    animations origin and the inline style attributes this app renders.
 
    This reaches no framer-motion animation. Framer drives WAAPI and rAF, not CSS
-   transitions. MotionConfig in components/MotionProvider.tsx covers those, and
+   transitions. MotionConfig in components/providers/MotionProvider.tsx covers those, and
    four leftovers are guarded per component via hooks/usePrefersReducedMotion.
 
    0.01ms rather than none, so animationend and transitionend still fire. */

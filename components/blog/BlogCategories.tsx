@@ -9,7 +9,6 @@ interface BlogCategoriesProps {
   onCategorySelect: (category: string | null) => void;
   resultCount: number;
   totalCount: number;
-  className?: string;
 }
 
 export function BlogCategories({
@@ -18,14 +17,13 @@ export function BlogCategories({
   onCategorySelect,
   resultCount,
   totalCount,
-  className = '',
 }: BlogCategoriesProps) {
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className={`w-full ${className}`}
+      className='w-full'
     >
       {/* Mobile-Optimized Header */}
       <div className='mb-5 space-y-3 sm:mb-6 sm:space-y-4'>

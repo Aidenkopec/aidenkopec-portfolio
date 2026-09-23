@@ -19,8 +19,6 @@ export function BlogToc({
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
-    if (!headings.length) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -48,8 +46,6 @@ export function BlogToc({
       });
     };
   }, [headings]);
-
-  if (!headings.length) return null;
 
   return (
     <div className={cn('w-full', className)}>
@@ -82,20 +78,7 @@ export function BlogToc({
                   // Mobile gets more spacing, desktop stays compact
                   isMobile ? 'min-h-[44px] items-center px-3 py-3' : 'py-1',
                 )}
-                onClick={(_e) => {
-                  // Let the native anchor behavior handle the navigation
-                  // Just update the active ID for styling
-                  setActiveId(heading.id);
-
-                  // Add a small delay to ensure the scroll happens before updating active state
-                  setTimeout(() => {
-                    const element = document.getElementById(heading.id);
-                    if (element) {
-                      // Verify the element exists and update active state
-                      setActiveId(heading.id);
-                    }
-                  }, 100);
-                }}
+                onClick={() => setActiveId(heading.id)}
               >
                 {heading.text}
               </a>

@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import { BlogCard } from '@/components/blog/BlogCard';
 import BlogNavbar from '@/components/blog/BlogNavbar';
 import { getAllBlogTags, getBlogPostsByTag } from '@/lib/blog';
+import { tagSlug } from '@/lib/utils';
 
 interface TagPageProps {
   params: Promise<{ tag: string }>;
@@ -40,9 +41,7 @@ export async function generateMetadata({
   }
 
   // Find the actual tag name from the posts
-  const tagName =
-    posts[0]?.tags.find((t) => t.toLowerCase().replace(/\s+/g, '-') === tag) ||
-    tag;
+  const tagName = posts[0]?.tags.find((t) => tagSlug(t) === tag) || tag;
 
   return {
     title: `Posts tagged "${tagName}" - Aiden Kopec`,
@@ -105,8 +104,7 @@ async function TagPageContent({ tag }: { tag: string }) {
 
   // Find the actual tag name from the posts
   const tagName =
-    posts[0]?.tags.find((t) => t.toLowerCase().replace(/\s+/g, '-') === tag) ||
-    tag.replace(/-/g, ' ');
+    posts[0]?.tags.find((t) => tagSlug(t) === tag) || tag.replace(/-/g, ' ');
 
   return (
     <div className='mx-auto max-w-6xl'>

@@ -1,9 +1,4 @@
-'use client';
-
 import React, { ReactNode } from 'react';
-import { motion } from 'framer-motion';
-
-import { staggerContainer } from '@/utils';
 
 interface SectionWrapperProps {
   children: ReactNode;
@@ -23,17 +18,16 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
     // whose class was defined nowhere, so following a nav link landed on a
     // non breaking space with no announced context. The navbar offset comes
     // from `:target { scroll-margin-top }` in globals.css, not from the span.
-    <motion.section
+    //
+    // The wider left padding on phones leaves room for the flight path, which
+    // runs down the middle of it (see --rail in globals.css).
+    <section
       id={idName || undefined}
       aria-label={label}
-      variants={staggerContainer()}
-      initial='hidden'
-      whileInView='show'
-      viewport={{ once: true, amount: 0 }}
-      className='relative z-0 mx-auto max-w-7xl padding'
+      className='relative z-0 mx-auto max-w-7xl padding max-sm:pl-12'
     >
       {children}
-    </motion.section>
+    </section>
   );
 };
 

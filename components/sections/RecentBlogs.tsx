@@ -1,4 +1,4 @@
-import RecentBlogsClient from '@/components/RecentBlogsClient';
+import RecentBlogsClient from '@/components/sections/RecentBlogsClient';
 import { getRecentBlogPosts } from '@/lib/blog';
 
 const RecentBlogs = async () => {

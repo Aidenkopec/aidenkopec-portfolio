@@ -1,12 +1,13 @@
-import Hero from '@/components/Hero';
-import Navbar from '@/components/Navbar';
-import About from '@/components/About';
-import Experience from '@/components/Experience';
-import Tech from '@/components/Tech';
-import Projects from '@/components/Projects';
-import GitHubActivity from '@/components/GitHubActivity';
-import RecentBlogs from '@/components/RecentBlogs';
-import Contact from '@/components/Contact';
+import Hero from '@/components/sections/Hero';
+import Navbar from '@/components/layout/Navbar';
+import About from '@/components/sections/About';
+import Experience from '@/components/sections/Experience';
+import Tech from '@/components/sections/Tech';
+import Projects from '@/components/sections/Projects';
+import GitHubActivity from '@/components/sections/GitHubActivity';
+import RecentBlogs from '@/components/sections/RecentBlogs';
+import Contact from '@/components/sections/Contact';
+import FlightPath from '@/components/chart/FlightPath';
 import SwarmStage from '@/components/swarm/SwarmStage';
 
 export default function Home() {
@@ -17,13 +18,17 @@ export default function Home() {
         <Navbar />
         <Hero />
       </div>
-      <About />
-      <Experience />
-      <Tech />
-      <Projects />
-      <GitHubActivity />
-      <RecentBlogs />
-      <Contact />
+      {/* Everything after the hero is one route, drawn under the sections. */}
+      <div className='relative'>
+        <FlightPath />
+        <About />
+        <Experience />
+        <Tech />
+        <Projects />
+        <GitHubActivity />
+        <RecentBlogs />
+        <Contact />
+      </div>
     </div>
   );
 }

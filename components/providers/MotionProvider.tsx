@@ -12,8 +12,7 @@ import React from 'react';
  * outcome: fades are not what triggers motion sickness.
  *
  * Its own client file rather than an import into the server root layout, so the
- * framer-motion barrel stays out of the server module graph. `motion/react`
- * re-exports the same instance, so this one provider covers both import paths.
+ * framer-motion barrel stays out of the server module graph.
  *
  * Known limitation: the preference is read at mount, so toggling it mid session
  * needs a reload.
