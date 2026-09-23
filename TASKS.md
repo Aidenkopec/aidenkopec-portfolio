@@ -48,6 +48,7 @@ Swarm everywhere plan: `~/.claude/plans/yes-do-that-come-sunny-aho.md`
 - [ ] 2. Tech: glass tiles with masked logos, spotlight border, brand colour on hover and focus; Ball canvas removed (built and seen on desktop; phone width not yet checked)
 - [ ] 3. Galaxy from the swarm beside the contact form; Earth, CanvasLoader and CanvasPlaceholder removed (built; not yet seen forming)
 - [ ] 4. Send collapses the galaxy and bangs it; an error wobbles it; confetti removed (built; not yet seen)
+- [ ] 6. Projects: transparent ring over the dust (no background, fog or floor), edge fade, hairline frame, glow behind the front panel, arrows on the stage, centred glass info panel with dots, fades between projects (built; ring seen once before the arrow styles loaded)
 - [ ] 5. Nav: no chrome over the hero, the name's dust streams into the nav line when the hero leaves (built; not yet seen)
 
 ## Found along the way
@@ -58,6 +59,7 @@ Swarm everywhere plan: `~/.claude/plans/yes-do-that-come-sunny-aho.md`
 - Once formed, the real heading stays transparent for good; the swarm always rebuilds the name on screen, so holds and the scroll exit never flash the text back
 - React warns about rendering `<script>`; `components/InlineScript.tsx` follows the Next guide ("Preventing flash before hydration")
 - The subtitle stays painted from first paint (LCP safe); the planned tracking reveal was left out
+- `public/models/planet/` is unused now that the Earth canvas is gone
 - `components/canvas/WavyLines.tsx` and `Computers.tsx` still exist though they are no longer mounted on the homepage
 
 - CLAUDE.md says Next.js 15; installed is 16.3.5

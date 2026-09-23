@@ -522,98 +522,108 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
             onLostPointerCapture={settleDrag}
             onKeyDown={onKeyDown}
             style={{ touchAction: 'pan-y' }}
-            className='relative mt-8 h-[clamp(340px,54vh,560px)] w-full cursor-grab overflow-hidden rounded-2xl border border-[var(--black-100)] select-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none active:cursor-grabbing'
+            className='project-stage relative mt-8 h-[clamp(380px,60vh,620px)] w-full cursor-grab rounded-2xl select-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none active:cursor-grabbing'
           >
-            {mode === 'ring' && canvasMounted && (
-              <ProjectRingCanvas
-                projects={projects}
-                cursorRef={cursorRef}
-                dragOffset={dragOffset}
-                paused={paused}
-                onSelect={goTo}
-                onOpenDetail={(index) => {
-                  goTo(index);
-                  setDetailIndex(index);
-                }}
-              />
-            )}
+            {/* Side panels dissolve into the dust instead of meeting an edge. */}
+            <div className='absolute inset-0 [mask-image:linear-gradient(to_right,transparent,#000_14%,#000_86%,transparent)]'>
+              {mode === 'ring' && canvasMounted && (
+                <ProjectRingCanvas
+                  projects={projects}
+                  cursorRef={cursorRef}
+                  dragOffset={dragOffset}
+                  paused={paused}
+                  onSelect={goTo}
+                  onOpenDetail={(index) => {
+                    goTo(index);
+                    setDetailIndex(index);
+                  }}
+                />
+              )}
+            </div>
+
+            <button
+              type='button'
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => step(-1)}
+              aria-label='Previous project'
+              className='stage-arrow left-2 sm:left-4'
+            >
+              <ChevronLeft className='h-5 w-5' />
+            </button>
+            <button
+              type='button'
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => step(1)}
+              aria-label='Next project'
+              className='stage-arrow right-2 sm:right-4'
+            >
+              <ChevronRight className='h-5 w-5' />
+            </button>
           </div>
 
           <motion.div
             variants={fadeIn('up', 'spring', 0.1, 0.75)}
-            className='mt-5 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between'
+            className='relative z-10 mx-auto -mt-20 w-full max-w-3xl rounded-2xl glass px-6 py-6 text-center sm:px-10 sm:py-8'
           >
-            <div className='min-w-0'>
-              <div className='flex items-center gap-3'>
-                <TierBadge tier={active.tier} />
-                <span className='text-[12px] text-secondary/60 tabular-nums'>
-                  {activeIndex + 1} / {count}
-                </span>
-              </div>
-
-              <h3 className='mt-3 text-[22px] font-bold text-[var(--white-100)] sm:text-[26px]'>
-                {active.name}
-              </h3>
-              <p className='mt-1.5 text-[15px] leading-[24px] text-secondary'>
-                {active.blurb}
-              </p>
-
-              <StackChips stack={active.stack} className='mt-4' />
-
-              <div className='mt-5 flex flex-wrap items-center gap-3'>
-                {active.links.map((link, i) => (
-                  <ProjectLinkButton
-                    key={link.href}
-                    link={link}
-                    primary={i === 0}
-                  />
-                ))}
+            <div className='flex items-center justify-center gap-2'>
+              {projects.map((project, index) => (
                 <button
+                  key={project.slug}
                   type='button'
-                  onClick={() => setDetailIndex(activeIndex)}
-                  className='inline-flex min-h-11 items-center rounded-lg px-3 text-[13px] text-[var(--text-color-variable)] underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
-                >
-                  Details
-                </button>
-              </div>
+                  onClick={() => goTo(index)}
+                  aria-label={`Show ${project.name}`}
+                  aria-current={index === activeIndex}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    index === activeIndex
+                      ? 'w-6 bg-[var(--text-color-variable)]'
+                      : 'w-1.5 bg-[var(--secondary-color)]/30 hover:bg-[var(--secondary-color)]/60'
+                  }`}
+                />
+              ))}
             </div>
 
-            <div className='flex shrink-0 items-center gap-3'>
-              <button
-                type='button'
-                onClick={() => step(-1)}
-                aria-label='Previous project'
-                className='rounded-lg border border-[var(--black-100)] bg-[var(--black-100)]/60 p-2.5 text-[var(--secondary-color)] transition-colors hover:text-[var(--text-color-variable)] focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
+            {/* Keyed on the project, so the text changes in step with the
+                ring rather than snapping mid turn. */}
+            <AnimatePresence mode='wait' initial={false}>
+              <motion.div
+                key={active.slug}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className='mt-5 flex flex-col items-center'
               >
-                <ChevronLeft className='h-4 w-4' />
-              </button>
+                <TierBadge tier={active.tier} />
+                <h3 className='mt-3 text-[30px] leading-tight font-black text-[var(--white-100)] sm:text-[40px]'>
+                  {active.name}
+                </h3>
+                <p className='mt-2 max-w-xl text-[15px] leading-[24px] text-secondary'>
+                  {active.blurb}
+                </p>
 
-              <div className='flex items-center gap-2'>
-                {projects.map((project, index) => (
+                <StackChips
+                  stack={active.stack}
+                  className='mt-5 justify-center'
+                />
+
+                <div className='mt-6 flex flex-wrap items-center justify-center gap-3'>
+                  {active.links.map((link, i) => (
+                    <ProjectLinkButton
+                      key={link.href}
+                      link={link}
+                      primary={i === 0}
+                    />
+                  ))}
                   <button
-                    key={project.slug}
                     type='button'
-                    onClick={() => goTo(index)}
-                    aria-label={`Show ${project.name}`}
-                    aria-current={index === activeIndex}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      index === activeIndex
-                        ? 'w-6 bg-[var(--text-color-variable)]'
-                        : 'w-2 bg-[var(--secondary-color)]/30 hover:bg-[var(--secondary-color)]/60'
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <button
-                type='button'
-                onClick={() => step(1)}
-                aria-label='Next project'
-                className='rounded-lg border border-[var(--black-100)] bg-[var(--black-100)]/60 p-2.5 text-[var(--secondary-color)] transition-colors hover:text-[var(--text-color-variable)] focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
-              >
-                <ChevronRight className='h-4 w-4' />
-              </button>
-            </div>
+                    onClick={() => setDetailIndex(activeIndex)}
+                    className='inline-flex min-h-11 items-center rounded-lg px-3 text-[13px] text-[var(--text-color-variable)] underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
+                  >
+                    Details
+                  </button>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
         </>
       )}

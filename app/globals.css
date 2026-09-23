@@ -379,6 +379,49 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   );
 }
 
+/* Accent light behind the ring's front panel, where the eye lands first. */
+.project-stage::before {
+  content: '';
+  position: absolute;
+  inset: 10% 20% 25%;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--text-color-variable) 16%, transparent);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.stage-arrow {
+  position: absolute;
+  top: 42%;
+  z-index: 10;
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background-color: color-mix(in srgb, var(--tertiary-color) 55%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: var(--secondary-color);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.stage-arrow:hover {
+  color: var(--text-color-variable);
+  border-color: color-mix(in srgb, var(--text-color-variable) 50%, transparent);
+}
+
+.stage-arrow:focus-visible {
+  outline: 2px solid var(--text-color-variable);
+  outline-offset: 2px;
+}
+
 /* Tech tiles. --mx/--my come from TechGrid's pointer handler, --brand and
    --icon from each technology. */
 .tech-tile {
