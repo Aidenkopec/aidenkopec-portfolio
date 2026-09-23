@@ -1,20 +1,98 @@
 'use client';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { navLinks } from '@/constants';
+import { HEAD } from '@/components/chart/FlightPath';
 
-// Direct paths for public folder assets - this is the correct Next.js approach
 import CustomizationMenu from './CustomizationMenu';
 
+// The homepage sections, in route order. Blog is a separate page, so it sits
+// off the route.
+const routeLinks = navLinks.filter((nav) => nav.id !== 'blog');
+
+/**
+ * Tracks the reader along the homepage route. Returns the index of the last
+ * section whose flight path stop has crossed the head line, or -1 above the
+ * first. Writes --route-at on `strip` every frame, so the probe moves without
+ * a React render.
+ */
+function useRouteProgress(strip: React.RefObject<HTMLElement | null>) {
+  const [reached, setReached] = useState(-1);
+
+  useEffect(() => {
+    // Each section's first waypoint is its title's stop on the flight path.
+    const stops = routeLinks.map((nav) => {
+      const section = document.getElementById(nav.id);
+      return section?.querySelector<HTMLElement>('[data-waypoint]') ?? section;
+    });
+    let frame = 0;
+
+    const draw = () => {
+      frame = 0;
+      const head = window.innerHeight * HEAD;
+      const ys = stops.map((stop) => {
+        if (!stop) return Infinity;
+        const rect = stop.getBoundingClientRect();
+        return rect.top + rect.height / 2;
+      });
+
+      let index = -1;
+      while (index + 1 < ys.length && ys[index + 1]! <= head) index++;
+
+      const from = ys[index];
+      const to = ys[index + 1];
+      const fraction =
+        from === undefined || to === undefined || to === Infinity
+          ? 0
+          : Math.min(1, (head - from) / (to - from));
+
+      strip.current?.style.setProperty(
+        '--route-at',
+        String(Math.max(0, index + fraction)),
+      );
+      setReached(index);
+    };
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(draw);
+    };
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    schedule();
+
+    return () => {
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      cancelAnimationFrame(frame);
+    };
+  }, [strip]);
+
+  return reached;
+}
+
+// A four point star, the glyph for the customization menu.
+const StarGlyph: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    aria-hidden='true'
+    viewBox='0 0 24 24'
+    fill='currentColor'
+    className={className}
+  >
+    <path d='M12 2l1.9 8.1L22 12l-8.1 1.9L12 22l-1.9-8.1L2 12l8.1-1.9z' />
+  </svg>
+);
+
 const Navbar: React.FC = () => {
-  const [active, setActive] = useState<string>('');
   const [toggle, setToggle] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [customizationMenuDesktop, setCustomizationMenuDesktop] =
     useState<boolean>(false);
   const [customizationMenuMobile, setCustomizationMenuMobile] =
     useState<boolean>(false);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const reached = useRouteProgress(stripRef);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,18 +120,13 @@ const Navbar: React.FC = () => {
     }
   };
 
-  // Selecting a link in the mobile dropdown marks it active and closes the menu.
-  const handleNavSelect = (title: string) => () => {
-    setMobileMenuOpen(false);
-    setActive(title);
-  };
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
     <nav
-      className={`site-nav fixed top-0 z-50 flex w-full items-center py-4 padding-x transition-all duration-500 ease-in-out ${
-        scrolled
-          ? 'border-b border-[var(--text-color-variable)]/20 bg-primary/90 shadow-2xl backdrop-blur-xl'
-          : 'bg-transparent'
+      aria-label='Primary'
+      className={`site-nav fixed top-0 z-50 flex w-full items-center py-3 padding-x transition-all duration-500 ease-in-out ${
+        scrolled ? 'bg-primary/75 backdrop-blur-md' : 'bg-transparent'
       }`}
     >
       {/* Gradient border on scroll. On the homepage the swarm draws it in
@@ -68,268 +141,179 @@ const Navbar: React.FC = () => {
       <div className='relative mx-auto flex w-full max-w-7xl items-center justify-between'>
         <Link
           href='/'
-          className='navbar-logo group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2 transition-all duration-300 hover:bg-[var(--text-color-variable)]/10'
-          onClick={() => {
-            setActive('');
-            window.scrollTo(0, 0);
-          }}
+          className='navbar-logo group flex items-baseline gap-4 transition-opacity duration-500'
+          onClick={() => window.scrollTo(0, 0)}
         >
-          {/* Animated background on hover */}
-          <div className='absolute inset-0 bg-gradient-to-r from-[var(--text-color-variable)]/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
-
-          <div className='relative flex items-center gap-2'>
-            {/* Logo animation dot */}
-            <div className='h-2 w-2 animate-pulse rounded-full bg-[var(--text-color-variable)]' />
-            <p className='flex cursor-pointer text-[18px] font-bold text-secondary transition-colors duration-300 group-hover:text-[var(--text-color-variable)]'>
-              Aiden Kopec &nbsp;
-              <span className='hidden opacity-80 transition-opacity duration-300 group-hover:opacity-100 sm:block'>
-                {' '}
-                | Full-Stack Developer
-              </span>
-            </p>
-          </div>
+          <span className='font-display text-[26px] leading-none text-white-100 italic transition-colors duration-300 group-hover:text-[var(--text-color-variable)]'>
+            Aiden Kopec
+          </span>
+          <span className='nav-label hidden lg:inline'>
+            Full-Stack Developer
+          </span>
         </Link>
 
-        <div className='hidden items-center gap-2 sm:flex'>
-          <ul className='flex list-none flex-row items-center gap-1'>
-            {navLinks.map((nav) => (
-              <li key={nav.id} className='group relative'>
-                {/* The padding lives on the anchor, not this wrapper, so the
-                    whole row is the click target. */}
-                <div
-                  className={`relative overflow-hidden rounded-lg transition-all duration-300 ${
-                    active === nav.title
-                      ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
-                      : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
-                  }`}
-                >
-                  {/* Animated underline */}
-                  <div
-                    className={`absolute bottom-0 left-0 h-0.5 bg-[var(--text-color-variable)] transition-all duration-300 ${active === nav.title ? 'w-full' : 'w-0 group-hover:w-full'}`}
-                  />
+        <div className='hidden items-center gap-8 md:flex'>
+          <div
+            ref={stripRef}
+            data-flying={reached >= 0 ? '' : undefined}
+            className='nav-route relative'
+            style={{ '--stops': routeLinks.length } as React.CSSProperties}
+          >
+            <span aria-hidden='true' className='nav-route-course' />
+            <span aria-hidden='true' className='nav-route-flown' />
+            <ol className='nav-route-grid relative list-none'>
+              {routeLinks.map((nav, index) => (
+                <li key={nav.id}>
+                  <a
+                    href={`#${nav.id}`}
+                    aria-current={index === reached ? 'location' : undefined}
+                    data-reached={index <= reached ? '' : undefined}
+                    className='nav-stop'
+                  >
+                    <span className='nav-label'>{nav.title}</span>
+                    <span className='nav-stop-ring-row'>
+                      <span aria-hidden='true' className='nav-stop-ring' />
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+            {/* After the rings, so it passes over them. */}
+            <span aria-hidden='true' className='nav-route-probe' />
+          </div>
 
-                  {/* Shimmer effect on hover */}
-                  <div className='absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-700 group-hover:translate-x-full' />
+          <Link href='/blog' className='nav-stop'>
+            <span className='nav-label'>Blog</span>
+            <span className='nav-stop-ring-row'>
+              <span aria-hidden='true' className='nav-stop-dash' />
+            </span>
+          </Link>
 
-                  {nav.id === 'blog' ? (
-                    <Link
-                      href='/blog'
-                      className='relative block px-4 py-2 text-[16px] font-medium'
-                      onClick={() => setActive(nav.title)}
-                    >
-                      {nav.title}
-                    </Link>
-                  ) : (
-                    <a
-                      href={`#${nav.id}`}
-                      className='relative block px-4 py-2 text-[16px] font-medium'
-                      onClick={() => setActive(nav.title)}
-                    >
-                      {nav.title}
-                    </a>
-                  )}
-                </div>
-              </li>
-            ))}
-
-            {/* Enhanced Customizations Button */}
-            <li className='relative ml-4 flex items-center gap-4'>
-              <button
-                onClick={() =>
-                  setCustomizationMenuDesktop(!customizationMenuDesktop)
-                }
-                aria-expanded={customizationMenuDesktop}
-                className={`group relative overflow-hidden rounded-lg px-6 py-2 text-[16px] font-medium transition-all duration-300 ${
+          <div className='relative'>
+            <button
+              type='button'
+              onClick={() =>
+                setCustomizationMenuDesktop(!customizationMenuDesktop)
+              }
+              aria-expanded={customizationMenuDesktop}
+              aria-label='Customizations'
+              title='Customizations'
+              className={`group flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 ${
+                customizationMenuDesktop
+                  ? 'border-[var(--text-color-variable)] text-[var(--text-color-variable)]'
+                  : 'border-[var(--chart-line)] text-white-100/70 hover:border-[var(--text-color-variable)] hover:text-[var(--text-color-variable)]'
+              }`}
+            >
+              <StarGlyph
+                className={`h-4 w-4 transition-transform duration-500 ${
                   customizationMenuDesktop
-                    ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
-                    : 'text-secondary hover:text-[var(--text-color-variable)]'
+                    ? 'rotate-45'
+                    : 'group-hover:rotate-45'
                 }`}
-              >
-                {/* Glowing border effect */}
-                <div
-                  className={`absolute inset-0 rounded-lg transition-all duration-300 ${
-                    customizationMenuDesktop
-                      ? 'bg-gradient-to-r from-[var(--text-color-variable)]/20 to-[var(--text-color-variable)]/10'
-                      : 'bg-gradient-to-r from-transparent to-transparent group-hover:from-[var(--text-color-variable)]/10 group-hover:to-[var(--text-color-variable)]/5'
-                  }`}
-                />
-
-                {/* Animated icon */}
-                <div className='relative flex items-center gap-2'>
-                  <span>Customizations</span>
-                  <div
-                    className={`h-1 w-1 rounded-full bg-[var(--text-color-variable)] transition-all duration-300 ${customizationMenuDesktop ? 'scale-150' : 'scale-100 group-hover:scale-125'}`}
-                  />
-                </div>
-              </button>
-
-              <CustomizationMenu
-                isOpen={customizationMenuDesktop}
-                onClose={() => setCustomizationMenuDesktop(false)}
               />
-            </li>
-          </ul>
+            </button>
+
+            <CustomizationMenu
+              isOpen={customizationMenuDesktop}
+              onClose={() => setCustomizationMenuDesktop(false)}
+            />
+          </div>
         </div>
 
-        <div className='flex flex-1 items-center justify-end gap-4 sm:hidden'>
-          {/* Enhanced Mobile Menu Button */}
+        <div className='flex flex-1 items-center justify-end md:hidden'>
           <button
+            type='button'
             aria-label='Toggle menu'
             aria-expanded={toggle}
             aria-controls='mobile-menu'
-            className={`group relative z-[100] flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl transition-all duration-300 focus:ring-2 focus:ring-[var(--text-color-variable)] focus:ring-offset-2 focus:ring-offset-transparent focus:outline-none ${
+            className={`relative z-[100] flex h-10 w-10 items-center justify-center rounded-full border transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-color-variable)] ${
               toggle
-                ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
-                : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
+                ? 'border-[var(--text-color-variable)] text-[var(--text-color-variable)]'
+                : 'border-[var(--chart-line)] text-white-100/80'
             }`}
             onClick={() => setMobileMenuOpen(!toggle)}
           >
-            {/* Animated background */}
-            <div
-              className={`absolute inset-0 bg-gradient-to-r from-[var(--text-color-variable)]/10 to-[var(--text-color-variable)]/5 transition-all duration-300 ${toggle ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-            />
-
-            {/* Pulsing border */}
-            <div
-              className={`absolute inset-0 rounded-xl border border-[var(--text-color-variable)]/30 transition-all duration-300 ${toggle ? 'scale-100 opacity-100' : 'scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100'}`}
-            />
-
-            <div className='relative'>
-              {toggle ? (
-                // Enhanced Close icon with rotation animation
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  stroke='currentColor'
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  className='h-6 w-6 rotate-90 transform transition-transform duration-300'
-                >
-                  <line x1='18' y1='6' x2='6' y2='18'></line>
-                  <line x1='6' y1='6' x2='18' y2='18'></line>
-                </svg>
-              ) : (
-                // Enhanced Hamburger with animated lines
-                <div className='flex flex-col gap-1'>
-                  <div className='h-0.5 w-5 rounded-full bg-current transition-all duration-300 group-hover:w-6' />
-                  <div className='h-0.5 w-4 rounded-full bg-current transition-all duration-300 group-hover:w-6' />
-                  <div className='h-0.5 w-5 rounded-full bg-current transition-all duration-300 group-hover:w-6' />
-                </div>
-              )}
-            </div>
+            {/* Two strokes that cross into a close mark. */}
+            <span aria-hidden='true' className='relative block h-3 w-4'>
+              <span
+                className={`absolute left-0 h-px w-4 bg-current transition-transform duration-300 ${
+                  toggle ? 'top-1.5 rotate-45' : 'top-0.5'
+                }`}
+              />
+              <span
+                className={`absolute left-0 h-px w-4 bg-current transition-transform duration-300 ${
+                  toggle ? 'top-1.5 -rotate-45' : 'top-2.5'
+                }`}
+              />
+            </span>
           </button>
 
-          {/* Enhanced Mobile Dropdown Menu */}
           {/* The handler only stops a click inside the panel from reaching the
               document listener that closes the menu. Not an affordance. */}
           {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
           <div
             id='mobile-menu'
             className={`${
-              !toggle
-                ? 'hidden scale-95 opacity-0'
-                : 'flex scale-100 opacity-100'
-            } black-gradient absolute top-20 right-0 z-50 mx-4 my-2 min-w-[240px] rounded-2xl border border-[var(--text-color-variable)]/20 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-out`}
+              toggle ? 'flex' : 'hidden'
+            } absolute top-14 right-0 z-50 min-w-[260px] flex-col rounded-2xl border border-[var(--chart-line)] bg-primary/95 p-6 shadow-2xl backdrop-blur-xl`}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Animated gradient background */}
-            <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-[var(--text-color-variable)]/5 to-transparent' />
-
-            {/* Glowing border effect */}
-            <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-[var(--text-color-variable)]/20 via-transparent to-[var(--text-color-variable)]/20 opacity-50' />
-
-            <ul className='relative z-10 flex flex-1 list-none flex-col items-start justify-end gap-2'>
-              {/* Navigation Links with enhanced styling */}
-              {navLinks.map((nav, index) => (
-                <li
-                  key={nav.id}
-                  className='group w-full'
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  {/* The padding lives on the anchor, not this wrapper, so
-                      tapping anywhere in the row navigates and closes the
-                      menu. */}
-                  <div
-                    className={`relative w-full overflow-hidden rounded-lg transition-all duration-300 ${
-                      active === nav.title
-                        ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
-                        : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
-                    }`}
+            <ol className='nav-route-vertical list-none'>
+              {routeLinks.map((nav, index) => (
+                <li key={nav.id}>
+                  <a
+                    href={`#${nav.id}`}
+                    aria-current={index === reached ? 'location' : undefined}
+                    data-reached={index <= reached ? '' : undefined}
+                    className='group flex items-center gap-5 py-3'
+                    onClick={closeMobileMenu}
                   >
-                    {/* Slide-in animation background */}
-                    <div className='absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-[var(--text-color-variable)]/10 to-transparent transition-transform duration-300 group-hover:translate-x-0' />
-
-                    {/* Active indicator dot */}
-                    {active === nav.title && (
-                      <div className='absolute top-1/2 left-1 h-2 w-2 -translate-y-1/2 transform animate-pulse rounded-full bg-[var(--text-color-variable)]' />
-                    )}
-
-                    {nav.id === 'blog' ? (
-                      <Link
-                        href='/blog'
-                        className={`relative block px-4 py-3 text-[16px] font-medium transition-all duration-300 ${active === nav.title ? 'pl-8' : 'group-hover:pl-6'}`}
-                        onClick={handleNavSelect(nav.title)}
-                      >
-                        {nav.title}
-                      </Link>
-                    ) : (
-                      <a
-                        href={`#${nav.id}`}
-                        className={`relative block px-4 py-3 text-[16px] font-medium transition-all duration-300 ${active === nav.title ? 'pl-8' : 'group-hover:pl-6'}`}
-                        onClick={handleNavSelect(nav.title)}
-                      >
-                        {nav.title}
-                      </a>
-                    )}
-                  </div>
+                    <span aria-hidden='true' className='nav-stop-ring' />
+                    <span className='font-display text-[26px] leading-none text-white-100/75 italic transition-colors group-hover:text-white-100 group-aria-[current=location]:text-white-100'>
+                      {nav.title}
+                    </span>
+                  </a>
                 </li>
               ))}
+            </ol>
 
-              {/* Enhanced Customizations Button */}
-              <li className='relative mt-2 w-full border-t border-[var(--text-color-variable)]/20 pt-4'>
-                <button
-                  className={`group relative w-full overflow-hidden rounded-lg px-4 py-3 text-[16px] font-medium transition-all duration-300 ${
-                    customizationMenuMobile
-                      ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
-                      : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+            <div className='mt-4 flex flex-col gap-4 border-t border-[var(--chart-line)] pt-5'>
+              <Link
+                href='/blog'
+                className='nav-label hover:text-white-100'
+                onClick={closeMobileMenu}
+              >
+                Blog
+              </Link>
+              <button
+                type='button'
+                aria-expanded={customizationMenuMobile}
+                className={`nav-label flex items-center gap-3 text-left hover:text-white-100 ${
+                  customizationMenuMobile
+                    ? 'text-[var(--text-color-variable)]'
+                    : ''
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
 
-                    if (!customizationMenuMobile) {
-                      // Opening customization menu
-                      setToggle(false); // Close mobile dropdown first
-                      // Longer delay to ensure proper state transitions
-                      setTimeout(() => {
-                        setCustomizationMenuMobile(true);
-                      }, 300);
-                    } else {
-                      // Closing customization menu
-                      setCustomizationMenuMobile(false);
-                    }
-                  }}
-                >
-                  {/* Glowing effect */}
-                  <div
-                    className={`absolute inset-0 rounded-lg transition-all duration-300 ${
-                      customizationMenuMobile
-                        ? 'bg-gradient-to-r from-[var(--text-color-variable)]/20 to-[var(--text-color-variable)]/10'
-                        : 'bg-gradient-to-r from-transparent to-transparent group-hover:from-[var(--text-color-variable)]/10 group-hover:to-[var(--text-color-variable)]/5'
-                    }`}
-                  />
-
-                  <div className='relative flex items-center gap-3'>
-                    <div
-                      className={`h-2 w-2 rounded-full bg-[var(--text-color-variable)] transition-all duration-300 ${customizationMenuMobile ? 'scale-125 animate-pulse' : 'scale-100 group-hover:scale-110'}`}
-                    />
-                    <span>Customizations</span>
-                  </div>
-                </button>
-              </li>
-            </ul>
+                  if (!customizationMenuMobile) {
+                    // Opening customization menu
+                    setToggle(false); // Close mobile dropdown first
+                    // Longer delay to ensure proper state transitions
+                    setTimeout(() => {
+                      setCustomizationMenuMobile(true);
+                    }, 300);
+                  } else {
+                    // Closing customization menu
+                    setCustomizationMenuMobile(false);
+                  }
+                }}
+              >
+                <StarGlyph className='h-3.5 w-3.5' />
+                Customizations
+              </button>
+            </div>
           </div>
         </div>
       </div>

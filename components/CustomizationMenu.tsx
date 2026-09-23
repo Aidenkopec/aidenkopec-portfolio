@@ -181,12 +181,12 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
         <div className='fixed inset-0 z-[9999] flex items-start justify-center pt-20 sm:pt-24'>
           <div
             ref={menuRef}
-            className='animate-slideDown sm:animate-scaleIn flex h-[500px] w-[90%] max-w-md flex-col overflow-hidden rounded-2xl border border-tertiary bg-black-100 shadow-2xl sm:w-[90%]'
+            className='animate-slideDown sm:animate-scaleIn flex h-[500px] w-[90%] max-w-md flex-col overflow-hidden rounded-2xl border border-[var(--chart-line)] bg-black-100 shadow-2xl sm:w-[90%]'
           >
             {/* Header */}
             <div className='flex-shrink-0 border-b border-tertiary p-4'>
               <div className='mb-3 flex items-center justify-between'>
-                <h3 className='text-lg font-semibold text-secondary'>
+                <h3 className='font-display text-2xl text-white-100 italic'>
                   Customizations
                 </h3>
                 <button
@@ -387,35 +387,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                       ))}
                     </div>
                   </div>
-
-                  {/* Music Controls Info */}
-                  <div className='rounded-lg bg-tertiary p-3'>
-                    <h4 className='mb-2 text-sm font-medium text-secondary'>
-                      Controls
-                    </h4>
-                    <div className='space-y-1 text-xs text-gray-400'>
-                      <div className='flex justify-between'>
-                        <span>Play/Pause</span>
-                        <span className='text-gray-300'>Spacebar or Click</span>
-                      </div>
-                      <div className='flex justify-between'>
-                        <span>Next Track</span>
-                        <span className='text-gray-300'>
-                          Ctrl + → or Swipe Left
-                        </span>
-                      </div>
-                      <div className='flex justify-between'>
-                        <span>Previous Track</span>
-                        <span className='text-gray-300'>
-                          Ctrl + ← or Swipe Right
-                        </span>
-                      </div>
-                      <div className='flex justify-between'>
-                        <span>Expand Dock</span>
-                        <span className='text-gray-300'>Click Music Icon</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               )}
             </div>
@@ -438,13 +409,13 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   return (
     <div
       ref={menuRef}
-      className='absolute top-full right-0 z-[9999] mt-2 w-96 overflow-hidden rounded-xl border border-tertiary bg-black-100 shadow-2xl'
+      className='absolute top-full right-0 z-[9999] mt-2 w-96 overflow-hidden rounded-xl border border-[var(--chart-line)] bg-black-100 shadow-2xl'
     >
       {/* Original desktop menu content remains the same */}
       {/* Header with tabs */}
       <div className='border-b border-tertiary p-4'>
         <div className='mb-3 flex items-center justify-between'>
-          <h3 className='text-lg font-semibold text-secondary'>
+          <h3 className='font-display text-2xl text-white-100 italic'>
             Customizations
           </h3>
           <button
@@ -637,31 +608,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
                     </div>
                   </button>
                 ))}
-              </div>
-            </div>
-
-            {/* Music Controls Info */}
-            <div className='rounded-lg bg-tertiary p-3'>
-              <h4 className='mb-2 text-sm font-medium text-secondary'>
-                Controls
-              </h4>
-              <div className='space-y-1 text-xs text-gray-400'>
-                <div className='flex justify-between'>
-                  <span>Play/Pause</span>
-                  <span className='text-gray-300'>Spacebar or Click</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Next Track</span>
-                  <span className='text-gray-300'>Ctrl + → or Swipe Left</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Previous Track</span>
-                  <span className='text-gray-300'>Ctrl + ← or Swipe Right</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span>Expand Dock</span>
-                  <span className='text-gray-300'>Click Music Icon</span>
-                </div>
               </div>
             </div>
           </div>

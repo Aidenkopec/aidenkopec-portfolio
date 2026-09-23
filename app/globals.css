@@ -338,6 +338,178 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   pointer-events: none;
 }
 
+/* The navbar. In the components layer so Tailwind utilities can still
+   override it. */
+@layer components {
+  /* Navbar copy, lettered like the hero's tagline. */
+  .nav-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    margin-right: -0.28em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--white-100) 55%, transparent);
+    transition: color 0.3s ease;
+  }
+
+  /* The homepage sections as stops on a course line, with a probe that tracks
+     the flight path. components/Navbar sets --route-at: the index of the last
+     stop passed plus the fraction of the way to the next. */
+  .nav-route {
+    --col: 5.5rem;
+    --ring: 9px;
+    /* Height of the ring row, and so where the course line runs. */
+    --ring-row: 1.25rem;
+    --route-at: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .nav-route {
+      --col: 7rem;
+    }
+  }
+
+  .nav-route-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--stops), var(--col));
+  }
+
+  .nav-route-course,
+  .nav-route-flown {
+    position: absolute;
+    bottom: calc(var(--ring-row) / 2);
+    left: calc(var(--col) / 2);
+    height: 1px;
+  }
+
+  /* The route ahead, dotted like the flight path's planned course. */
+  .nav-route-course {
+    right: calc(var(--col) / 2);
+    background: repeating-linear-gradient(
+      to right,
+      var(--chart-line) 0 1px,
+      transparent 1px 6px
+    );
+  }
+
+  .nav-route-flown {
+    width: calc(var(--route-at) * var(--col));
+    background: var(--text-color-variable);
+    box-shadow: 0 0 6px
+      color-mix(in srgb, var(--text-color-variable) 60%, transparent);
+  }
+
+  .nav-route-probe {
+    position: absolute;
+    bottom: calc(var(--ring-row) / 2);
+    left: calc((var(--route-at) + 0.5) * var(--col));
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: var(--star);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--text-color-variable) 35%, transparent),
+      0 0 14px var(--text-color-variable);
+    transform: translate(-50%, 50%);
+    transition: opacity 0.3s ease;
+  }
+
+  .nav-route:not([data-flying]) .nav-route-flown,
+  .nav-route:not([data-flying]) .nav-route-probe {
+    opacity: 0;
+  }
+
+  .nav-stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .nav-stop-ring-row {
+    display: grid;
+    place-items: center;
+    height: var(--ring-row);
+  }
+
+  /* A small copy of .waypoint. */
+  .nav-stop-ring {
+    position: relative;
+    width: var(--ring, 9px);
+    height: var(--ring, 9px);
+    border-radius: 9999px;
+    border: 1px solid var(--chart-line);
+    background: var(--primary-color);
+    transition:
+      border-color 0.6s ease,
+      box-shadow 0.6s ease;
+  }
+
+  .nav-stop-ring::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: inherit;
+    background: var(--chart-faint);
+    transition: background-color 0.6s ease;
+  }
+
+  [data-reached] .nav-stop-ring {
+    border-color: var(--text-color-variable);
+    box-shadow: 0 0 10px
+      color-mix(in srgb, var(--text-color-variable) 60%, transparent);
+  }
+
+  [data-reached] .nav-stop-ring::after {
+    background: var(--text-color-variable);
+  }
+
+  a:hover .nav-stop-ring,
+  a:focus-visible .nav-stop-ring {
+    border-color: var(--text-color-variable);
+  }
+
+  .nav-stop:hover .nav-label,
+  .nav-stop:focus-visible .nav-label,
+  .nav-stop[aria-current] .nav-label {
+    color: var(--white-100);
+  }
+
+  /* Blog leaves the route, so it gets a dash that draws in, not a ring. */
+  .nav-stop-dash {
+    width: 1.25rem;
+    height: 1px;
+    background: var(--text-color-variable);
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.6, 0, 0.2, 1);
+  }
+
+  .nav-stop:hover .nav-stop-dash,
+  .nav-stop:focus-visible .nav-stop-dash {
+    transform: scaleX(1);
+  }
+
+  /* On phones the route runs down the menu, through each ring. */
+  .nav-route-vertical {
+    position: relative;
+  }
+
+  .nav-route-vertical::before {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    left: 4px;
+    width: 1px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--chart-line) 0 1px,
+      transparent 1px 6px
+    );
+  }
+}
+
 /* A soft glow where the swarm draws the contact galaxy. On its own it stands
    in for the galaxy without WebGL; under the dust it reads as the core's
    light. */

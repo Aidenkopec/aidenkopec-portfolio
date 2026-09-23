@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 
-// How far down the viewport the head of the path sits while scrolling.
-const HEAD = 0.62;
+// How far down the viewport the head of the path sits while scrolling. The
+// navbar tracks the same line, so its route strip agrees with this one.
+export const HEAD = 0.62;
 // Spacing of the length to height lookup, in CSS pixels along the path.
 const SAMPLE_STEP = 6;
 // The last stretch into the galaxy fades out over this many pixels.
