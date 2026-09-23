@@ -4,7 +4,9 @@ import { ThemeProvider } from 'next-themes';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import FloatingMusicBar from '@/components/FloatingMusicBar';
+import { InlineScript } from '@/components/InlineScript';
 import { MotionProvider } from '@/components/MotionProvider';
+import { SWARM_INTRO_SCRIPT } from '@/components/swarm/introScript';
 import { GITHUB_URL } from '@/constants';
 import { themeKeys } from '@/constants/themes';
 import { MusicProvider } from '@/context/MusicContext';
@@ -95,6 +97,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
+      <head>
+        {/* Must run before first paint, so a plain inline script. */}
+        <InlineScript html={SWARM_INTRO_SCRIPT} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

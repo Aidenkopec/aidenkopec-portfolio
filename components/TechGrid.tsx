@@ -1,49 +1,66 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import Image from 'next/image';
-import React from 'react';
+import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
 
 import { type Technology } from '@/constants';
-import { useCanRender3D } from '@/hooks/useCanRender3D';
-import { useInViewport } from '@/hooks/useInViewport';
-
-// Loaded on demand so three.js stays out of the initial bundle.
-const BallCanvas = dynamic(() => import('./canvas/Ball'), { ssr: false });
+import { fadeIn, textVariant } from '@/utils';
 
 /**
- * One WebGL context per icon is twelve contexts, against a browser ceiling of
- * sixteen that this page already crowds. So the whole grid shares a single
- * viewport observer and unmounts together the moment it scrolls away, freeing
- * those contexts for the sections below.
- *
- * When 3D is off, the icon itself is what the section is communicating, so the
- * fallback is the same image through next/image rather than an empty box.
+ * Glass tiles over the swarm. One pointer handler writes each tile's cursor
+ * offset to CSS variables, and the tiles draw their own spotlight border from
+ * those, so edges near the cursor light up as it sweeps across the grid.
  */
 const TechGrid: React.FC<{ technologies: Technology[] }> = ({
   technologies,
 }) => {
-  const canRender3D = useCanRender3D();
-  const { ref, mounted } = useInViewport<HTMLDivElement>(canRender3D);
+  const gridRef = useRef<HTMLUListElement>(null);
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLUListElement>) => {
+    const tiles =
+      gridRef.current?.querySelectorAll<HTMLElement>('.tech-tile') ?? [];
+    for (const tile of tiles) {
+      const rect = tile.getBoundingClientRect();
+      tile.style.setProperty('--mx', `${event.clientX - rect.left}px`);
+      tile.style.setProperty('--my', `${event.clientY - rect.top}px`);
+    }
+  };
 
   return (
-    <div ref={ref} className='flex flex-row flex-wrap justify-center gap-10'>
-      {technologies.map((technology) => (
-        <div className='h-28 w-28' key={technology.name}>
-          {canRender3D && mounted ? (
-            <BallCanvas icon={technology.icon} />
-          ) : (
-            <Image
-              src={technology.icon}
-              alt={technology.name}
-              width={112}
-              height={112}
-              className='h-full w-full object-contain'
-            />
-          )}
-        </div>
-      ))}
-    </div>
+    <>
+      <motion.div variants={textVariant()}>
+        <p className='section-sub-text'>What I build with</p>
+        <h2 className='section-head-text'>Tech Stack.</h2>
+      </motion.div>
+
+      <ul
+        ref={gridRef}
+        onPointerMove={handlePointerMove}
+        className='tech-grid mt-12 grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6'
+      >
+        {technologies.map((technology, index) => (
+          <motion.li
+            key={technology.name}
+            variants={fadeIn('up', 'spring', index * 0.05, 0.6)}
+          >
+            <div
+              tabIndex={0}
+              className='tech-tile glass'
+              style={
+                {
+                  '--brand': technology.color,
+                  '--icon': `url(${technology.icon})`,
+                } as React.CSSProperties
+              }
+            >
+              <span aria-hidden='true' className='tech-glow' />
+              <span aria-hidden='true' className='tech-logo' />
+              <span className='tech-name'>{technology.name}</span>
+            </div>
+          </motion.li>
+        ))}
+      </ul>
+    </>
   );
 };
 

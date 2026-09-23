@@ -26,6 +26,8 @@ const Navbar: React.FC = () => {
     // Passive: without it the browser must wait on this handler in case it
     // calls preventDefault, which it never does.
     window.addEventListener('scroll', handleScroll, { passive: true });
+    // A reload restores the scroll position without firing a scroll event.
+    handleScroll();
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -48,21 +50,25 @@ const Navbar: React.FC = () => {
 
   return (
     <nav
-      className={`fixed top-0 z-50 flex w-full items-center py-4 padding-x transition-all duration-500 ease-in-out ${
+      className={`site-nav fixed top-0 z-50 flex w-full items-center py-4 padding-x transition-all duration-500 ease-in-out ${
         scrolled
           ? 'border-b border-[var(--text-color-variable)]/20 bg-primary/90 shadow-2xl backdrop-blur-xl'
           : 'bg-transparent'
       }`}
     >
-      {/* Animated gradient border on scroll */}
-      {scrolled && (
-        <div className='absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-color-variable)] to-transparent opacity-60' />
-      )}
+      {/* Gradient border on scroll. On the homepage the swarm draws it in
+          dust first; globals.css holds it back until the dust arrives. */}
+      <div
+        data-swarm-slot='navline'
+        className={`nav-line absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--text-color-variable)] to-transparent ${
+          scrolled ? 'opacity-60' : 'opacity-0'
+        }`}
+      />
 
       <div className='relative mx-auto flex w-full max-w-7xl items-center justify-between'>
         <Link
           href='/'
-          className='group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2 transition-all duration-300 hover:bg-[var(--text-color-variable)]/10'
+          className='navbar-logo group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2 transition-all duration-300 hover:bg-[var(--text-color-variable)]/10'
           onClick={() => {
             setActive('');
             window.scrollTo(0, 0);

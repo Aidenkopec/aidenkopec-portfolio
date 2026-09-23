@@ -2,13 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import type { BlogHeading } from '@/lib/types';
 import { cn } from '@/lib/utils';
-
-export interface BlogHeading {
-  id: string;
-  text: string;
-  level: number;
-}
 
 interface BlogTocProps {
   headings: BlogHeading[];

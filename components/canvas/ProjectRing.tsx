@@ -2,7 +2,6 @@
 
 import {
   Image as DreiImage,
-  MeshReflectorMaterial,
   Preload,
   RoundedBox,
   useTexture,
@@ -25,22 +24,22 @@ const PANEL_W = 4;
 const PANEL_H = 2.5;
 const RING_RADIUS = 6.8;
 
-// The lit frame sits slightly proud of the screenshot on every side. drei builds
+// The lit frame is a hairline proud of the screenshot on every side. drei builds
 // the rounded box by extruding `FRAME_D - FRAME_RADIUS * 2` and bevelling the rest,
 // so the depth has to clear twice the radius or the extrusion runs backwards.
-const FRAME_W = PANEL_W + 0.16;
-const FRAME_H = PANEL_H + 0.16;
+const FRAME_W = PANEL_W + 0.05;
+const FRAME_H = PANEL_H + 0.05;
 const FRAME_RADIUS = 0.07;
 const FRAME_D = 0.16;
 
-// Height of the ring's centre, and of the reflective floor just beneath it.
+// Height of the ring's centre.
 const RING_Y = 0.55;
-const FLOOR_Y = -0.8;
 
 // The vertical band the camera has to keep in view: the front panel plus a
-// little headroom, down through enough floor to show its reflection.
+// little headroom, and room below it for the info panel that overlaps the
+// stage's bottom edge.
 const FRAME_TOP = RING_Y + FRAME_H / 2 + 0.12;
-const FRAME_BOTTOM = FLOOR_Y - 0.5;
+const FRAME_BOTTOM = RING_Y - FRAME_H / 2 - 0.75;
 const FRAME_CENTER_Y = (FRAME_TOP + FRAME_BOTTOM) / 2;
 const FRAME_HALF_H = (FRAME_TOP - FRAME_BOTTOM) / 2;
 
@@ -85,18 +84,15 @@ const shortestDelta = (delta: number, count: number): number => {
 interface ThemeColors {
   accent: string;
   frame: string;
-  floor: string;
 }
 
 const FALLBACK_COLORS: ThemeColors = {
   accent: '#60a5fa',
   frame: '#0b1b2b',
-  floor: '#030a12',
 };
 
 // Themes swap CSS custom properties on <html>, so the scene reads them at
-// runtime and re-reads them when the theme class changes. Same approach as
-// components/canvas/WavyLines.tsx.
+// runtime and re-reads them when the theme class changes.
 function readThemeColors(): ThemeColors {
   if (typeof window === 'undefined') return FALLBACK_COLORS;
 
@@ -107,8 +103,6 @@ function readThemeColors(): ThemeColors {
       FALLBACK_COLORS.accent,
     frame:
       style.getPropertyValue('--black-100').trim() || FALLBACK_COLORS.frame,
-    floor:
-      style.getPropertyValue('--black-200').trim() || FALLBACK_COLORS.floor,
   };
 }
 
@@ -199,7 +193,7 @@ const Panel: React.FC<PanelProps> = ({
       const material = frameMesh.material as THREE.MeshStandardMaterial;
       material.emissiveIntensity = THREE.MathUtils.lerp(
         material.emissiveIntensity,
-        0.08 + 0.85 * focus.current,
+        0.05 + 0.6 * focus.current,
         ease,
       );
     }
@@ -339,7 +333,9 @@ const ProjectRingCanvas: React.FC<ProjectRingCanvasProps> = ({
         near: 0.1,
         far: 100,
       }}
+      // Transparent, so the ring floats over the swarm's dust behind the page.
       gl={{
+        alpha: true,
         antialias: true,
         powerPreference: 'high-performance',
         outputColorSpace: THREE.SRGBColorSpace,
@@ -347,9 +343,6 @@ const ProjectRingCanvas: React.FC<ProjectRingCanvasProps> = ({
       style={{ touchAction: 'pan-y' }}
     >
       <FitCamera />
-
-      <color attach='background' args={[colors.floor]} />
-      <fog attach='fog' args={[colors.floor, 9, 22]} />
 
       <ambientLight intensity={0.75} />
       <directionalLight position={[3, 6, 5]} intensity={0.9} />
@@ -373,23 +366,6 @@ const ProjectRingCanvas: React.FC<ProjectRingCanvasProps> = ({
           onSelect={onSelect}
           onOpenDetail={onOpenDetail}
         />
-
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y, 0]}>
-          <planeGeometry args={[60, 60]} />
-          <MeshReflectorMaterial
-            mirror={0.78}
-            resolution={512}
-            blur={[220, 70]}
-            mixBlur={0.8}
-            mixStrength={1.6}
-            depthScale={1.1}
-            minDepthThreshold={0.4}
-            maxDepthThreshold={1.4}
-            color={colors.floor}
-            metalness={0.6}
-            roughness={1}
-          />
-        </mesh>
 
         <Preload all />
       </Suspense>

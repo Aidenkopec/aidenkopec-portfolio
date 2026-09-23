@@ -52,13 +52,13 @@ export interface Commit {
   sha: string;
 }
 
-export interface ContributionDay {
+interface ContributionDay {
   contributionCount: number;
   date: string;
   color?: string;
 }
 
-export interface ContributionWeek {
+interface ContributionWeek {
   contributionDays: ContributionDay[];
 }
 
@@ -71,7 +71,7 @@ export interface ContributionCalendar {
   weeks: ContributionWeek[];
 }
 
-export interface GitHubStats {
+interface GitHubStats {
   totalStars: number;
   totalForks: number;
   /** Whole years since the account was created. null when GitHub omits the date. */

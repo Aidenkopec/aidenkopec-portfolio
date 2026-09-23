@@ -16,7 +16,7 @@ interface ContactNotificationEmailProps {
   message: string;
 }
 
-export const ContactNotificationEmail = ({
+const ContactNotificationEmail = ({
   userName,
   userEmail,
   message,

@@ -1,79 +1,46 @@
 'use client';
 import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { useCanRender3D } from '@/hooks/useCanRender3D';
-import { useInViewport } from '@/hooks/useInViewport';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
-import CanvasPlaceholder from './CanvasPlaceholder';
-
-// Client only: the canvas needs a real WebGL context, so there is nothing for
-// the server to render. The spinner below holds the space until it mounts.
-const ComputersCanvas = dynamic(() => import('./canvas/Computers'), {
-  ssr: false,
-});
-
-/** Holds the model's space while the chunk and the model are still coming down. */
-function HeroLoader() {
-  return (
-    <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
-      <span
-        className='h-10 w-10 animate-spin rounded-full border-2 border-transparent'
-        style={{ borderTopColor: 'var(--text-color-variable)' }}
-        role='status'
-        aria-label='Loading 3D scene'
-      />
-    </div>
-  );
-}
-
 const Hero: React.FC = () => {
-  const [modelReady, setModelReady] = useState(false);
-  const canRender3D = useCanRender3D();
   const prefersReducedMotion = usePrefersReducedMotion();
-  // The section is the observed box: it is already h-screen, so nothing needs a
-  // wrapper. Unmounting on scroll-away hands the WebGL context back to the
-  // sections below, which is the same ceiling TechGrid works around.
-  const { ref, mounted, paused } = useInViewport<HTMLElement>(canRender3D);
+  const nameRef = useRef<HTMLHeadingElement>(null);
 
-  const handleReady = useCallback(() => setModelReady(true), []);
+  // The navbar hides its own copy of the name while this one is on screen.
+  useEffect(() => {
+    const name = nameRef.current;
+    if (!name) return;
+    const root = document.documentElement;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) root.dataset.heroInView = '';
+      else delete root.dataset.heroInView;
+    });
+    observer.observe(name);
+    return () => {
+      observer.disconnect();
+      delete root.dataset.heroInView;
+    };
+  }, []);
 
   return (
-    <section ref={ref} className='relative mx-auto h-screen w-full'>
-      <div className='absolute inset-0 top-[120px] mx-auto flex max-w-7xl flex-row items-start gap-5 padding-x'>
-        <div className='mt-5 flex flex-col items-center justify-center'>
-          <div
-            className='h-5 w-5 rounded-full'
-            style={{ backgroundColor: 'var(--text-color-variable)' }}
-          />
-          <div className='dynamic-gradient h-40 w-1 sm:h-80' />
-        </div>
-
-        <div>
-          <h1 className='hero-head-text'>
-            Hi, I&apos;m
-            <span style={{ color: 'var(--text-color-variable)' }}> Aiden</span>
-          </h1>
-          <p className='hero-sub-text'>
-            {/*className='sm:block hidden'*/}
-            Analyze. Build. Transform. <br />
-            Turning business challenges into powerful solutions.
-          </p>
-        </div>
+    // Pressing and holding anywhere in the hero grows a black hole.
+    <section className='relative mx-auto h-screen w-full' data-swarm-hold-zone>
+      <div className='absolute inset-0 flex flex-col items-center justify-center padding-x text-center'>
+        {/* The particle swarm samples this text and forms over it, then the
+            text fades to transparent. It stays in the DOM for screen readers,
+            search and selection, and stays visible if the swarm never runs. */}
+        <h1 ref={nameRef} className='hero-head-text' data-swarm-slot='name'>
+          Aiden Kopec
+        </h1>
+        <p className='hero-sub-text'>Full Stack Developer</p>
+        {/* Shown by the swarm once the name has formed, until the first hold. */}
+        <p className='hero-hint' aria-hidden='true'>
+          <span className='pointer-coarse:hidden'>Press and hold</span>
+          <span className='hidden pointer-coarse:inline'>Touch and hold</span>
+        </p>
       </div>
-
-      {/* Gated on the canvas actually mounting: without WebGL or under reduced
-          motion nothing ever calls onReady, so an ungated spinner would spin
-          forever for exactly the visitors who should see no motion. */}
-      {canRender3D && mounted && !modelReady && <HeroLoader />}
-
-      {canRender3D && mounted ? (
-        <ComputersCanvas onReady={handleReady} paused={paused} />
-      ) : (
-        <CanvasPlaceholder />
-      )}
 
       <div className='absolute bottom-32 flex w-full items-center justify-center sm:bottom-10 md:hidden'>
         <a href='#about' aria-label='Scroll to the About section'>

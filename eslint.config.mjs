@@ -20,8 +20,6 @@ const eslintConfig = [
         'warn',
         { argsIgnorePattern: '^_', ignoreRestSiblings: true },
       ],
-      // The regression guard for Phase 5. This was 'off', which is why 32
-      // explicit `any` accumulated without the lint ever failing.
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-empty-object-type': 'warn',
 
@@ -31,13 +29,7 @@ const eslintConfig = [
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'react/no-unescaped-entities': 'warn',
-
-      // Accessibility. These are the rules that would have caught the Phase 4
-      // findings: icon only buttons with no name, and a clickable div with no
-      // keyboard path.
-      // Form fields are covered by label-has-associated-control below. This
-      // rule only looks inside the control's own subtree, so it cannot see a
-      // label attached with htmlFor and flags every correct input.
+    
       'jsx-a11y/control-has-associated-label': [
         'error',
         { ignoreElements: ['input', 'textarea', 'select', 'audio', 'video'] },
@@ -64,7 +56,6 @@ const eslintConfig = [
         },
       ],
 
-      // Import order (auto-fixable)
       'import/order': [
         'warn',
         {

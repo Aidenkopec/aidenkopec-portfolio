@@ -208,16 +208,3 @@ export async function getRecentBlogPosts(
   const allPosts = await getAllBlogPosts();
   return allPosts.slice(0, limit);
 }
-
-// Search blog posts by title, description, or content
-export async function searchBlogPosts(query: string): Promise<BlogPost[]> {
-  const allPosts = await getAllBlogPosts();
-  const searchTerm = query.toLowerCase();
-
-  return allPosts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(searchTerm) ||
-      post.description.toLowerCase().includes(searchTerm) ||
-      post.tags.some((tag) => tag.toLowerCase().includes(searchTerm)),
-  );
-}

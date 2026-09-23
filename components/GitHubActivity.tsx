@@ -18,7 +18,7 @@ const GitHubStatsSkeleton = () => (
     <span className='sr-only'>Loading GitHub stats</span>
     {[...Array(4)].map((_, i) => (
       <div key={i} className='min-w-[160px] flex-1'>
-        <div className='rounded-xl border border-tertiary bg-tertiary p-4'>
+        <div className='rounded-xl glass p-4'>
           <div className='mb-2 flex items-center justify-between'>
             <div className='h-6 w-6 animate-pulse rounded bg-gray-600'></div>
             <div className='h-6 w-6 animate-pulse rounded bg-gray-600'></div>
@@ -37,16 +37,13 @@ const GitHubDashboardSkeleton = () => (
     className='mb-12 grid grid-cols-1 gap-8'
   >
     <span className='sr-only'>Loading GitHub activity</span>
-    <div className='w-full rounded-xl border border-tertiary bg-tertiary p-4'>
+    <div className='w-full rounded-xl glass p-4'>
       <div className='mb-4 h-6 w-48 animate-pulse rounded bg-gray-600'></div>
       <div className='h-32 animate-pulse rounded bg-gray-600'></div>
     </div>
     <div className='flex flex-col gap-8 lg:flex-row'>
       {[...Array(2)].map((_, i) => (
-        <div
-          key={i}
-          className='flex-1 rounded-xl border border-tertiary bg-tertiary p-4'
-        >
+        <div key={i} className='flex-1 rounded-xl glass p-4'>
           <div className='mb-4 h-6 w-32 animate-pulse rounded bg-gray-600'></div>
           <div className='space-y-3'>
             {[...Array(3)].map((_, j) => (
@@ -65,7 +62,7 @@ const GitHubDashboardSkeleton = () => (
 // Rendered instead of fabricating zeros when GitHub is unreachable.
 function GitHubUnavailable() {
   return (
-    <div className='rounded-2xl border border-[var(--black-100)] bg-[var(--tertiary-color)] p-8 text-center'>
+    <div className='rounded-2xl glass p-8 text-center'>
       <p className='text-lg font-semibold text-secondary'>
         GitHub activity is temporarily unavailable
       </p>

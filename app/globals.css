@@ -15,8 +15,6 @@
   --color-gradient-start: var(--gradient-start);
   --color-gradient-end: var(--gradient-end);
 
-  /* Background Patterns - Dynamic (now using WavyLines component) */
-
   /* 475px, used by the typography utilities below */
   --breakpoint-xs: 29.6875rem;
 
@@ -28,17 +26,15 @@
   --spacing-padding-combined: 2.5rem; /* py-10 */
 
   /* Typography Scales */
-  --text-hero-head-base: 2.5rem; /* 40px */
-  --text-hero-head-xs: 3.125rem; /* 50px */
-  --text-hero-head-sm: 3.75rem; /* 60px */
-  --text-hero-head-lg: 5rem; /* 80px */
-  --leading-hero-head-lg: 6.125rem; /* 98px */
+  --text-hero-head-base: 2.75rem; /* 44px */
+  --text-hero-head-xs: 4rem; /* 64px */
+  --text-hero-head-sm: 5.5rem; /* 88px */
+  --text-hero-head-lg: 8rem; /* 128px */
 
-  --text-hero-sub-base: 1rem; /* 16px */
-  --text-hero-sub-xs: 1.25rem; /* 20px */
-  --text-hero-sub-sm: 1.625rem; /* 26px */
-  --text-hero-sub-lg: 1.875rem; /* 30px */
-  --leading-hero-sub-lg: 2.5rem; /* 40px */
+  --text-hero-sub-base: 0.75rem; /* 12px */
+  --text-hero-sub-xs: 0.875rem; /* 14px */
+  --text-hero-sub-sm: 1rem; /* 16px */
+  --text-hero-sub-lg: 1.125rem; /* 18px */
 
   --text-section-head-base: 1.875rem; /* 30px */
   --text-section-head-xs: 2.5rem; /* 40px */
@@ -113,14 +109,6 @@
 
 /* Custom Utilities */
 
-.dynamic-gradient {
-  background: linear-gradient(
-    180deg,
-    var(--gradient-start) 0%,
-    var(--gradient-end) 100%
-  );
-}
-
 .black-gradient {
   background: linear-gradient(
     90deg,
@@ -129,25 +117,14 @@
   );
 }
 
-.green-pink-gradient {
-  background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
-}
-
-.shadow-card {
-  box-shadow:
-    0 0 20px rgba(0, 212, 170, 0.4),
-    0 0 40px rgba(168, 85, 247, 0.2),
-    0 0 60px rgba(255, 107, 107, 0.1);
-}
-
 /* Typography and section padding, owned by Tailwind so they sort and layer
    like any other utility. */
 @utility hero-head-text {
   font-weight: 900;
   color: white;
   font-size: var(--text-hero-head-base);
-  line-height: 1.2;
-  margin-top: 0.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 
   @variant xs {
     font-size: var(--text-hero-head-xs);
@@ -157,15 +134,19 @@
   }
   @variant lg {
     font-size: var(--text-hero-head-lg);
-    line-height: var(--leading-hero-head-lg);
   }
 }
 
 @utility hero-sub-text {
-  color: #ffffff;
+  color: color-mix(in srgb, var(--white-100) 70%, transparent);
   font-weight: 500;
   font-size: var(--text-hero-sub-base);
   line-height: 1.5;
+  letter-spacing: 0.4em;
+  /* Tracking also trails the last letter; this keeps the line centred. */
+  margin-right: -0.4em;
+  text-transform: uppercase;
+  margin-top: 1.25rem;
 
   @variant xs {
     font-size: var(--text-hero-sub-xs);
@@ -175,7 +156,6 @@
   }
   @variant lg {
     font-size: var(--text-hero-sub-lg);
-    line-height: var(--leading-hero-sub-lg);
   }
 }
 
@@ -230,13 +210,39 @@
   }
 }
 
-/* Text gradient for project tags */
-.blue-text-gradient {
-  background: linear-gradient(90deg, #00d4ff 0%, #0099cc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: #00d4ff;
+/* Translucent card over the swarm. The dust behind the page shows through
+   blurred, so every section sits in the same space as the hero. */
+@utility glass {
+  background-color: color-mix(in srgb, var(--tertiary-color) 55%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+/* Accent gradient hairline around a glass card. A masked ring rather than a
+   padded gradient shell, so the translucent fill never shows the gradient. */
+@utility glass-edge {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      var(--text-color-variable),
+      transparent 55%,
+      color-mix(in srgb, var(--text-color-variable) 50%, transparent)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 }
 
 body {
@@ -269,6 +275,271 @@ html {
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-top: 6px solid var(--secondary-color);
+}
+
+/* A swarm slot's text fades out once the particles have formed over it. The
+   text stays in the DOM and selectable; components/swarm sets the attribute. */
+[data-swarm-slot] {
+  transition: color 1.2s ease;
+}
+
+[data-swarm-slot][data-swarm-formed] {
+  color: transparent;
+}
+
+/* During the intro the name starts hidden so the particles can build it.
+   Set before first paint by components/swarm/introScript.ts. */
+html[data-swarm-intro] [data-swarm-slot='name'] {
+  color: transparent;
+  transition: none;
+}
+
+/* A quiet hint that the hero can be held. Hidden until the swarm reveals it. */
+.hero-hint {
+  margin-top: 2.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--white-100) 40%, transparent);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+html[data-swarm-hint] .hero-hint {
+  opacity: 1;
+}
+
+/* On touch, a long press in the hero grows a black hole, so it must not also
+   select text or open the callout menu. Desktop keeps selection. */
+@media (pointer: coarse) {
+  [data-swarm-hold-zone] {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+}
+
+/* Over the hero the nav is only its links, floating on the dust. The bar
+   comes in once the hero scrolls away. */
+html[data-hero-in-view] .site-nav {
+  border-color: transparent;
+  background-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.nav-line {
+  transition: opacity 0.8s ease;
+}
+
+/* The swarm streams dust into the line; the line itself waits for it. */
+html[data-hero-in-view] .nav-line,
+html[data-swarm-navline='drawing'] .nav-line {
+  opacity: 0;
+}
+
+/* The hero shows the name, so the navbar's copy waits until it scrolls away.
+   It still appears when tabbed to, and stays put without JavaScript. */
+html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* A soft glow where the swarm draws the contact galaxy. On its own it stands
+   in for the galaxy without WebGL; under the dust it reads as the core's
+   light. */
+.galaxy-slot {
+  background: radial-gradient(
+    ellipse 40% 26% at 50% 50%,
+    color-mix(in srgb, var(--text-color-variable) 14%, transparent),
+    transparent 70%
+  );
+}
+
+/* Accent light behind the ring's front panel, where the eye lands first. */
+.project-stage::before {
+  content: '';
+  position: absolute;
+  inset: 10% 20% 25%;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--text-color-variable) 16%, transparent);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.stage-arrow {
+  position: absolute;
+  top: 42%;
+  z-index: 10;
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background-color: color-mix(in srgb, var(--tertiary-color) 55%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: var(--secondary-color);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.stage-arrow:hover {
+  color: var(--text-color-variable);
+  border-color: color-mix(in srgb, var(--text-color-variable) 50%, transparent);
+}
+
+.stage-arrow:focus-visible {
+  outline: 2px solid var(--text-color-variable);
+  outline-offset: 2px;
+}
+
+/* Tech tiles. --mx/--my come from TechGrid's pointer handler, --brand and
+   --icon from each technology. */
+.tech-tile {
+  --mx: -999px;
+  --my: -999px;
+  position: relative;
+  display: flex;
+  aspect-ratio: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  border-radius: 1rem;
+  outline: none;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.35s ease;
+}
+
+/* Spotlight border: an accent ring that only shows near the cursor. */
+.tech-tile::before,
+.tech-tile::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.tech-tile::before {
+  padding: 1px;
+  background: radial-gradient(
+    240px circle at var(--mx) var(--my),
+    var(--text-color-variable),
+    transparent 65%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* A faint wash of the same light across the glass. */
+.tech-tile::after {
+  background: radial-gradient(
+    260px circle at var(--mx) var(--my),
+    color-mix(in srgb, var(--text-color-variable) 8%, transparent),
+    transparent 70%
+  );
+}
+
+.tech-glow {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: var(--brand);
+  opacity: 0;
+  filter: blur(28px);
+  transform: translate(-50%, -50%) scale(0.6);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.tech-logo {
+  position: relative;
+  /* Wider than tall so a landscape mark like BullMQ's is not shrunk. */
+  width: 3.25rem;
+  height: 2.25rem;
+  background-color: color-mix(in srgb, var(--white-100) 75%, transparent);
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+  transition: background-color 0.35s ease;
+}
+
+.tech-name {
+  position: relative;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  margin-right: -0.25em;
+  text-transform: uppercase;
+  text-align: center;
+  color: color-mix(in srgb, var(--white-100) 55%, transparent);
+  transition: color 0.35s ease;
+}
+
+@media (min-width: 640px) {
+  .tech-logo {
+    width: 4.5rem;
+    height: 3rem;
+  }
+
+  .tech-name {
+    font-size: 0.6875rem;
+  }
+}
+
+.tech-tile:hover,
+.tech-tile:focus-visible {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--brand) 40%, transparent);
+}
+
+.tech-tile:hover .tech-logo,
+.tech-tile:focus-visible .tech-logo {
+  background-color: var(--brand);
+}
+
+.tech-tile:hover .tech-glow,
+.tech-tile:focus-visible .tech-glow {
+  opacity: 0.35;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.tech-tile:hover .tech-name,
+.tech-tile:focus-visible .tech-name {
+  color: var(--white-100);
+}
+
+/* No hover on touch, so the logos wear their colours from the start. */
+@media (hover: none) {
+  .tech-logo {
+    background-color: var(--brand);
+  }
+
+  .tech-tile:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tech-tile:hover,
+  .tech-tile:focus-visible {
+    transform: none;
+  }
 }
 
 /* Respect the OS reduced motion setting for everything CSS can reach: the
