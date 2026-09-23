@@ -389,7 +389,7 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   }
 
   /* The homepage sections as stops on a course line, with a probe that tracks
-     the flight path. components/Navbar sets --route-at: the index of the last
+     the flight path. components/layout/Navbar sets --route-at: the index of the last
      stop passed plus the fraction of the way to the next. */
   .nav-route {
     --col: 5.5rem;
@@ -993,7 +993,7 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
    animations origin and the inline style attributes this app renders.
 
    This reaches no framer-motion animation. Framer drives WAAPI and rAF, not CSS
-   transitions. MotionConfig in components/MotionProvider.tsx covers those, and
+   transitions. MotionConfig in components/providers/MotionProvider.tsx covers those, and
    four leftovers are guarded per component via hooks/usePrefersReducedMotion.
 
    0.01ms rather than none, so animationend and transitionend still fire. */

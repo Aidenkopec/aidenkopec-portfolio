@@ -3,24 +3,19 @@ import type { NextConfig } from 'next';
 const isDev = process.env.NODE_ENV !== 'production';
 
 /**
- * Report-only. Flip to Content-Security-Policy once a preview deploy is clean.
+ * Content Security Policy. Sent as report only, so browsers log violations to
+ * the console but block nothing.
  *
- * Both 'unsafe-inline' entries are load bearing and cannot be removed without a
- * nonce minting proxy: next-themes inlines a pre paint theme script, the App
- * Router inlines RSC payload scripts, and styled-jsx plus ~117 style attributes
- * cover style-src. So this is not XSS mitigation. The value is frame-ancestors,
- * object-src, base-uri and form-action.
- *
- * Production needs no external origin: @vercel/analytics is same origin,
- * next/font self hosts, no remote images.
- *
- * img-src data: the blog hero background.
+ * 'unsafe-inline' is required because next-themes, the App Router and
+ * styled-jsx inject inline scripts and styles.
+ * The dev only entries allow hot reload and the analytics debug script.
+ * img-src data: allows the inline SVG background on the blog hero.
  */
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval' https://va.vercel-scripts.com" : ''}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data:",
   `connect-src 'self'${isDev ? ' ws: https://va.vercel-scripts.com' : ''}`,
   "object-src 'none'",
   "frame-src 'none'",
@@ -33,16 +28,11 @@ const csp = [
 const nextConfig: NextConfig = {
   images: {
     minimumCacheTTL: 86400, // 24 hours
-
-    // No dangerouslyAllowSVG: Next then serves .svg unoptimized, which suits the
-    // three local files. contentDispositionType only applied to that proxied path.
   },
   async headers() {
     return [
       {
-        // Not immutable: CREDITS.md has these tracks slated for re-sourcing under
-        // the same filenames, so a year long immutable cache would strand the old
-        // audio on every repeat visitor.
+        // Not immutable: tracks may be replaced under the same filenames.
         source: '/music/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=604800' }],
       },
@@ -62,9 +52,7 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=()',
           },
-          // frame-ancestors will supersede this once the CSP is enforced. While
-          // the CSP is report only it reports framing rather than blocking it,
-          // so this header is the only thing stopping a clickjacking iframe.
+          // Blocks framing while the CSP (and its frame-ancestors) is report only.
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Content-Security-Policy-Report-Only', value: csp },
         ],

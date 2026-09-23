@@ -104,6 +104,10 @@ npm run format:check
   - **`app/api/`** - API endpoints (contact, blog, GitHub data)
   - **`app/blog/`** - Blog pages (list view, individual posts, tag filtering)
 - **`components/`** - React components organized by feature
+  - **`sections/`** - Homepage sections, server components beside their client islands
+  - **`layout/`** - Site chrome (Navbar, FloatingMusicBar, CustomizationMenu, SectionWrapper, ErrorShell)
+  - **`providers/`** - Client context providers (MotionProvider)
+  - **`chart/`** - Flight chart visuals (FlightPath, Constellations, SectionHeader)
   - **`canvas/`** - Three.js/React Three Fiber 3D components (ProjectRing)
   - **`swarm/`** - Particle swarm hero scene
   - **`blog/`** - Blog-related UI components (BlogCard, BlogContent, BlogNavigation, etc.)
@@ -207,7 +211,7 @@ Required for full functionality:
 
 ## Component Organization Notes
 
-- **Server vs Client Components**: Projects, RecentBlogs and the blog index use a split architecture. The server half reads data (constants or `lib/blog.ts`) and passes it as props to a client island (`ProjectsShowcase`, `RecentBlogsClient`, `BlogIndex`). Never fetch local content over HTTP from a client component. `components/GitHubActivity.tsx` is the reference for the server plus cached data plus client island shape.
+- **Server vs Client Components**: Projects, RecentBlogs and the blog index use a split architecture. The server half reads data (constants or `lib/blog.ts`) and passes it as props to a client island (`ProjectsShowcase`, `RecentBlogsClient`, `BlogIndex`). Never fetch local content over HTTP from a client component. `components/sections/GitHubActivity.tsx` is the reference for the server plus cached data plus client island shape.
 - **Email Templates**: React Email components for contact form (UserAcknowledgment, ContactNotification)
 - **Utility Components**: Button and background boxes under `components/ui/`
 - **3D Canvas**: Separate components for each canvas element to allow lazy loading
