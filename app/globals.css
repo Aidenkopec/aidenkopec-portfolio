@@ -45,6 +45,31 @@
   --color-foreground: var(--white-100);
   --color-border: var(--black-100);
   --color-ring: var(--text-color-variable);
+
+  /* CustomizationMenu entrances */
+  --animate-fadeIn: fadeIn 0.2s ease-out;
+  --animate-slideDown: slideDown 0.3s ease-out;
+  --animate-scaleIn: scaleIn 0.2s ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+  }
 }
 
 /* Theme values, defined only here. CustomizationMenu previews a theme by
@@ -257,6 +282,27 @@ html {
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-top: 6px solid var(--secondary-color);
+}
+
+/* CustomizationMenu volume sliders. */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--text-color-variable);
+  cursor: pointer;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+}
+
+.slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--text-color-variable);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 }
 
 /* A swarm slot's text fades out once the particles have formed over it. The

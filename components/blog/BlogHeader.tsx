@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { BlogPost } from '@/lib/types';
+import { tagSlug } from '@/lib/utils';
 
 interface BlogHeaderProps {
   post: BlogPost;
@@ -88,7 +89,7 @@ export function BlogHeader({ post }: BlogHeaderProps) {
             {post.tags.map((tag) => (
               <Link
                 key={tag}
-                href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                href={`/blog/tag/${tagSlug(tag)}`}
                 className='inline-flex items-center gap-1 rounded-full bg-black-100 px-3 py-1 text-sm text-secondary transition-all duration-200 hover:bg-black-200 hover:text-secondary'
               >
                 <Tag className='h-3 w-3' />

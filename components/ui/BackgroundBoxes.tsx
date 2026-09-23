@@ -51,7 +51,7 @@ const BoxesCore = () => {
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
-                  viewBox='0 24'
+                  viewBox='0 0 24 24'
                   strokeWidth='1.5'
                   stroke='currentColor'
                   className='pointer-events-none absolute -top-[14px] -left-[22px] h-6 w-10 stroke-[1px] text-slate-700'

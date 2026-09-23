@@ -57,33 +57,26 @@ const FloatingMusicBar: React.FC = () => {
   } = useMusicContext();
 
   const [shouldScrollTitle, setShouldScrollTitle] = useState<boolean>(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
   const titleRef = useRef<HTMLSpanElement>(null);
+  // Phones start with the dock hidden, once. After that the mode is the
+  // user's choice, so picking Full or Compact in the menu sticks.
+  const autoHidden = useRef(false);
 
-  // Detect mobile device and set initial mode
   useEffect(() => {
     const checkMobile = () => {
-      const isMobileDevice = window.innerWidth <= 768; // Standard mobile breakpoint
-
-      // Only auto-hide on mobile if user hasn't interacted yet
-      if (
-        isMobileDevice &&
-        !hasUserInteracted &&
-        floatingBarMode !== 'hidden'
-      ) {
-        setFloatingBarMode('hidden');
-      }
+      if (autoHidden.current || window.innerWidth > 768) return;
+      autoHidden.current = true;
+      setFloatingBarMode('hidden');
     };
 
     checkMobile();
     window.addEventListener('resize', checkMobile, { passive: true });
 
     return () => window.removeEventListener('resize', checkMobile);
-  }, [floatingBarMode, setFloatingBarMode, hasUserInteracted]);
+  }, [setFloatingBarMode]);
 
-  // Track user interactions to prevent auto-hiding after they've used the music bar
   const handleShowMusicBar = () => {
-    setHasUserInteracted(true);
+    autoHidden.current = true;
     setFloatingBarMode('standard');
   };
 

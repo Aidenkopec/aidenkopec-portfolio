@@ -164,7 +164,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             convenience rather than the only dismissal path. */}
         <div
           aria-hidden='true'
-          className='animate-fadeIn fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm'
+          className='fixed inset-0 z-[9998] animate-fadeIn bg-black/60 backdrop-blur-sm'
           onClick={onClose}
         />
 
@@ -172,7 +172,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
         <div className='fixed inset-0 z-[9999] flex items-start justify-center pt-20 sm:pt-24'>
           <div
             ref={menuRef}
-            className='animate-slideDown sm:animate-scaleIn flex h-[500px] w-[90%] max-w-md flex-col overflow-hidden rounded-2xl border border-[var(--chart-line)] bg-black-100 shadow-2xl sm:w-[90%]'
+            className='flex h-[500px] w-[90%] max-w-md animate-slideDown flex-col overflow-hidden rounded-2xl border border-[var(--chart-line)] bg-black-100 shadow-2xl sm:w-[90%] sm:animate-scaleIn'
           >
             {/* Header */}
             <div className='flex-shrink-0 border-b border-tertiary p-4'>
@@ -613,68 +613,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
             : 'Music dock settings persist across sessions'}
         </p>
       </div>
-
-      {/* Custom slider styles */}
-      <style>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          height: 16px;
-          width: 16px;
-          border-radius: 50%;
-          background: var(--text-color-variable);
-          cursor: pointer;
-          box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
-        }
-
-        .slider::-moz-range-thumb {
-          height: 16px;
-          width: 16px;
-          border-radius: 50%;
-          background: var(--text-color-variable);
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slideDown {
-          from { 
-            transform: translateY(-20px);
-            opacity: 0;
-          }
-          to { 
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        @keyframes scaleIn {
-          from { 
-            transform: scale(0.95);
-            opacity: 0;
-          }
-          to { 
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out;
-        }
-
-        .animate-scaleIn {
-          animation: scaleIn 0.2s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { cache } from 'react';
 import { blogFrontmatterSchema, formatIssues } from './blog-schema';
 import { createSlugger, stripInlineMarkdown } from './slugify';
 import { BlogPost, BlogTag, BlogHeading } from './types';
+import { tagSlug } from './utils';
 
 const BLOG_DIRECTORY = path.join(process.cwd(), 'content/blog');
 
@@ -164,7 +165,7 @@ export async function getBlogPostBySlug(
 export async function getBlogPostsByTag(tag: string): Promise<BlogPost[]> {
   const allPosts = await getAllBlogPosts();
   return allPosts.filter((post) =>
-    post.tags.some((postTag) => postTag.toLowerCase() === tag.toLowerCase()),
+    post.tags.some((postTag) => tagSlug(postTag) === tag),
   );
 }
 
@@ -173,16 +174,7 @@ export async function getAllBlogTags(): Promise<BlogTag[]> {
   const allPosts = await getAllBlogPosts();
   const tags = new Set(allPosts.flatMap((post) => post.tags));
 
-  return [...tags].map((name) => ({
-    // Deliberately NOT the shared slugify from lib/slugify. getBlogPostsByTag
-    // above matches with a bare toLowerCase and never hyphenates, so the route
-    // resolves only because this slug is lenient: `Next.js` stays `next.js`.
-    // Running it through slugify would yield `nextjs`, the match would fail,
-    // and /blog/tag/next.js would 404. Unifying the two means changing this,
-    // the matcher, both reverse lookups in app/blog/tag/[tag]/page.tsx and the
-    // href in components/blog/BlogHeader.tsx together, and it alters live URLs.
-    slug: name.toLowerCase().replace(/\s+/g, '-'),
-  }));
+  return [...tags].map((name) => ({ slug: tagSlug(name) }));
 }
 
 // Get featured blog posts

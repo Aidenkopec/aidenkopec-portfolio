@@ -62,20 +62,22 @@ const Contact: React.FC = () => {
     }
   };
 
-  // The success view replaces the form, so focus would otherwise be stranded on
-  // a button that no longer exists.
-  useEffect(() => {
-    if (submitSuccess) {
-      successRef.current?.focus();
-    }
-  }, [submitSuccess]);
-
   const resetForm = () => {
     setSubmitSuccess(false);
     setErrorMessage('');
     setErrorField(undefined);
     setForm(EMPTY_FORM);
   };
+
+  // The success view replaces the form, so focus would otherwise be stranded on
+  // a button that no longer exists. It returns to a blank form after a delay;
+  // the timer dies with the success view, so it cannot wipe a new draft.
+  useEffect(() => {
+    if (!submitSuccess) return;
+    successRef.current?.focus();
+    const timer = setTimeout(resetForm, 10000);
+    return () => clearTimeout(timer);
+  }, [submitSuccess]);
 
   const validateLocally = (): boolean => {
     const parsed = contactSchema.safeParse(form);
@@ -120,11 +122,6 @@ const Contact: React.FC = () => {
         setLoading(false);
         setSubmitSuccess(true);
         setLastSend(`sent-${++sendCountRef.current}`);
-
-        // Reset form after a delay to let user see success message
-        setTimeout(() => {
-          resetForm();
-        }, 10000);
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to send message');
