@@ -71,6 +71,9 @@ const simplexNoise = /* glsl */ `
   }
 `;
 
+/** The galaxy's height over its width: a disc seen at an angle. */
+export const GALAXY_TILT = 0.55;
+
 /** Shared by both passes: a stable direction per particle, from its seed. */
 const seedDirection = /* glsl */ `
   vec2 seedDirection(float seed) {
@@ -124,6 +127,13 @@ export const velocityShader = /* glsl */ `
   // bound particles, and response.
   uniform vec4 uWellA;
   uniform vec4 uWellB;
+  // Galaxy: centre, formation, formation clock and how far it has turned.
+  uniform vec2 uGalaxy;
+  uniform float uGalaxyForm;
+  uniform float uGalaxyFormTime;
+  uniform float uGalaxyAngle;
+
+  const float GALAXY_TILT = ${GALAXY_TILT.toFixed(2)};
 
   ${simplexNoise}
   ${seedDirection}
@@ -152,8 +162,13 @@ export const velocityShader = /* glsl */ `
     // Velocity as the position pass will use it this frame.
     vec2 heading = vel.xy;
 
+    // Group 1 is the galaxy, with its own formation; group 0 is the slot's
+    // shape.
+    bool inGalaxy = target.z > 0.5;
+    float form = inGalaxy ? uGalaxyForm : uForm;
+    float formTime = inGalaxy ? uGalaxyFormTime : uFormTime;
     float delay = seed * uMaxDelay;
-    float bind = target.w * uForm * smoothstep(delay, delay + uRamp, uFormTime);
+    float bind = target.w * form * smoothstep(delay, delay + uRamp, formTime);
 
     // Shockwave. A ring expands from the click; shockT is the time since it
     // passed this particle, so everything below runs as a wave outward.
@@ -196,6 +211,14 @@ export const velocityShader = /* glsl */ `
 
     // Slot origin is the shape's top left in world space; local y runs down.
     vec2 home = vec2(uSlot.x + target.x, uSlot.y - target.y);
+    if (inGalaxy) {
+      // Galaxy points are around its centre with y up. It turns as one, then
+      // is flattened as if seen at an angle.
+      float c = cos(uGalaxyAngle);
+      float s = sin(uGalaxyAngle);
+      vec2 turned = vec2(target.x * c - target.y * s, target.x * s + target.y * c);
+      home = uGalaxy + vec2(turned.x, turned.y * GALAXY_TILT);
+    }
     // Stiffness scales with bind, so damping scales with its square root. That
     // keeps the damping ratio at exactly 1 while the pull ramps in, where
     // scaling both by bind would leave the spring bouncy mid ramp.

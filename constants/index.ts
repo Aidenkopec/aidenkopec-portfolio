@@ -1,19 +1,5 @@
 import type { StaticImageData } from 'next/image';
 
-// Technology icons - Static imports for Next.js optimization
-import aws from '@/public/technologies/aws.png';
-import docker from '@/public/technologies/docker.png';
-import nodejs from '@/public/technologies/nodejs.png';
-import postgres from '@/public/technologies/postgresql.png';
-import python from '@/public/technologies/python.png';
-import react from '@/public/technologies/reactjs.png';
-import tailwind from '@/public/technologies/tailwind.png';
-import typescript from '@/public/technologies/typescript.png';
-import vue from '@/public/technologies/vue-three.png';
-import bullmq from '@/public/technologies/bullmq.png';
-import nextjs from '@/public/technologies/nextjs.png';
-import redis from '@/public/technologies/redis.png';
-
 // Company logos - Static imports
 import evans from '@/public/companies/evans-consoles-logo.jpeg';
 import idotogetherlogo from '@/public/companies/idotogether-logo.webp';
@@ -49,7 +35,10 @@ interface Service {
 
 interface Technology {
   name: string;
-  icon: StaticImageData;
+  /** Single colour logo in public/, drawn as a CSS mask so it can be tinted. */
+  icon: string;
+  /** Brand colour, lightened where the official one is too dark on glass. */
+  color: string;
 }
 
 interface Experience {
@@ -140,26 +129,43 @@ const services: Service[] = [
   },
 ];
 
+// Logos from simple-icons (CC0), except BullMQ which is not in the set.
 const technologies: Technology[] = [
   // Frontend
-  { name: 'Next.js', icon: nextjs },
-  { name: 'React', icon: react },
-  { name: 'TypeScript', icon: typescript },
-  { name: 'Tailwind CSS', icon: tailwind },
-  { name: 'Vue 3', icon: vue },
+  { name: 'Next.js', icon: '/technologies/nextdotjs.svg', color: '#FFFFFF' },
+  { name: 'React', icon: '/technologies/react.svg', color: '#61DAFB' },
+  {
+    name: 'TypeScript',
+    icon: '/technologies/typescript.svg',
+    color: '#4A9BEA',
+  },
+  {
+    name: 'Tailwind CSS',
+    icon: '/technologies/tailwindcss.svg',
+    color: '#06B6D4',
+  },
+  { name: 'Vue 3', icon: '/technologies/vuedotjs.svg', color: '#4FC08D' },
 
   // Backend
-  { name: 'Node.js', icon: nodejs },
-  { name: 'BullMQ', icon: bullmq },
-  { name: 'Redis', icon: redis },
+  { name: 'Node.js', icon: '/technologies/nodedotjs.svg', color: '#6CC24A' },
+  { name: 'BullMQ', icon: '/technologies/bullmq.png', color: '#F25C54' },
+  { name: 'Redis', icon: '/technologies/redis.svg', color: '#FF4438' },
 
   // Databases
-  { name: 'PostgreSQL', icon: postgres },
-  { name: 'Python', icon: python },
+  {
+    name: 'PostgreSQL',
+    icon: '/technologies/postgresql.svg',
+    color: '#6B8FF0',
+  },
+  { name: 'Python', icon: '/technologies/python.svg', color: '#FFD43B' },
 
   // DevOps
-  { name: 'AWS', icon: aws },
-  { name: 'Docker', icon: docker },
+  {
+    name: 'AWS',
+    icon: '/technologies/amazonwebservices.svg',
+    color: '#FF9900',
+  },
+  { name: 'Docker', icon: '/technologies/docker.svg', color: '#2496ED' },
 ];
 
 const experiences: Experience[] = [

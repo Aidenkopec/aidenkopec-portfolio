@@ -302,7 +302,7 @@ const ProjectStrip: React.FC<{
     {projects.map((project, index) => (
       <article
         key={project.slug}
-        className='flex w-[85%] shrink-0 snap-center flex-col overflow-hidden rounded-xl border border-black-100 bg-tertiary sm:w-[60%]'
+        className='flex w-[85%] shrink-0 snap-center flex-col overflow-hidden rounded-xl glass sm:w-[60%]'
       >
         <div className='relative aspect-[16/10] w-full border-b border-[var(--black-100)]'>
           <Image

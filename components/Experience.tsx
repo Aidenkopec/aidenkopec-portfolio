@@ -28,10 +28,14 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
   return (
     <VerticalTimelineElement
       contentStyle={{
-        background: 'var(--tertiary-color)',
+        background:
+          'color-mix(in srgb, var(--tertiary-color) 55%, transparent)',
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
+        border: '1px solid rgb(255 255 255 / 0.08)',
         color: 'var(--white-100)',
       }}
-      contentArrowStyle={{ borderRight: '7px solid var(--tertiary-color)' }}
+      contentArrowStyle={{ borderRight: '7px solid rgb(255 255 255 / 0.08)' }}
       date={experience.date}
       iconStyle={{ background: experience.iconBg }}
       icon={

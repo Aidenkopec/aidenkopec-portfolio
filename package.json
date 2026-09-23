@@ -30,7 +30,6 @@
     "@react-three/fiber": "^9.7.0",
     "@tailwindcss/typography": "^0.5.20",
     "@vercel/analytics": "^2.0.1",
-    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "framer-motion": "^13.4.0",
     "gray-matter": "^4.0.3",
@@ -60,7 +59,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/canvas-confetti": "^1.9.0",
     "@types/luxon": "^3.7.5",
     "@types/node": "^25",
     "@types/react": "^19",

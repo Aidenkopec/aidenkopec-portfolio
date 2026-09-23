@@ -10,8 +10,12 @@ import BlackHole, {
   type BlackHoleState,
 } from './BlackHole';
 import { trackPointer, type PointerState } from './pointer';
-import { pointsFragmentShader, pointsVertexShader } from './shaders';
-import { sampleText, writeTargets } from './shapes';
+import {
+  GALAXY_TILT,
+  pointsFragmentShader,
+  pointsVertexShader,
+} from './shaders';
+import { galaxyPoints, linePoints, sampleText, writeTargets } from './shapes';
 import {
   CLICK_SHOCK,
   createSimulation,
@@ -32,7 +36,11 @@ import {
   introCollapse,
   introWell,
   releaseShock,
+  SEND,
+  sendBang,
+  sendWell,
   type ShockShape,
+  wobbleShock,
 } from './timeline';
 
 // Particle budgets as simulation texture sizes: 32,768, 16,384 and 8,192.
@@ -66,6 +74,24 @@ const TEXT_FADE_AFTER = 1.8;
 // by points keeps letter density the same at phone and desktop sizes.
 const NAME_DENSITY = 1;
 const NAME_MAX_SHARE = 0.6;
+// The galaxy beside the contact form takes the last share of particles, so
+// it never touches the name's.
+const GALAXY_SHARE = 0.35;
+// The galaxy forms once this much of the screen's height, from each edge, is
+// clear of its box: mostly in view, not just peeking.
+const GALAXY_MARGIN = 0.15;
+// How fast the galaxy turns in radians per second, at rest and while a
+// message sends, and how fast it moves between them.
+const GALAXY_SPIN = 0.1;
+const GALAXY_SENDING_SPIN = 0.8;
+const SPIN_SMOOTHING = 2;
+// When the hero scrolls away, the name's particles stream into the navbar's
+// line. The real line fades in once they have mostly arrived, and the dust
+// lets go a little after that.
+const NAVLINE_ARRIVE = 0.9;
+const NAVLINE_HOLD = 0.7;
+// Particles per pixel of line.
+const NAVLINE_DENSITY = 2;
 
 // Pointer speed in px/s where wind starts and where it reaches full strength.
 // Below the first, a resting or barely moving cursor leaves particles alone.
@@ -160,6 +186,31 @@ function Dust({
   const simulationRef = useRef<Simulation | null>(null);
   const nameRef = useRef<{ slot: Slot; ready: boolean } | null>(null);
   const formStartRef = useRef<number | null>(null);
+  const galaxyRef = useRef<{
+    slot: Slot;
+    radius: number;
+    ready: boolean;
+  } | null>(null);
+  const galaxyFormStartRef = useRef<number | null>(null);
+  // The name's last sampled shape, to write back after the line borrows its
+  // particles.
+  const nameShapeRef = useRef<{ points: Float32Array; count: number } | null>(
+    null,
+  );
+  const navlineRef = useRef<{
+    slot: Slot;
+    drawing: boolean;
+    start: number;
+    heroWasInView: boolean;
+  } | null>(null);
+  const galaxySpinRef = useRef({ angle: 0, speed: GALAXY_SPIN });
+  // The contact form's last send signal seen, and the collapse it started.
+  const sendRef = useRef({
+    seen: '',
+    stage: 'idle' as 'idle' | 'collapsing' | 'banged',
+    t: 0,
+    bangAt: 0,
+  });
   // The opening sequence: its clock, warm up frames counted, and when it
   // banged in clock time.
   const introRef = useRef({
@@ -190,7 +241,7 @@ function Dust({
   const exitRef = useRef({ evaporated: false });
   // Which well was open last frame, so a handover between two can free what
   // the first one captured.
-  const wellSourceRef = useRef<'intro' | 'hold' | 'exit' | null>(null);
+  const wellSourceRef = useRef<'intro' | 'hold' | 'send' | 'exit' | null>(null);
   // Whether the hint has shown and whether this visitor has ever held.
   const hintRef = useRef({ shown: false, held: false });
   // Frame times sampled for the tier check, until it has run.
@@ -235,11 +286,13 @@ function Dust({
       void document.fonts.ready.then(() => {
         if (cancelled) return;
         const points = sampleText(element);
+        const nameEnd = Math.round(texWidth * texHeight * NAME_MAX_SHARE);
         const count = Math.min(
           Math.round((points.length / 2) * NAME_DENSITY),
-          Math.round(texWidth * texHeight * NAME_MAX_SHARE),
+          nameEnd,
         );
-        writeTargets(sim.targets, points, count);
+        nameShapeRef.current = { points, count };
+        writeTargets(sim.targets, points, count, { to: nameEnd });
         sim.commitTargets();
         if (nameRef.current) nameRef.current.ready = true;
       });
@@ -249,6 +302,34 @@ function Dust({
       gl.domElement.closest('[data-swarm-stage]')?.parentElement ?? document;
     const slot = trackSlot(page, 'name', resample);
     nameRef.current = slot ? { slot, ready: false } : null;
+    const total = texWidth * texHeight;
+    const galaxyCount = Math.round(total * GALAXY_SHARE);
+    const galaxySlot = trackSlot(page, 'galaxy', (element) => {
+      const { width, height } = element.getBoundingClientRect();
+      // Wide enough to fill the box as it turns, flat enough to fit it.
+      const radius = Math.min(width * 0.42, (height * 0.42) / GALAXY_TILT);
+      writeTargets(sim.targets, galaxyPoints(radius), galaxyCount, {
+        from: total - galaxyCount,
+        group: 1,
+      });
+      sim.commitTargets();
+      if (galaxyRef.current) {
+        galaxyRef.current.radius = radius;
+        galaxyRef.current.ready = true;
+      }
+    });
+    galaxyRef.current = galaxySlot
+      ? { slot: galaxySlot, radius: 0, ready: false }
+      : null;
+    const navlineSlot = trackSlot(page, 'navline', () => {});
+    navlineRef.current = navlineSlot
+      ? {
+          slot: navlineSlot,
+          drawing: false,
+          start: 0,
+          heroWasInView: 'heroInView' in root.dataset,
+        }
+      : null;
     const pointer = trackPointer();
     pointerRef.current = pointer.state;
     const stopAccent = watchAccent((accent) => {
@@ -270,6 +351,11 @@ function Dust({
       slot?.stop();
       if (slot) delete slot.element.dataset.swarmFormed;
       nameRef.current = null;
+      galaxySlot?.stop();
+      galaxyRef.current = null;
+      navlineSlot?.stop();
+      navlineRef.current = null;
+      delete root.dataset.swarmNavline;
       sim.dispose();
       simulationRef.current = null;
     };
@@ -472,14 +558,120 @@ function Dust({
       blackHole.flashX = centerX;
       blackHole.flashY = centerY;
     }
+    // The galaxy beside the contact form, and what the last send did to it.
+    const galaxy = galaxyRef.current;
+    const galaxyRect = galaxy?.slot.rect;
+    const galaxyRadius = galaxy?.radius ?? 0;
+    const galaxyX = galaxyRect
+      ? galaxyRect.left + galaxyRect.width / 2 - size.width / 2
+      : 0;
+    const galaxyY = galaxyRect
+      ? size.height / 2 - (galaxyRect.top + galaxyRect.height / 2)
+      : 0;
+    const galaxyInView =
+      !!galaxyRect &&
+      galaxyRect.bottom > size.height * GALAXY_MARGIN &&
+      galaxyRect.top < size.height * (1 - GALAXY_MARGIN);
+    const send = sendRef.current;
+    const signal = galaxy?.slot.element.dataset.swarmSend ?? '';
+    if (signal !== send.seen) {
+      send.seen = signal;
+      if (!calm && galaxy?.ready && galaxyInView) {
+        if (signal.startsWith('sent-') && send.stage === 'idle') {
+          send.stage = 'collapsing';
+          send.t = 0;
+        } else if (signal.startsWith('error-')) {
+          startShock(wobbleShock(galaxyX, galaxyY, galaxyRadius));
+        }
+      }
+    }
+    if (send.stage === 'collapsing') {
+      send.t += dt;
+      if (send.t >= SEND.collapse) {
+        send.stage = 'banged';
+        send.bangAt = time;
+        startShock(sendBang(galaxyX, galaxyY, galaxyRadius));
+        blackHole.flash = 0.8;
+        blackHole.flashX = galaxyX;
+        blackHole.flashY = galaxyY;
+      }
+    }
+    if (send.stage === 'banged' && time - send.bangAt >= SEND.formDelay) {
+      send.stage = 'idle';
+    }
+    const shouldFormGalaxy =
+      !!galaxy?.ready && galaxyInView && send.stage === 'idle';
+    if (shouldFormGalaxy && galaxyFormStartRef.current === null) {
+      galaxyFormStartRef.current = time;
+    } else if (!shouldFormGalaxy) {
+      galaxyFormStartRef.current = null;
+    }
+    const spin = galaxySpinRef.current;
+    const spinTarget = calm
+      ? 0
+      : signal === 'sending'
+        ? GALAXY_SENDING_SPIN
+        : GALAXY_SPIN;
+    spin.speed +=
+      (spinTarget - spin.speed) * (1 - Math.exp(-dt * SPIN_SMOOTHING));
+    spin.angle += spin.speed * dt;
+
+    // The hero leaving the screen sends the name's particles to the navbar's
+    // line; coming back, or the line's hold running out, gives them back.
+    const navline = navlineRef.current;
+    const root = document.documentElement;
+    const restoreName = () => {
+      const shape = nameShapeRef.current;
+      if (!shape) return;
+      writeTargets(simulation.targets, shape.points, shape.count, {
+        to: Math.round(texWidth * texHeight * NAME_MAX_SHARE),
+      });
+      simulation.commitTargets();
+    };
+    if (navline) {
+      const heroInView = 'heroInView' in root.dataset;
+      if (heroInView !== navline.heroWasInView) {
+        navline.heroWasInView = heroInView;
+        if (!heroInView && !calm && intro.stage !== 'gathering') {
+          const width = navline.slot.rect.width;
+          const nameEnd = Math.round(texWidth * texHeight * NAME_MAX_SHARE);
+          writeTargets(
+            simulation.targets,
+            linePoints(width),
+            Math.min(Math.round(width * NAVLINE_DENSITY), nameEnd),
+            { to: nameEnd },
+          );
+          simulation.commitTargets();
+          navline.drawing = true;
+          navline.start = time;
+          root.dataset.swarmNavline = 'drawing';
+        } else if (heroInView && navline.drawing) {
+          navline.drawing = false;
+          delete root.dataset.swarmNavline;
+          restoreName();
+        }
+      }
+      const lineTime = time - navline.start;
+      if (navline.drawing && lineTime > NAVLINE_ARRIVE) {
+        delete root.dataset.swarmNavline;
+      }
+      if (navline.drawing && lineTime > NAVLINE_ARRIVE + NAVLINE_HOLD) {
+        navline.drawing = false;
+        restoreName();
+      }
+    }
+    const lineRect = navline?.drawing ? navline.slot.rect : null;
+
     const wellSource =
       intro.stage === 'gathering'
         ? 'intro'
         : hold.active
           ? 'hold'
-          : exiting
-            ? 'exit'
-            : null;
+          : send.stage === 'collapsing'
+            ? 'send'
+            : exiting
+              ? 'exit'
+              : null;
     // Captured particles are freed only when the horizon closes, so a handover
     // from one open well to another closes it for one frame first. Otherwise
     // they stay parked, now at the new well.
@@ -495,7 +687,9 @@ function Dust({
           ? introWell(intro.t, centerX, centerY)
           : wellSource === 'hold'
             ? holdWell(hold.x, hold.y, hold.heldFor)
-            : exitWell(exitProgress, centerX, centerY);
+            : wellSource === 'send'
+              ? sendWell(send.t, galaxyX, galaxyY, galaxyRadius)
+              : exitWell(exitProgress, centerX, centerY);
 
     // The core eases in as the well opens and vanishes the moment it closes.
     const coreTarget = well.horizon * CORE_SCALE;
@@ -524,10 +718,18 @@ function Dust({
       delta: dt,
       width: size.width,
       height: size.height,
-      slotX: (rect?.left ?? 0) - size.width / 2,
-      slotY: size.height / 2 - (rect?.top ?? 0),
-      form: formStartRef.current === null ? 0 : 1,
-      formTime,
+      slotX: ((lineRect ?? rect)?.left ?? 0) - size.width / 2,
+      slotY: size.height / 2 - ((lineRect ?? rect)?.top ?? 0),
+      form: lineRect || formStartRef.current !== null ? 1 : 0,
+      formTime: lineRect && navline ? time - navline.start : formTime,
+      galaxyX,
+      galaxyY,
+      galaxyForm: galaxyFormStartRef.current === null ? 0 : 1,
+      galaxyFormTime:
+        galaxyFormStartRef.current === null
+          ? 0
+          : time - galaxyFormStartRef.current,
+      galaxyAngle: spin.angle,
       pointerX: (pointer?.x ?? 0) - size.width / 2,
       pointerY: size.height / 2 - (pointer?.y ?? 0),
       // Client y runs down, world y runs up.

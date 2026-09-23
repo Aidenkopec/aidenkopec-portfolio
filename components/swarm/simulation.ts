@@ -101,6 +101,13 @@ export type StepInput = {
   form: number;
   /** Seconds since the current formation started. */
   formTime: number;
+  /** The galaxy's centre in world space, and its own form and clock. */
+  galaxyX: number;
+  galaxyY: number;
+  galaxyForm: number;
+  galaxyFormTime: number;
+  /** How far the galaxy has turned, in radians. */
+  galaxyAngle: number;
   /** Pointer position and smoothed velocity, in world space. */
   pointerX: number;
   pointerY: number;
@@ -116,7 +123,7 @@ export type Simulation = {
   step: (input: StepInput) => void;
   positions: () => THREE.Texture;
   velocities: () => THREE.Texture;
-  /** Target data, four floats per particle: local x, local y, z, bound. */
+  /** Target data, four floats per particle: local x, local y, group, bound. */
   targets: Float32Array;
   /** Uploads `targets` after it has been written. */
   commitTargets: () => void;
@@ -206,6 +213,15 @@ export function createSimulation(
   velocity.material.uniforms.uMaxDelay = { value: FORM.maxDelay };
   velocity.material.uniforms.uRamp = { value: FORM.ramp };
 
+  const galaxy = { value: new THREE.Vector2() };
+  const galaxyForm = { value: 0 };
+  const galaxyFormTime = { value: 0 };
+  const galaxyAngle = { value: 0 };
+  velocity.material.uniforms.uGalaxy = galaxy;
+  velocity.material.uniforms.uGalaxyForm = galaxyForm;
+  velocity.material.uniforms.uGalaxyFormTime = galaxyFormTime;
+  velocity.material.uniforms.uGalaxyAngle = galaxyAngle;
+
   const pointer = { value: new THREE.Vector2() };
   const pointerVelocity = { value: new THREE.Vector2() };
   const wind = { value: 0 };
@@ -248,6 +264,10 @@ export function createSimulation(
       slot.value.set(input.slotX, input.slotY);
       form.value = input.form;
       formTime.value = input.formTime;
+      galaxy.value.set(input.galaxyX, input.galaxyY);
+      galaxyForm.value = input.galaxyForm;
+      galaxyFormTime.value = input.galaxyFormTime;
+      galaxyAngle.value = input.galaxyAngle;
       pointer.value.set(input.pointerX, input.pointerY);
       pointerVelocity.value.set(input.pointerVX, input.pointerVY);
       wind.value = input.wind;

@@ -19,7 +19,7 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
 }) => (
   <motion.div
     variants={fadeIn('up', 'spring', index * 0.25, 0.6)}
-    className='h-full rounded-3xl bg-black-200 p-8 md:p-10'
+    className='h-full rounded-3xl glass p-8 md:p-10'
   >
     <p className='text-4xl leading-none font-black text-secondary'>&ldquo;</p>
 
@@ -49,8 +49,8 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
 const Testimonials: React.FC = () => {
   return (
     <SectionWrapper label='Testimonials'>
-      <section className='mt-12 rounded-[20px] bg-black-100'>
-        <div className='min-h-[300px] rounded-2xl bg-tertiary padding'>
+      <section className='mt-12 rounded-[20px] glass'>
+        <div className='min-h-[300px] rounded-2xl padding'>
           <motion.div variants={textVariant()}>
             <p className='section-sub-text'>WHAT OTHERS SAY</p>
             <h2 className='section-head-text'>Testimonials.</h2>

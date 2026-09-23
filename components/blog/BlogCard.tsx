@@ -31,7 +31,7 @@ export function BlogCard({
       >
         <Link href={`/blog/${post.slug}`}>
           <motion.div
-            className='flex min-h-[300px] flex-col overflow-hidden rounded-xl border border-black-100 bg-tertiary shadow-sm transition-all duration-300 hover:border-[var(--text-color-variable)]/30 hover:shadow-xl lg:flex-row'
+            className='flex min-h-[300px] flex-col overflow-hidden rounded-xl glass shadow-sm transition-all duration-300 hover:border-[var(--text-color-variable)]/30 hover:shadow-xl lg:flex-row'
             whileHover={{
               y: -5,
               transition: { duration: 0.3 },
@@ -154,7 +154,7 @@ export function BlogCard({
     >
       <Link href={`/blog/${post.slug}`}>
         <motion.div
-          className='flex h-full flex-col overflow-hidden rounded-xl border border-black-100 bg-tertiary shadow-sm transition-all duration-300 hover:border-[var(--text-color-variable)]/30 hover:shadow-xl'
+          className='flex h-full flex-col overflow-hidden rounded-xl glass shadow-sm transition-all duration-300 hover:border-[var(--text-color-variable)]/30 hover:shadow-xl'
           whileHover={{
             y: -5,
             transition: { duration: 0.3 },

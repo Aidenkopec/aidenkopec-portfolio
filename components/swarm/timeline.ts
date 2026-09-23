@@ -136,3 +136,47 @@ export function exitWell(p: number, x: number, y: number): Well {
 export function evaporateShock(x: number, y: number): ShockShape {
   return { x, y, kick: 7000, speed: 1400, reach: 700, hold: 1.5 };
 }
+
+/**
+ * Sending the contact form. The galaxy spirals into its own core (collapse),
+ * then bangs back out and re-forms after formDelay. Seconds of simulation time.
+ */
+export const SEND = { collapse: 1.1, formDelay: 0.7 };
+
+/** The well at send time t, sized to a galaxy of this radius. */
+export function sendWell(
+  t: number,
+  x: number,
+  y: number,
+  radius: number,
+): Well {
+  const c = clamp01(t / SEND.collapse);
+  return {
+    x,
+    y,
+    pull: 0.3 + 7 * c * c,
+    spin: 600 + 2200 * c,
+    // Only the galaxy and the dust right around it fall in.
+    reach: radius * 1.6,
+    horizon: 2 + 16 * c,
+    release: 1,
+    response: 3 + 6 * c,
+  };
+}
+
+/** The bang that ends a send, scaled to the galaxy. */
+export function sendBang(x: number, y: number, radius: number): ShockShape {
+  return {
+    x,
+    y,
+    kick: CLICK_SHOCK.kick * 1.5,
+    speed: 1800,
+    reach: radius * 2.5,
+    hold: 0.3,
+  };
+}
+
+/** A failed send only shakes the galaxy; nothing falls in. */
+export function wobbleShock(x: number, y: number, radius: number): ShockShape {
+  return { x, y, kick: 2500, speed: 1200, reach: radius, hold: 0.15 };
+}

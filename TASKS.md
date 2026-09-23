@@ -2,6 +2,7 @@
 
 Full plan: `~/.claude/plans/pasted-content-id-8669-i-want-greedy-barto.md`
 Big Bang hero plan: `~/.claude/plans/great-come-up-with-rosy-puffin.md`
+Swarm everywhere plan: `~/.claude/plans/yes-do-that-come-sunny-aho.md`
 
 ## Planning
 
@@ -40,6 +41,14 @@ Big Bang hero plan: `~/.claude/plans/great-come-up-with-rosy-puffin.md`
 - [x] 7. Name hidden before first paint on a fresh visit via an inline head script, 4s failsafe
 - [x] 8. "Press and hold" hint after the intro, gone for good after the first hold
 - [x] 9. Scroll exit: a black hole swallows the name as it scrolls away, then evaporates
+
+## Swarm everywhere
+
+- [ ] 1. Glass surfaces: `glass` and `glass-edge` utilities on every homepage card (built; not yet checked on all four themes)
+- [ ] 2. Tech: glass tiles with masked logos, spotlight border, brand colour on hover and focus; Ball canvas removed (built and seen on desktop; phone width not yet checked)
+- [ ] 3. Galaxy from the swarm beside the contact form; Earth, CanvasLoader and CanvasPlaceholder removed (built; not yet seen forming)
+- [ ] 4. Send collapses the galaxy and bangs it; an error wobbles it; confetti removed (built; not yet seen)
+- [ ] 5. Nav: no chrome over the hero, the name's dust streams into the nav line when the hero leaves (built; not yet seen)
 
 ## Found along the way
 

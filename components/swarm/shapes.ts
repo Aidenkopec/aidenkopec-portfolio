@@ -67,28 +67,91 @@ export function sampleText(element: HTMLElement): Float32Array {
 }
 
 /**
- * Writes a shape into the simulation's target texture data. The first `count`
- * particles take a random shape point each, jittered within its pixel, and are
- * marked as bound (w = 1). The rest are spare (w = 0) and keep drifting.
+ * A spiral galaxy seen face on, centred on (0, 0) with y up: a bright bulge,
+ * two logarithmic arms that widen as they wind out, and a faint disc between
+ * them. `radius` is where the arms end.
+ */
+export function galaxyPoints(radius: number, count = 6000): Float32Array {
+  const points = new Float32Array(count * 2);
+  // Standard normal from two uniforms (Box Muller).
+  const gauss = () =>
+    Math.sqrt(-2 * Math.log(1 - Math.random())) *
+    Math.cos(2 * Math.PI * Math.random());
+  const inner = radius * 0.1;
+  // Arm pitch: smaller winds tighter.
+  const pitch = Math.tan(0.32);
+
+  for (let i = 0; i < count; i++) {
+    const kind = Math.random();
+    let x: number;
+    let y: number;
+    if (kind < 0.22) {
+      // Bulge.
+      const r = Math.abs(gauss()) * radius * 0.13;
+      const a = Math.random() * Math.PI * 2;
+      x = Math.cos(a) * r;
+      y = Math.sin(a) * r;
+    } else if (kind < 0.88) {
+      // Arms. Denser near the core, scattered wider further out.
+      const t = Math.pow(Math.random(), 0.75);
+      const r = inner + (radius - inner) * t;
+      const arm = Math.random() < 0.5 ? 0 : Math.PI;
+      const a = arm + Math.log(r / inner) / pitch;
+      const spread = radius * (0.018 + 0.045 * t);
+      x = Math.cos(a) * r + gauss() * spread;
+      y = Math.sin(a) * r + gauss() * spread;
+    } else {
+      // Disc between the arms.
+      const r = radius * Math.sqrt(Math.random()) * 1.05;
+      const a = Math.random() * Math.PI * 2;
+      x = Math.cos(a) * r;
+      y = Math.sin(a) * r;
+    }
+    points[i * 2] = x;
+    points[i * 2 + 1] = y;
+  }
+
+  return points;
+}
+
+/**
+ * A hairline `width` px long, just under its slot's top edge. Points bunch
+ * toward the middle, like the gradient line they stand in for.
+ */
+export function linePoints(width: number, count = 3000): Float32Array {
+  const points = new Float32Array(count * 2);
+  for (let i = 0; i < count; i++) {
+    points[i * 2] = ((Math.random() + Math.random()) / 2) * width;
+    points[i * 2 + 1] = 2;
+  }
+  return points;
+}
+
+/**
+ * Writes a shape into the simulation's target texture data, over particles
+ * `from` to `to` only, so several shapes can share the texture. The first
+ * `count` of that range take a random shape point each, jittered within its
+ * pixel, and are bound (w = 1) to `group` (z). The rest of the range is spare
+ * (w = 0) and keeps drifting.
  */
 export function writeTargets(
   target: Float32Array,
   points: Float32Array,
   count: number,
+  { from = 0, to = target.length / 4, group = 0 } = {},
 ) {
   const pointCount = points.length / 2;
-  const particles = target.length / 4;
 
-  for (let i = 0; i < particles; i++) {
+  for (let i = from; i < to; i++) {
     const o = i * 4;
-    if (i >= count || pointCount === 0) {
+    if (i - from >= count || pointCount === 0) {
       target[o + 3] = 0;
       continue;
     }
     const p = Math.floor(Math.random() * pointCount) * 2;
     target[o] = points[p]! + Math.random();
     target[o + 1] = points[p + 1]! + Math.random();
-    target[o + 2] = 0;
+    target[o + 2] = group;
     target[o + 3] = 1;
   }
 }

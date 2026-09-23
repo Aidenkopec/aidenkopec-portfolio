@@ -53,7 +53,7 @@ const StatCard: React.FC<StatCardProps> = ({
     variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
     className='min-w-[160px] flex-1'
   >
-    <div className='transform-gpu rounded-xl border border-tertiary bg-tertiary p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
+    <div className='transform-gpu rounded-xl glass p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
       <div className='mb-2 flex items-center justify-between'>
         <div className='text-xl font-bold text-secondary'>
           {loading ? (
@@ -156,7 +156,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 
   if (loading) {
     return (
-      <div className='rounded-xl border border-tertiary bg-tertiary p-4'>
+      <div className='rounded-xl glass p-4'>
         <h4 className='mb-4 text-[16px] font-semibold text-secondary'>
           Contribution Activity
         </h4>
@@ -204,7 +204,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 
   return (
     <div
-      className='rounded-xl border border-tertiary bg-tertiary p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
+      className='rounded-xl glass p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
       style={{ position: 'relative', overflow: 'visible' }}
     >
       <div className='mb-4 flex items-center justify-between'>
@@ -223,7 +223,7 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
             onClick={() => setDropdownOpen(!dropdownOpen)}
             aria-expanded={dropdownOpen}
             aria-label='Filter contributions by year'
-            className='flex items-center justify-between gap-1.5 rounded-md border border-tertiary bg-black-100 px-2.5 py-1.5 text-xs font-medium text-secondary transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
+            className='flex items-center justify-between gap-1.5 rounded-md border border-tertiary bg-black-100/40 px-2.5 py-1.5 text-xs font-medium text-secondary transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
           >
             <span className='flex items-center gap-1.5 text-[11px] sm:text-sm'>
               <span aria-hidden='true'>📅</span>{' '}
@@ -589,7 +589,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
         variants={fadeIn('up', 'spring', 0.4, 0.75)}
         className='w-full'
       >
-        <div className='transform-gpu rounded-xl border border-tertiary bg-tertiary p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
+        <div className='transform-gpu rounded-xl glass p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
           <h4 className='mb-4 text-[16px] font-semibold text-secondary'>
             Open Source Activity
           </h4>
@@ -600,13 +600,13 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
                 <motion.div
                   key={`${commit.sha || commit.date}-${index}`}
                   variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
-                  className='rounded-lg border border-tertiary bg-black-100 p-3 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
+                  className='rounded-lg border border-tertiary bg-black-100/40 p-3 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
                 >
                   <div className='mb-1 flex items-center gap-3'>
                     <span className='truncate text-sm font-medium text-secondary'>
                       {formatCommitMessage(commit.message, 50)}
                     </span>
-                    <span className='rounded bg-tertiary px-2 py-1 font-mono text-xs text-[var(--text-color-variable)]'>
+                    <span className='rounded bg-tertiary/60 px-2 py-1 font-mono text-xs text-[var(--text-color-variable)]'>
                       {commit.sha.substring(0, 7)}
                     </span>
                   </div>

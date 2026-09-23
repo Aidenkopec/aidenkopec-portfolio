@@ -1,26 +1,14 @@
 'use client';
 import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
 import React, { useEffect, useRef, useState } from 'react';
 
 import SectionWrapper from '@/components/layout/SectionWrapper';
-import { useCanRender3D } from '@/hooks/useCanRender3D';
-import { useInViewport } from '@/hooks/useInViewport';
 import {
   contactSchema,
   firstIssue,
   type ContactField,
 } from '@/lib/contact-schema';
 import { slideIn } from '@/utils';
-
-import CanvasPlaceholder from './CanvasPlaceholder';
-
-// Loaded on demand so three.js stays out of the initial bundle, and only once
-// the section is approaching the viewport.
-const EarthCanvas = dynamic(() => import('./canvas/Earth'), {
-  ssr: false,
-  loading: () => <CanvasPlaceholder />,
-});
 
 interface FormData {
   name: string;
@@ -51,12 +39,10 @@ const Contact: React.FC = () => {
     undefined,
   );
 
-  const canRender3D = useCanRender3D();
-  const {
-    ref: globeRef,
-    mounted: globeMounted,
-    paused: globePaused,
-  } = useInViewport<HTMLDivElement>(canRender3D);
+  // The swarm's galaxy beside the form reacts to each send. A counter makes
+  // every result a new value, so two sends in a row each register.
+  const sendCountRef = useRef(0);
+  const [lastSend, setLastSend] = useState('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -74,27 +60,6 @@ const Contact: React.FC = () => {
       setErrorMessage('');
       setErrorField(undefined);
     }
-  };
-
-  const triggerConfetti = () => {
-    // Canvas + requestAnimationFrame, so neither the reduced-motion CSS block
-    // nor MotionConfig reaches it. Checked inline rather than through a hook
-    // because this runs from an event handler.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
-
-    // Trigger confetti effect from center of form area
-    import('canvas-confetti').then((confetti) => {
-      confetti.default({
-        particleCount: 100,
-        spread: 70,
-        origin: {
-          x: 0.4, // Center-left where form is positioned
-          y: 0.5,
-        },
-      });
-    });
   };
 
   // The success view replaces the form, so focus would otherwise be stranded on
@@ -155,7 +120,7 @@ const Contact: React.FC = () => {
       if (response.ok) {
         setLoading(false);
         setSubmitSuccess(true);
-        triggerConfetti();
+        setLastSend(`sent-${++sendCountRef.current}`);
 
         // Reset form after a delay to let user see success message
         setTimeout(() => {
@@ -167,6 +132,7 @@ const Contact: React.FC = () => {
       }
     } catch (error) {
       setLoading(false);
+      setLastSend(`error-${++sendCountRef.current}`);
       console.error('Error sending message:', error);
       setErrorField(undefined);
       setErrorMessage(
@@ -182,7 +148,7 @@ const Contact: React.FC = () => {
       <div className='flex flex-col-reverse gap-10 overflow-hidden xl:mt-12 xl:flex-row'>
         <motion.div
           variants={slideIn('left', 'tween', 0.2, 1)}
-          className='flex-[0.75] rounded-2xl bg-black-100 p-8'
+          className='flex-[0.75] rounded-2xl glass p-8'
         >
           {!submitSuccess ? (
             // Show Form
@@ -224,7 +190,7 @@ const Contact: React.FC = () => {
                     aria-describedby={
                       errorField === 'name' ? 'contact-error' : undefined
                     }
-                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
+                    className='rounded-lg border-none bg-tertiary/40 px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
                   />
                 </label>
                 <label htmlFor='contact-email' className='flex flex-col'>
@@ -244,7 +210,7 @@ const Contact: React.FC = () => {
                     aria-describedby={
                       errorField === 'email' ? 'contact-error' : undefined
                     }
-                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
+                    className='rounded-lg border-none bg-tertiary/40 px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
                   />
                 </label>
                 <label htmlFor='contact-message' className='flex flex-col'>
@@ -263,13 +229,13 @@ const Contact: React.FC = () => {
                     aria-describedby={
                       errorField === 'message' ? 'contact-error' : undefined
                     }
-                    className='rounded-lg border-none bg-tertiary px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
+                    className='rounded-lg border-none bg-tertiary/40 px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
                   />
                 </label>
 
                 <button
                   type='submit'
-                  className='w-fit rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] disabled:opacity-50'
+                  className='w-fit rounded-xl bg-tertiary/40 px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/70 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] disabled:opacity-50'
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send'}
@@ -360,7 +326,7 @@ const Contact: React.FC = () => {
 
               <button
                 onClick={resetForm}
-                className='mb-4 rounded-xl bg-tertiary px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
+                className='mb-4 rounded-xl bg-tertiary/40 px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/70 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
               >
                 Send Another Message
               </button>
@@ -372,17 +338,14 @@ const Contact: React.FC = () => {
           )}
         </motion.div>
 
-        <motion.div
-          ref={globeRef}
-          variants={slideIn('right', 'tween', 0.2, 1)}
-          className='h-[350px] md:h-[550px] xl:h-auto xl:flex-1'
-        >
-          {canRender3D && globeMounted ? (
-            <EarthCanvas paused={globePaused} />
-          ) : (
-            <CanvasPlaceholder />
-          )}
-        </motion.div>
+        {/* The swarm draws a galaxy over this box. No transform on it, since
+            the swarm only re-reads its rect on scroll and resize. */}
+        <div
+          aria-hidden='true'
+          data-swarm-slot='galaxy'
+          data-swarm-send={loading ? 'sending' : lastSend}
+          className='galaxy-slot h-[350px] md:h-[550px] xl:h-auto xl:flex-1'
+        />
       </div>
     </SectionWrapper>
   );
