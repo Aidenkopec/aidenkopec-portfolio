@@ -12,6 +12,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import SectionHeader from '@/components/chart/SectionHeader';
 import { GITHUB_URL } from '@/constants';
+import { usePlayWhileVisible } from '@/hooks/usePlayWhileVisible';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import {
   formatCommitMessage,
@@ -555,6 +556,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduced = usePrefersReducedMotion();
+  const chartRef = usePlayWhileVisible<HTMLDivElement>();
 
   useEffect(() => {
     if (reduced || paused || commits.length < 2) return;
@@ -572,7 +574,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   const markedDate = commit ? DateTime.fromISO(commit.date).toISODate() : null;
 
   return (
-    <div className='mt-16'>
+    <div ref={chartRef} className='mt-16'>
       <SkyChart
         commitCalendar={contributionData}
         loading={loading}

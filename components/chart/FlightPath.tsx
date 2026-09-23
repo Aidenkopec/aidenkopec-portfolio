@@ -153,17 +153,19 @@ export default function FlightPath() {
     };
 
     // Images, fonts and the GitHub data all land after first paint, and each
-    // moves the stops, so the route is rebuilt whenever the page resizes.
+    // moves the stops, so the route is rebuilt whenever the page resizes. A
+    // window resize alone only moves the head: phone toolbars resize the window
+    // as they show and hide on scroll, and a rebuild there drops frames.
     const observer = new ResizeObserver(scheduleBuild);
     observer.observe(root);
     window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', scheduleBuild);
+    window.addEventListener('resize', schedule);
     reduced.addEventListener('change', schedule);
 
     return () => {
       observer.disconnect();
       window.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', scheduleBuild);
+      window.removeEventListener('resize', schedule);
       reduced.removeEventListener('change', schedule);
       cancelAnimationFrame(frame);
       cancelAnimationFrame(buildFrame);

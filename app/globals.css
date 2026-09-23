@@ -648,14 +648,25 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   box-shadow:
     0 0 0 4px var(--primary-color),
     0 0 0 5px var(--chart-line);
-  transition: box-shadow 0.6s ease;
 }
 
-.planet[data-reached] {
+/* The lit ring and glow sit on their own layer and fade in by opacity, which
+   the compositor runs. Transitioning box-shadow repainted the page each frame. */
+.planet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   box-shadow:
     0 0 0 4px var(--primary-color),
     0 0 0 5px var(--text-color-variable),
     0 0 28px color-mix(in srgb, var(--text-color-variable) 55%, transparent);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.planet[data-reached]::before {
+  opacity: 1;
 }
 
 @media (min-width: 768px) {
@@ -716,11 +727,15 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   opacity: 1;
 }
 
-/* No hover on touch, so the waveforms just play. */
+/* No hover on touch, so the waveforms just play, while the list is on screen
+   (data-playing, set by components/sections/RecentBlogsClient). */
 @media (hover: none) {
   .signal rect {
-    animation-play-state: running;
     opacity: 1;
+  }
+
+  [data-playing] .signal rect {
+    animation-play-state: running;
   }
 }
 
@@ -745,6 +760,13 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   transform-box: fill-box;
   transform-origin: center;
   animation: commit-ping 2.4s ease-out infinite;
+  /* Off screen it would still repaint every frame. data-playing is set by
+     components/sections/GitHubActivityClient. */
+  animation-play-state: paused;
+}
+
+[data-playing] .commit-marker-echo {
+  animation-play-state: running;
 }
 
 @keyframes commit-ping {

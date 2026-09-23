@@ -6,6 +6,7 @@ import React from 'react';
 
 import SectionHeader from '@/components/chart/SectionHeader';
 import SectionWrapper from '@/components/layout/SectionWrapper';
+import { usePlayWhileVisible } from '@/hooks/usePlayWhileVisible';
 import { BlogPost } from '@/lib/types';
 
 // Bar heights of the signal glyph, as a share of its height.
@@ -45,6 +46,8 @@ const formatDate = (date: string) =>
 
 // Posts arrive like transmissions: newest first, the latest with its cover.
 const RecentBlogsClient: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
+  const listRef = usePlayWhileVisible<HTMLOListElement>();
+
   return (
     <SectionWrapper idName='recent-blogs' label='Recent blog posts'>
       <SectionHeader
@@ -57,7 +60,7 @@ const RecentBlogsClient: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
         }
       />
 
-      <ol className='mt-12 border-b border-[var(--chart-faint)]'>
+      <ol ref={listRef} className='mt-12 border-b border-[var(--chart-faint)]'>
         {posts.map((post, index) => {
           const cover = index === 0 ? post.coverImage : undefined;
           return (
