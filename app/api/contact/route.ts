@@ -5,7 +5,7 @@ import UserAcknowledgmentEmail from '@/components/emails/UserAcknowledgment';
 import ContactNotificationEmail from '@/components/emails/ContactNotification';
 import { contactSchema, firstIssue } from '@/lib/contact-schema';
 
-const NOTIFICATION_RECIPIENT = 'aidenkopec@icloud.com';
+const NOTIFICATION_RECIPIENT = 'aiden@aidenkopec.com';
 
 // Per request, not at module scope: new Resend(undefined) throws during module
 // evaluation, outside the handler's try/catch.

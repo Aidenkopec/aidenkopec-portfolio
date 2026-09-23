@@ -69,6 +69,9 @@ function useRouteProgress(strip: React.RefObject<HTMLElement | null>) {
   return reached;
 }
 
+// Built and copied here by build-resume.sh in the resume repo.
+const RESUME_HREF = '/Aiden-Kopec-Resume.pdf';
+
 // A four point star, the glyph for the customization menu.
 const StarGlyph: React.FC<{ className?: string }> = ({ className }) => (
   <svg
@@ -189,6 +192,19 @@ const Navbar: React.FC = () => {
             </span>
           </Link>
 
+          <a
+            href={RESUME_HREF}
+            target='_blank'
+            rel='noopener noreferrer'
+            aria-label='Resume (PDF, opens in a new tab)'
+            className='nav-stop'
+          >
+            <span className='nav-label'>Resume</span>
+            <span className='nav-stop-ring-row'>
+              <span aria-hidden='true' className='nav-stop-dash' />
+            </span>
+          </a>
+
           <div className='relative'>
             <button
               type='button'
@@ -288,6 +304,16 @@ const Navbar: React.FC = () => {
               >
                 Blog
               </Link>
+              <a
+                href={RESUME_HREF}
+                target='_blank'
+                rel='noopener noreferrer'
+                aria-label='Resume (PDF, opens in a new tab)'
+                className='nav-label flex min-h-11 items-center hover:text-white-100'
+                onClick={closeMobileMenu}
+              >
+                Resume
+              </a>
               <button
                 type='button'
                 aria-expanded={customizationMenuMobile}

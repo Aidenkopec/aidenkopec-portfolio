@@ -152,7 +152,7 @@ npm run format:check
 - Uses React Email components for templating
 - Contact form sends two emails:
   1. User acknowledgment email
-  2. Admin notification email to `aidenkopec@icloud.com`
+  2. Admin notification email to `aiden@aidenkopec.com`
 - Requires `RESEND_API_KEY` environment variable
 
 ### 3D Components
