@@ -3,9 +3,9 @@ import type { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
 import { EB_Garamond, Geist, Geist_Mono } from 'next/font/google';
 
-import FloatingMusicBar from '@/components/FloatingMusicBar';
-import { InlineScript } from '@/components/InlineScript';
-import { MotionProvider } from '@/components/MotionProvider';
+import FloatingMusicBar from '@/components/layout/FloatingMusicBar';
+import { InlineScript } from '@/components/ui/InlineScript';
+import { MotionProvider } from '@/components/providers/MotionProvider';
 import { SWARM_INTRO_SCRIPT } from '@/components/swarm/introScript';
 import { GITHUB_URL } from '@/constants';
 import { themeKeys } from '@/constants/themes';

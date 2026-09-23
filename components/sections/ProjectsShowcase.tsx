@@ -16,9 +16,12 @@ import github from '@/public/assets/github.png';
 
 // Loaded on demand so three.js stays out of the initial bundle and the WebGL
 // context is only created once the section is actually approaching the viewport.
-const ProjectRingCanvas = dynamic(() => import('./canvas/ProjectRing'), {
-  ssr: false,
-});
+const ProjectRingCanvas = dynamic(
+  () => import('@/components/canvas/ProjectRing'),
+  {
+    ssr: false,
+  },
+);
 
 const TIER_LABEL: Record<ProjectTier, string> = {
   featured: 'Featured',

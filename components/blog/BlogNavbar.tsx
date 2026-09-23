@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 
-import CustomizationMenu from '@/components/CustomizationMenu';
+import CustomizationMenu from '@/components/layout/CustomizationMenu';
 import { useDismiss } from '@/hooks/useDismiss';
 
 const BlogNavbar: React.FC = () => {
