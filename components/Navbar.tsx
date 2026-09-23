@@ -62,7 +62,7 @@ const Navbar: React.FC = () => {
       <div className='relative mx-auto flex w-full max-w-7xl items-center justify-between'>
         <Link
           href='/'
-          className='group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2 transition-all duration-300 hover:bg-[var(--text-color-variable)]/10'
+          className='navbar-logo group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2 transition-all duration-300 hover:bg-[var(--text-color-variable)]/10'
           onClick={() => {
             setActive('');
             window.scrollTo(0, 0);

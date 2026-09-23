@@ -28,17 +28,15 @@
   --spacing-padding-combined: 2.5rem; /* py-10 */
 
   /* Typography Scales */
-  --text-hero-head-base: 2.5rem; /* 40px */
-  --text-hero-head-xs: 3.125rem; /* 50px */
-  --text-hero-head-sm: 3.75rem; /* 60px */
-  --text-hero-head-lg: 5rem; /* 80px */
-  --leading-hero-head-lg: 6.125rem; /* 98px */
+  --text-hero-head-base: 2.75rem; /* 44px */
+  --text-hero-head-xs: 4rem; /* 64px */
+  --text-hero-head-sm: 5.5rem; /* 88px */
+  --text-hero-head-lg: 8rem; /* 128px */
 
-  --text-hero-sub-base: 1rem; /* 16px */
-  --text-hero-sub-xs: 1.25rem; /* 20px */
-  --text-hero-sub-sm: 1.625rem; /* 26px */
-  --text-hero-sub-lg: 1.875rem; /* 30px */
-  --leading-hero-sub-lg: 2.5rem; /* 40px */
+  --text-hero-sub-base: 0.75rem; /* 12px */
+  --text-hero-sub-xs: 0.875rem; /* 14px */
+  --text-hero-sub-sm: 1rem; /* 16px */
+  --text-hero-sub-lg: 1.125rem; /* 18px */
 
   --text-section-head-base: 1.875rem; /* 30px */
   --text-section-head-xs: 2.5rem; /* 40px */
@@ -113,14 +111,6 @@
 
 /* Custom Utilities */
 
-.dynamic-gradient {
-  background: linear-gradient(
-    180deg,
-    var(--gradient-start) 0%,
-    var(--gradient-end) 100%
-  );
-}
-
 .black-gradient {
   background: linear-gradient(
     90deg,
@@ -146,8 +136,8 @@
   font-weight: 900;
   color: white;
   font-size: var(--text-hero-head-base);
-  line-height: 1.2;
-  margin-top: 0.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 
   @variant xs {
     font-size: var(--text-hero-head-xs);
@@ -157,15 +147,19 @@
   }
   @variant lg {
     font-size: var(--text-hero-head-lg);
-    line-height: var(--leading-hero-head-lg);
   }
 }
 
 @utility hero-sub-text {
-  color: #ffffff;
+  color: color-mix(in srgb, var(--white-100) 70%, transparent);
   font-weight: 500;
   font-size: var(--text-hero-sub-base);
   line-height: 1.5;
+  letter-spacing: 0.4em;
+  /* Tracking also trails the last letter; this keeps the line centred. */
+  margin-right: -0.4em;
+  text-transform: uppercase;
+  margin-top: 1.25rem;
 
   @variant xs {
     font-size: var(--text-hero-sub-xs);
@@ -175,7 +169,6 @@
   }
   @variant lg {
     font-size: var(--text-hero-sub-lg);
-    line-height: var(--leading-hero-sub-lg);
   }
 }
 
@@ -279,6 +272,45 @@ html {
 
 [data-swarm-slot][data-swarm-formed] {
   color: transparent;
+}
+
+/* During the intro the name starts hidden so the particles can build it.
+   Set before first paint by components/swarm/introScript.ts. */
+html[data-swarm-intro] [data-swarm-slot='name'] {
+  color: transparent;
+  transition: none;
+}
+
+/* A quiet hint that the hero can be held. Hidden until the swarm reveals it. */
+.hero-hint {
+  margin-top: 2.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--white-100) 40%, transparent);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+html[data-swarm-hint] .hero-hint {
+  opacity: 1;
+}
+
+/* On touch, a long press in the hero grows a black hole, so it must not also
+   select text or open the callout menu. Desktop keeps selection. */
+@media (pointer: coarse) {
+  [data-swarm-hold-zone] {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+}
+
+/* The hero shows the name, so the navbar's copy waits until it scrolls away.
+   It still appears when tabbed to, and stays put without JavaScript. */
+html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Respect the OS reduced motion setting for everything CSS can reach: the

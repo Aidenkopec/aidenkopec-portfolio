@@ -1,6 +1,7 @@
 # Particle Swarm Tasks
 
 Full plan: `~/.claude/plans/pasted-content-id-8669-i-want-greedy-barto.md`
+Big Bang hero plan: `~/.claude/plans/great-come-up-with-rosy-puffin.md`
 
 ## Planning
 
@@ -20,14 +21,35 @@ Full plan: `~/.claude/plans/pasted-content-id-8669-i-want-greedy-barto.md`
 - [x] 3. Name forms over the real heading (desktop verified; phone width not yet checked)
 - [x] 4. Cursor wind (verified with a synthetic sweep: letters part along the path and close behind)
 - [ ] 5. Click shockwave (works and re-forms from the click outward; the stronger tuning, reach 420 and full release, is not yet seen in the browser)
-- [ ] 6. Slots and scroll morph (globe, frames, envelope, dust)
-- [ ] 7. Nav clusters and fly to section
-- [ ] 8. Theme colours
-- [ ] 9. Tiers and runtime downgrade
-- [ ] 10. Reduced motion, no WebGL fallback, touch
-- [ ] 11. Cleanup, lint, typecheck, build, format check
+- [x] 6. Replaced by the black hole scroll exit (Big Bang hero, below)
+- [x] 7. Dropped: nav clusters, so the hero is the one star moment
+- [ ] 8. Theme colours (built: dust, hot dust and ring lean toward the accent; theme switch not yet seen in the browser)
+- [ ] 9. Tiers and runtime downgrade (built: 32k, 16k, 8k; one step down after a slow 2s median; not yet tested under throttling)
+- [ ] 10. Reduced motion, no WebGL fallback, touch (built: calm mode, sim null path, touch hold CSS; not yet tested in DevTools emulation)
+- [ ] 11. Cleanup, lint, typecheck, build, format check (lint, typecheck, build and format check pass; Lighthouse LCP not yet measured)
+
+## Big Bang hero
+
+- [x] 0. Slot lookup scoped to the visible page (fixes the hidden duplicate h1)
+- [x] 1. Centred hero: name, "Full Stack Developer"; tagline, dot and line removed; navbar logo hidden while the hero is in view
+- [x] 2. Temperature colour (fast dust glows blue white) and depth parallax (formed name stays put)
+- [x] 3. Gravity well primitive with capture at the horizon; shocks carry their own strength
+- [x] 4. Press and hold grows a black hole; release bangs it back (click after a hold is swallowed)
+- [x] 5. Black hole core, photon ring, bang flash, point lens bending the dust
+- [x] 6. Intro: galaxy gathers, collapses, bangs, name forms (`?swarm=intro` in dev forces it)
+- [x] 7. Name hidden before first paint on a fresh visit via an inline head script, 4s failsafe
+- [x] 8. "Press and hold" hint after the intro, gone for good after the first hold
+- [x] 9. Scroll exit: a black hole swallows the name as it scrolls away, then evaporates
 
 ## Found along the way
+
+- Straight line integration near a spinning well pushed particles outward each frame and parked them in a ring they never left; position and velocity now turn by the exact orbit angle
+- The dev server sometimes serves a stale `globals.css` after an edit; saving the file again picks it up
+- Exit progress is measured from scroll distance, not screen centre: the name sits above centre because the subtitle and hint share its column
+- Once formed, the real heading stays transparent for good; the swarm always rebuilds the name on screen, so holds and the scroll exit never flash the text back
+- React warns about rendering `<script>`; `components/InlineScript.tsx` follows the Next guide ("Preventing flash before hydration")
+- The subtitle stays painted from first paint (LCP safe); the planned tracking reveal was left out
+- `components/canvas/WavyLines.tsx` and `Computers.tsx` still exist though they are no longer mounted on the homepage
 
 - CLAUDE.md says Next.js 15; installed is 16.3.5
 - Nav "Work" goes to Experience; Projects has no nav link

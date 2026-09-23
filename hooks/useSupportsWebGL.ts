@@ -6,7 +6,7 @@ import { useSyncExternalStore } from 'react';
 // rather than recomputed on every render.
 let probed: boolean | null = null;
 
-function supportsWebGL(): boolean {
+export function probeWebGL(): boolean {
   if (probed !== null) return probed;
 
   try {
@@ -31,7 +31,7 @@ function supportsWebGL(): boolean {
 
 const subscribe = () => () => {};
 
-const getSnapshot = () => supportsWebGL();
+const getSnapshot = () => probeWebGL();
 
 /**
  * Whether this client can create a WebGL context, ignoring motion preferences.

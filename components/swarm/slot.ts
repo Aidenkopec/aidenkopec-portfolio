@@ -8,12 +8,24 @@ export type Slot = {
   stop: () => void;
 };
 
+/**
+ * Searches only inside `root`, and skips hidden matches. Next keeps pages you
+ * navigate away from mounted under `display: none`, so a second copy of the
+ * slot can sit elsewhere in the document.
+ */
 export function trackSlot(
+  root: ParentNode,
   name: string,
   onResize: (element: HTMLElement) => void,
 ): Slot | null {
-  const element = document.querySelector<HTMLElement>(
-    `[data-swarm-slot="${name}"]`,
+  const element = Array.from(
+    root.querySelectorAll<HTMLElement>(`[data-swarm-slot="${name}"]`),
+  ).find((candidate) =>
+    // Safari before 17.4 has no checkVisibility; a display: none subtree has
+    // no client rects either.
+    typeof candidate.checkVisibility === 'function'
+      ? candidate.checkVisibility()
+      : candidate.getClientRects().length > 0,
   );
   if (!element) return null;
 

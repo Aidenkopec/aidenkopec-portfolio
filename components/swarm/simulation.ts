@@ -31,10 +31,24 @@ const WIND = {
   drag: 3.5,
 };
 
-// Shockwave tuning. The ring travels at speed px/s, reach is the distance in
-// px over which its effect falls off, kick is the outward push in px/s², and
-// hold is how long the name stays blown apart before pulling back together.
-const SHOCK = {
+/**
+ * A shockwave. The ring leaves (x, y) in world space and travels at speed px/s,
+ * reach is the distance in px over which its effect falls off, kick is the
+ * outward push in px/s², and hold is how long a shape stays blown apart before
+ * pulling back together. time is seconds since it started.
+ */
+export type Shock = {
+  x: number;
+  y: number;
+  time: number;
+  kick: number;
+  speed: number;
+  reach: number;
+  hold: number;
+};
+
+/** Shape of a click's shock; callers add where and when. */
+export const CLICK_SHOCK = {
   speed: 1800,
   reach: 420,
   kick: 9000,
@@ -43,6 +57,36 @@ const SHOCK = {
 
 /** A shock time this old has long finished everywhere on screen. */
 export const NO_SHOCK = 1e4;
+
+/**
+ * A gravity well at (x, y) in world space. pull is inflow per second (inward
+ * speed is pull times radius), spin is tangential speed in px/s at 100px,
+ * reach in px is where its influence falls off, and particles inside horizon
+ * px are captured until it drops to 0. release (0 to 1) is how much it frees
+ * bound particles from their shape, and response how fast they obey it.
+ */
+export type Well = {
+  x: number;
+  y: number;
+  pull: number;
+  spin: number;
+  reach: number;
+  horizon: number;
+  release: number;
+  response: number;
+};
+
+/** A reach of 0 switches the well off. */
+export const NO_WELL: Well = {
+  x: 0,
+  y: 0,
+  pull: 0,
+  spin: 0,
+  reach: 0,
+  horizon: 0,
+  release: 0,
+  response: 0,
+};
 
 export type StepInput = {
   time: number;
@@ -64,15 +108,14 @@ export type StepInput = {
   pointerVY: number;
   /** Wind strength from 0 (still or absent pointer) to 1. */
   wind: number;
-  /** Last click position in world space, and seconds since it happened. */
-  shockX: number;
-  shockY: number;
-  shockTime: number;
+  shock: Shock;
+  well: Well;
 };
 
 export type Simulation = {
   step: (input: StepInput) => void;
   positions: () => THREE.Texture;
+  velocities: () => THREE.Texture;
   /** Target data, four floats per particle: local x, local y, z, bound. */
   targets: Float32Array;
   /** Uploads `targets` after it has been written. */
@@ -173,14 +216,18 @@ export function createSimulation(
   velocity.material.uniforms.uWindPush = { value: WIND.push };
   velocity.material.uniforms.uWindDrag = { value: WIND.drag };
 
-  const shockCenter = { value: new THREE.Vector2() };
-  const shockTime = { value: NO_SHOCK };
-  velocity.material.uniforms.uShockCenter = shockCenter;
-  velocity.material.uniforms.uShockTime = shockTime;
-  velocity.material.uniforms.uShockSpeed = { value: SHOCK.speed };
-  velocity.material.uniforms.uShockReach = { value: SHOCK.reach };
-  velocity.material.uniforms.uShockKick = { value: SHOCK.kick };
-  velocity.material.uniforms.uShockHold = { value: SHOCK.hold };
+  const shock = { value: new THREE.Vector4(0, 0, NO_SHOCK, 0) };
+  const shockShape = { value: new THREE.Vector3(1, 1, 0) };
+  velocity.material.uniforms.uShock = shock;
+  velocity.material.uniforms.uShockShape = shockShape;
+
+  // Both passes share these: velocity steers into the well, position captures.
+  const wellA = { value: new THREE.Vector4() };
+  const wellB = { value: new THREE.Vector4() };
+  velocity.material.uniforms.uWellA = wellA;
+  velocity.material.uniforms.uWellB = wellB;
+  position.material.uniforms.uWellA = wellA;
+  position.material.uniforms.uWellB = wellB;
 
   const error = gpu.init();
   if (error) {
@@ -204,11 +251,15 @@ export function createSimulation(
       pointer.value.set(input.pointerX, input.pointerY);
       pointerVelocity.value.set(input.pointerVX, input.pointerVY);
       wind.value = input.wind;
-      shockCenter.value.set(input.shockX, input.shockY);
-      shockTime.value = input.shockTime;
+      const { shock: s, well: w } = input;
+      shock.value.set(s.x, s.y, s.time, s.kick);
+      shockShape.value.set(s.speed, s.reach, s.hold);
+      wellA.value.set(w.x, w.y, w.pull, w.spin);
+      wellB.value.set(w.reach, w.horizon, w.release, w.response);
       gpu.compute();
     },
     positions: () => gpu.getCurrentRenderTarget(position).texture,
+    velocities: () => gpu.getCurrentRenderTarget(velocity).texture,
     targets,
     commitTargets: () => {
       targetTexture.needsUpdate = true;
