@@ -119,17 +119,6 @@
   );
 }
 
-.green-pink-gradient {
-  background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
-}
-
-.shadow-card {
-  box-shadow:
-    0 0 20px rgba(0, 212, 170, 0.4),
-    0 0 40px rgba(168, 85, 247, 0.2),
-    0 0 60px rgba(255, 107, 107, 0.1);
-}
-
 /* Typography and section padding, owned by Tailwind so they sort and layer
    like any other utility. */
 @utility hero-head-text {
@@ -256,15 +245,6 @@
     mask-composite: exclude;
     pointer-events: none;
   }
-}
-
-/* Text gradient for project tags */
-.blue-text-gradient {
-  background: linear-gradient(90deg, #00d4ff 0%, #0099cc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: #00d4ff;
 }
 
 body {

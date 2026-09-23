@@ -50,13 +50,6 @@ interface Experience {
   points: string[];
 }
 
-interface Testimonial {
-  testimonial: string;
-  name: string;
-  designation: string;
-  company: string;
-}
-
 type ProjectTier = 'featured' | 'personal' | 'client';
 
 interface ProjectLink {
@@ -229,30 +222,6 @@ const experiences: Experience[] = [
   },
 ];
 
-const testimonials: Testimonial[] = [
-  {
-    testimonial:
-      'Aiden was instrumental in helping us build a robust directory for the oil and gas industry. He brought strong technical skills and was easy to work with throughout the project.',
-    name: 'Daniel Kernaghan',
-    designation: 'CEO',
-    company: 'Gadget Rentals',
-  },
-  {
-    testimonial:
-      'Aiden built the website for Spartatech Coatings from the ground up. He delivered exactly what I needed with speed and professionalism.',
-    name: 'Liam Hennessey',
-    designation: 'CEO',
-    company: 'Spartatech Coatings',
-  },
-  {
-    testimonial:
-      'Aiden built our website from scratch and nailed exactly what we were looking for. Professional, fast, and easy to work with. Would recommend him without hesitation.',
-    name: 'Paxton Cote',
-    designation: 'CEO',
-    company: 'PD Construction',
-  },
-];
-
 const projects: Project[] = [
   {
     slug: 'treeline',
@@ -410,7 +379,7 @@ const projects: Project[] = [
   },
 ];
 
-export { experiences, projects, services, technologies, testimonials };
+export { experiences, projects, services, technologies };
 export type {
   Experience,
   NavLink,
@@ -420,5 +389,4 @@ export type {
   ProjectTier,
   Service,
   Technology,
-  Testimonial,
 };

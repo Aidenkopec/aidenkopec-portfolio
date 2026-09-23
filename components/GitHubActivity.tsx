@@ -43,10 +43,7 @@ const GitHubDashboardSkeleton = () => (
     </div>
     <div className='flex flex-col gap-8 lg:flex-row'>
       {[...Array(2)].map((_, i) => (
-        <div
-          key={i}
-          className='flex-1 rounded-xl glass p-4'
-        >
+        <div key={i} className='flex-1 rounded-xl glass p-4'>
           <div className='mb-4 h-6 w-32 animate-pulse rounded bg-gray-600'></div>
           <div className='space-y-3'>
             {[...Array(3)].map((_, j) => (

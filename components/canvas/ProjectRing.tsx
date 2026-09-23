@@ -39,7 +39,7 @@ const RING_Y = 0.55;
 // little headroom, and room below it for the info panel that overlaps the
 // stage's bottom edge.
 const FRAME_TOP = RING_Y + FRAME_H / 2 + 0.12;
-const FRAME_BOTTOM = RING_Y - FRAME_H / 2 - 0.55;
+const FRAME_BOTTOM = RING_Y - FRAME_H / 2 - 0.75;
 const FRAME_CENTER_Y = (FRAME_TOP + FRAME_BOTTOM) / 2;
 const FRAME_HALF_H = (FRAME_TOP - FRAME_BOTTOM) / 2;
 

@@ -6,7 +6,6 @@ import Tech from '@/components/Tech';
 import Projects from '@/components/Projects';
 import GitHubActivity from '@/components/GitHubActivity';
 import RecentBlogs from '@/components/RecentBlogs';
-import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
 import SwarmStage from '@/components/swarm/SwarmStage';
 
@@ -24,7 +23,6 @@ export default function Home() {
       <Projects />
       <GitHubActivity />
       <RecentBlogs />
-      <Testimonials />
       <Contact />
     </div>
   );

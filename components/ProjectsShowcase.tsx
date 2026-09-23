@@ -522,7 +522,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
             onLostPointerCapture={settleDrag}
             onKeyDown={onKeyDown}
             style={{ touchAction: 'pan-y' }}
-            className='project-stage relative mt-8 h-[clamp(380px,60vh,620px)] w-full cursor-grab rounded-2xl select-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none active:cursor-grabbing'
+            className='project-stage relative mt-4 h-[clamp(280px,calc(100svh-500px),560px)] w-full cursor-grab rounded-2xl select-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none active:cursor-grabbing'
           >
             {/* Side panels dissolve into the dust instead of meeting an edge. */}
             <div className='absolute inset-0 [mask-image:linear-gradient(to_right,transparent,#000_14%,#000_86%,transparent)]'>
@@ -563,7 +563,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
 
           <motion.div
             variants={fadeIn('up', 'spring', 0.1, 0.75)}
-            className='relative z-10 mx-auto -mt-20 w-full max-w-3xl rounded-2xl glass px-6 py-6 text-center sm:px-10 sm:py-8'
+            className='relative z-10 mx-auto -mt-16 w-full max-w-3xl rounded-2xl glass px-6 py-4 text-center sm:px-10 sm:py-5'
           >
             <div className='flex items-center justify-center gap-2'>
               {projects.map((project, index) => (
@@ -591,22 +591,22 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className='mt-5 flex flex-col items-center'
+                className='mt-3 flex flex-col items-center'
               >
                 <TierBadge tier={active.tier} />
-                <h3 className='mt-3 text-[30px] leading-tight font-black text-[var(--white-100)] sm:text-[40px]'>
+                <h3 className='mt-2 text-[26px] leading-tight font-black text-[var(--white-100)] sm:text-[32px]'>
                   {active.name}
                 </h3>
-                <p className='mt-2 max-w-xl text-[15px] leading-[24px] text-secondary'>
+                <p className='mt-1 max-w-xl text-[15px] leading-[24px] text-secondary'>
                   {active.blurb}
                 </p>
 
                 <StackChips
                   stack={active.stack}
-                  className='mt-5 justify-center'
+                  className='mt-3 justify-center'
                 />
 
-                <div className='mt-6 flex flex-wrap items-center justify-center gap-3'>
+                <div className='mt-4 flex flex-wrap items-center justify-center gap-3'>
                   {active.links.map((link, i) => (
                     <ProjectLinkButton
                       key={link.href}
