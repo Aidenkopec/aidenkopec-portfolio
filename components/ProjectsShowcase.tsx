@@ -427,7 +427,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   }, [setCursorTo]);
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (mode !== 'ring' || !event.isPrimary || event.button !== 0) return;
+    if (!event.isPrimary || event.button !== 0) return;
     drag.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -482,7 +482,6 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (mode !== 'ring') return;
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
       step(-1);
@@ -527,7 +526,7 @@ const ProjectsShowcase: React.FC<{ projects: Project[] }> = ({ projects }) => {
           >
             {/* Side panels dissolve into the dust instead of meeting an edge. */}
             <div className='absolute inset-0 [mask-image:linear-gradient(to_right,transparent,#000_14%,#000_86%,transparent)]'>
-              {mode === 'ring' && canvasMounted && (
+              {canvasMounted && (
                 <ProjectRingCanvas
                   projects={projects}
                   cursorRef={cursorRef}

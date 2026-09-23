@@ -1,5 +1,5 @@
 import { Analytics } from '@vercel/analytics/next';
-import type { Metadata, Viewport } from 'next';
+import type { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
 import { EB_Garamond, Geist, Geist_Mono } from 'next/font/google';
 
@@ -28,11 +28,6 @@ const ebGaramond = EB_Garamond({
   subsets: ['latin'],
   style: ['normal', 'italic'],
 });
-
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://aidenkopec.com'),

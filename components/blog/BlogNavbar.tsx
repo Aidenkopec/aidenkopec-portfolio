@@ -188,9 +188,6 @@ const BlogNavbar: React.FC = () => {
           </button>
 
           {/* Enhanced Mobile Dropdown Menu */}
-          {/* The handler only stops a click inside the panel from reaching the
-              document listener that closes the menu. Not an affordance. */}
-          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
           <div
             id='blog-mobile-menu'
             className={`${
@@ -198,7 +195,6 @@ const BlogNavbar: React.FC = () => {
                 ? 'hidden scale-95 opacity-0'
                 : 'flex scale-100 opacity-100'
             } black-gradient absolute top-20 right-0 z-50 mx-4 my-2 min-w-[240px] rounded-2xl border border-[var(--text-color-variable)]/20 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-out`}
-            onClick={(e) => e.stopPropagation()}
           >
             {/* Animated gradient background */}
             <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-[var(--text-color-variable)]/5 to-transparent' />
@@ -237,10 +233,7 @@ const BlogNavbar: React.FC = () => {
                       ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
                       : 'text-secondary hover:bg-[var(--text-color-variable)]/10 hover:text-[var(--text-color-variable)]'
                   }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
+                  onClick={() => {
                     if (!customizationMenuMobile) {
                       // Opening customization menu
                       setToggle(false); // Close mobile dropdown first

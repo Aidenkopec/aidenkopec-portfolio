@@ -2,9 +2,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
-import { cn } from '@/lib/utils';
-
-const BoxesCore = ({ className, ...rest }: { className?: string }) => {
+const BoxesCore = () => {
   const rows = new Array(150).fill(1);
   const cols = new Array(100).fill(1);
   const colors = [
@@ -30,11 +28,7 @@ const BoxesCore = ({ className, ...rest }: { className?: string }) => {
       style={{
         transform: `translate(-40%,-60%) skewX(-48deg) skewY(14deg) scale(0.675) rotate(0deg) translateZ(0)`,
       }}
-      className={cn(
-        'absolute -top-1/4 left-1/4 z-0 flex h-full w-full -translate-x-1/2 -translate-y-1/2 p-4',
-        className,
-      )}
-      {...rest}
+      className='absolute -top-1/4 left-1/4 z-0 flex h-full w-full -translate-x-1/2 -translate-y-1/2 p-4'
     >
       {rows.map((_, i) => (
         <motion.div

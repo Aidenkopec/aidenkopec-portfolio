@@ -477,9 +477,9 @@ export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
   githubData,
 }) => {
   const stats = [
-    { label: 'Public repositories', value: githubData.user?.public_repos },
+    { label: 'Public repositories', value: githubData.user.public_repos },
     { label: 'Stars earned', value: githubData.stats.totalStars },
-    { label: 'Followers', value: githubData.user?.followers },
+    { label: 'Followers', value: githubData.user.followers },
     { label: 'Years on GitHub', value: githubData.stats.yearsOnGitHub },
   ];
 
@@ -537,7 +537,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
     }
   };
 
-  const commits = githubData.commits.slice(0, 5);
+  const commits = githubData.commits;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduced = usePrefersReducedMotion();

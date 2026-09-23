@@ -72,7 +72,7 @@ const clamp01 = (x: number) => Math.min(Math.max(x, 0), 1);
 /** The well at intro time t: slow at first, then everything falls in. */
 export function introWell(t: number, x: number, y: number): Well {
   const gather = clamp01(t / INTRO.gather);
-  const collapse = clamp01((t - INTRO.gather) / INTRO.collapse);
+  const collapse = introCollapse(t);
   return {
     x,
     y,

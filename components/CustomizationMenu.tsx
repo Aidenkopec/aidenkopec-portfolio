@@ -30,11 +30,7 @@ const ThemeOption: React.FC<ThemeOptionProps> = ({
   <button
     type='button'
     aria-pressed={isSelected}
-    onClick={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onSelect(themeKey);
-    }}
+    onClick={() => onSelect(themeKey)}
     className={`relative w-full cursor-pointer rounded-lg border p-3 text-left transition-all duration-300 ${
       isSelected
         ? 'border-[var(--text-color-variable)] bg-[var(--tertiary-color)] shadow-lg'
@@ -132,11 +128,6 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
         document.removeEventListener('keydown', handleEscape);
       };
     }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
   }, [isOpen, onClose, isFullScreen]);
 
   // Effect specifically for body scroll
@@ -157,7 +148,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
     setTheme(themeKey);
     // Small delay for visual feedback before closing
     setTimeout(() => {
-      if (activeTab === 'themes' && !isFullScreen) {
+      if (!isFullScreen) {
         onClose();
       }
     }, 300);
@@ -166,7 +157,7 @@ const CustomizationMenu: React.FC<CustomizationMenuProps> = ({
   if (!isOpen || !mounted) return null;
 
   // Mobile fullscreen overlay mode
-  if (isFullScreen || isMobile) {
+  if (isMobile) {
     return (
       <>
         {/* Backdrop. Escape already closes the menu, so this is a pointer

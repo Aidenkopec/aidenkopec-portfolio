@@ -45,16 +45,8 @@ const githubFetch = async (url: string, options?: RequestInit) => {
 function toPublicUser(data: GitHubUser | null): GitHubUser | null {
   if (!data) return null;
   return {
-    login: data.login,
-    avatar_url: data.avatar_url,
-    html_url: data.html_url,
-    name: data.name,
-    company: data.company,
-    location: data.location,
-    bio: data.bio,
     public_repos: data.public_repos,
     followers: data.followers,
-    following: data.following,
     created_at: data.created_at,
   };
 }
@@ -119,9 +111,6 @@ const fetchRecentCommits = cache(async (): Promise<Commit[]> => {
                         oid
                         message
                         committedDate
-                        author {
-                          name
-                        }
                       }
                     }
                   }
@@ -218,7 +207,6 @@ const fetchContributionCalendar = cache(
                 contributionDays {
                   contributionCount
                   date
-                  color
                 }
               }
             }
@@ -279,10 +267,6 @@ const fetchGitHubSnapshot = unstable_cache(
         (sum, repo) => sum + repo.stargazers_count,
         0,
       );
-      const totalForks = repositories.reduce(
-        (sum, repo) => sum + repo.forks_count,
-        0,
-      );
       // Whole elapsed years, not a calendar-year subtraction: an account created
       // in December 2024 is not "2 years on GitHub" in January 2026. null when
       // GitHub did not send created_at, so the UI can say so instead of guessing.
@@ -295,11 +279,10 @@ const fetchGitHubSnapshot = unstable_cache(
 
       return {
         user: userData,
-        commits: commits.slice(0, 5),
+        commits,
         commitCalendar,
         stats: {
           totalStars,
-          totalForks,
           yearsOnGitHub,
         },
       };

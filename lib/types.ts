@@ -22,7 +22,5 @@ export interface BlogPost extends BlogMetadata {
 }
 
 export interface BlogTag {
-  name: string;
-  count: number;
   slug: string;
 }

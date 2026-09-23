@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 
 import UserAcknowledgmentEmail from '@/components/emails/UserAcknowledgment';
 import ContactNotificationEmail from '@/components/emails/ContactNotification';
-import { contactSchema, firstError } from '@/lib/contact-schema';
+import { contactSchema, firstIssue } from '@/lib/contact-schema';
 
 const NOTIFICATION_RECIPIENT = 'aidenkopec@icloud.com';
 
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const parsed = contactSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: firstError(parsed.error) },
+        { error: firstIssue(parsed.error).message },
         { status: 400 },
       );
     }

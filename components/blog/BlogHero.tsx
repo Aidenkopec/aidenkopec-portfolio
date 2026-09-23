@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { BlogPost } from '@/lib/types';
 
 interface BlogHeroProps {
-  postsCount: number;
   recentPosts: BlogPost[];
   searchResults: BlogPost[];
   searchTerm: string;
@@ -15,7 +14,6 @@ interface BlogHeroProps {
 }
 
 export function BlogHero({
-  postsCount,
   recentPosts,
   searchResults,
   searchTerm,
@@ -165,7 +163,7 @@ export function BlogHero({
                   <div className='text-sm font-medium text-[var(--text-color-variable)]'>
                     {isSearchActive
                       ? `${filteredPosts.length} results`
-                      : `${postsCount} posts`}
+                      : `${recentPosts.length} posts`}
                   </div>
                 </div>
               </div>

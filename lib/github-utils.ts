@@ -4,44 +4,15 @@
 // Public fields only. The authenticated /user endpoint also returns private
 // account data, and this object reaches the browser in the RSC payload.
 export interface GitHubUser {
-  login: string;
-  avatar_url: string;
-  html_url: string;
-  name: string;
-  company: string | null;
-  location: string | null;
-  bio: string | null;
   public_repos: number;
   followers: number;
-  following: number;
   created_at: string;
 }
 
 export interface GitHubRepository {
-  id: number;
-  name: string;
-  full_name: string;
-  description: string | null;
-  private: boolean;
-  fork: boolean;
-  html_url: string;
-  clone_url: string;
   stargazers_count: number;
-  watchers_count: number;
-  language: string | null;
-  languages_url: string;
-  forks_count: number;
-  archived: boolean;
-  disabled: boolean;
-  open_issues_count: number;
-  topics: string[];
-  visibility: string;
-  pushed_at: string;
-  created_at: string;
-  updated_at: string;
   owner: {
     login: string;
-    avatar_url: string;
   };
 }
 
@@ -55,7 +26,6 @@ export interface Commit {
 interface ContributionDay {
   contributionCount: number;
   date: string;
-  color?: string;
 }
 
 interface ContributionWeek {
@@ -73,14 +43,13 @@ export interface ContributionCalendar {
 
 interface GitHubStats {
   totalStars: number;
-  totalForks: number;
   /** Whole years since the account was created. null when GitHub omits the date. */
   yearsOnGitHub: number | null;
 }
 
 // No repositories field: fetched only to derive stats, never rendered.
 export interface GitHubData {
-  user: GitHubUser | null;
+  user: GitHubUser;
   commits: Commit[];
   // null when the contribution calendar is unavailable, so the UI can say so
   // rather than render a graph totalling zero.

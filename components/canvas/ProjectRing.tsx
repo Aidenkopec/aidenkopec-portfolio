@@ -94,8 +94,6 @@ const FALLBACK_COLORS: ThemeColors = {
 // Themes swap CSS custom properties on <html>, so the scene reads them at
 // runtime and re-reads them when the theme class changes.
 function readThemeColors(): ThemeColors {
-  if (typeof window === 'undefined') return FALLBACK_COLORS;
-
   const style = getComputedStyle(document.documentElement);
   return {
     accent:

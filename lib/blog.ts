@@ -168,31 +168,21 @@ export async function getBlogPostsByTag(tag: string): Promise<BlogPost[]> {
   );
 }
 
-// Get all unique tags with post counts
+// Get all unique tag slugs
 export async function getAllBlogTags(): Promise<BlogTag[]> {
   const allPosts = await getAllBlogPosts();
-  const tagCounts: Record<string, number> = {};
+  const tags = new Set(allPosts.flatMap((post) => post.tags));
 
-  allPosts.forEach((post) => {
-    post.tags.forEach((tag) => {
-      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-    });
-  });
-
-  return Object.entries(tagCounts)
-    .map(([name, count]) => ({
-      name,
-      count,
-      // Deliberately NOT the shared slugify from lib/slugify. getBlogPostsByTag
-      // above matches with a bare toLowerCase and never hyphenates, so the route
-      // resolves only because this slug is lenient: `Next.js` stays `next.js`.
-      // Running it through slugify would yield `nextjs`, the match would fail,
-      // and /blog/tag/next.js would 404. Unifying the two means changing this,
-      // the matcher, both reverse lookups in app/blog/tag/[tag]/page.tsx and the
-      // href in components/blog/BlogHeader.tsx together, and it alters live URLs.
-      slug: name.toLowerCase().replace(/\s+/g, '-'),
-    }))
-    .sort((a, b) => b.count - a.count);
+  return [...tags].map((name) => ({
+    // Deliberately NOT the shared slugify from lib/slugify. getBlogPostsByTag
+    // above matches with a bare toLowerCase and never hyphenates, so the route
+    // resolves only because this slug is lenient: `Next.js` stays `next.js`.
+    // Running it through slugify would yield `nextjs`, the match would fail,
+    // and /blog/tag/next.js would 404. Unifying the two means changing this,
+    // the matcher, both reverse lookups in app/blog/tag/[tag]/page.tsx and the
+    // href in components/blog/BlogHeader.tsx together, and it alters live URLs.
+    slug: name.toLowerCase().replace(/\s+/g, '-'),
+  }));
 }
 
 // Get featured blog posts

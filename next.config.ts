@@ -1,4 +1,3 @@
-import createMDX from '@next/mdx';
 import type { NextConfig } from 'next';
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -12,28 +11,17 @@ const isDev = process.env.NODE_ENV !== 'production';
  * cover style-src. So this is not XSS mitigation. The value is frame-ancestors,
  * object-src, base-uri and form-action.
  *
- * One external origin is required: drei's <Environment preset> resolves its
- * HDRIs against raw.githack.com. That image based lighting is what gives the
- * hero desk its sheen; swapping it for a runtime generated RoomEnvironment
- * dropped envMapIntensity 0.05 onto a low dynamic range map and flattened the
- * desk to black. Self hosting the four preset HDRIs would remove this origin.
+ * Production needs no external origin: @vercel/analytics is same origin,
+ * next/font self hosts, no remote images.
  *
- * Otherwise production needs no external origin: @vercel/analytics is same
- * origin, next/font self hosts, no remote images.
- *
- * worker-src blob: canvas-confetti. img-src data: the blog hero background.
- * No external origin is needed for the 3D models: both useGLTF call sites pass
- * draco and meshopt as false, and the models use EXT_texture_webp plus
- * KHR_mesh_quantization, which three decodes natively with no decoder download.
- * Adding a Draco compressed model would require allowing www.gstatic.com.
+ * img-src data: the blog hero background.
  */
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval' https://va.vercel-scripts.com" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
-  "worker-src 'self' blob:",
-  `connect-src 'self' https://raw.githack.com${isDev ? ' ws: https://va.vercel-scripts.com' : ''}`,
+  `connect-src 'self'${isDev ? ' ws: https://va.vercel-scripts.com' : ''}`,
   "object-src 'none'",
   "frame-src 'none'",
   "frame-ancestors 'none'",
@@ -43,7 +31,6 @@ const csp = [
 ].join('; ');
 
 const nextConfig: NextConfig = {
-  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   images: {
     minimumCacheTTL: 86400, // 24 hours
 
@@ -86,11 +73,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-const withMDX = createMDX({
-  options: {
-    remarkPlugins: [],
-    rehypePlugins: [],
-  },
-});
-
-export default withMDX(nextConfig);
+export default nextConfig;

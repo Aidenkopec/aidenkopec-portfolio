@@ -57,8 +57,8 @@ function createHeading(level: number, slug: (input: string) => string) {
 }
 
 /**
- * The real builder. Not `use` prefixed, because it is not a hook and is called
- * from a server component in app/blog/[slug]/page.tsx.
+ * Not `use` prefixed, because it is not a hook and is called from a server
+ * component in app/blog/[slug]/page.tsx.
  *
  * One slugger per call, matching the one `extractHeadings` makes per post, so
  * the collision suffixes on both sides line up. That only holds while this runs
@@ -147,14 +147,4 @@ export function getMDXComponents(): MDXComponents {
       </td>
     ),
   };
-}
-
-/**
- * The @next/mdx file convention. next.config.ts applies withMDX and puts `mdx`
- * in pageExtensions, so this file must export a function of exactly this name,
- * taking no arguments. It exists for file based MDX routes; the blog renders
- * through next-mdx-remote and calls getMDXComponents directly.
- */
-export function useMDXComponents(): MDXComponents {
-  return getMDXComponents();
 }

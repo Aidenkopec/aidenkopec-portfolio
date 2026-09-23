@@ -35,19 +35,13 @@ const playlist: Track[] = [
 interface MusicContextType {
   // State
   isPlaying: boolean;
-  setIsPlaying: (playing: boolean) => void;
   volume: number;
   setVolume: (volume: number) => void;
   currentTrack: number;
-  setCurrentTrack: (track: number) => void;
-  hasError: boolean;
-  setHasError: (error: boolean) => void;
   isFloatingBarVisible: boolean;
-  setIsFloatingBarVisible: (visible: boolean) => void;
   floatingBarMode: string;
   setFloatingBarMode: (mode: string) => void;
   isHydrated: boolean;
-  audioRef: React.RefObject<HTMLAudioElement | null>;
   playlist: Track[];
 
   // Actions
@@ -55,7 +49,6 @@ interface MusicContextType {
   nextTrack: () => void;
   previousTrack: () => void;
   selectTrack: (index: number) => void;
-  handleTrackEnd: () => void;
   toggleFloatingBar: () => void;
 }
 
@@ -121,7 +114,6 @@ function writeStoredSetting(key: string, value: string): void {
 
 export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [hasError, setHasError] = useState<boolean>(false);
 
   // Stored settings are read only after hydration, so the first client render
   // matches the server markup. A value the user sets overrides the stored one.
@@ -185,7 +177,6 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     } else {
       audio.play().catch((error) => {
         console.warn('Audio playback failed:', error);
-        setHasError(true);
         setIsPlaying(false);
       });
     }
@@ -199,7 +190,6 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         audioRef.current?.play().catch((error) => {
           console.warn('Audio playback failed:', error);
           setIsPlaying(false);
-          setHasError(true);
         });
       }, 100);
     }
@@ -214,7 +204,6 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
         audioRef.current?.play().catch((error) => {
           console.warn('Audio playback failed:', error);
           setIsPlaying(false);
-          setHasError(true);
         });
       }, 100);
     }
@@ -228,17 +217,12 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
           audioRef.current?.play().catch((error) => {
             console.warn('Audio playback failed:', error);
             setIsPlaying(false);
-            setHasError(true);
           });
         }, 100);
       }
     },
     [isPlaying],
   );
-
-  const handleTrackEnd = useCallback((): void => {
-    nextTrack();
-  }, [nextTrack]);
 
   const toggleFloatingBar = useCallback((): void => {
     setIsFloatingBarVisible((v) => !(v ?? stored.isFloatingBarVisible));
@@ -295,19 +279,13 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     () => ({
       // State
       isPlaying,
-      setIsPlaying,
       volume,
       setVolume,
       currentTrack,
-      setCurrentTrack,
-      hasError,
-      setHasError,
       isFloatingBarVisible,
-      setIsFloatingBarVisible,
       floatingBarMode,
       setFloatingBarMode,
       isHydrated,
-      audioRef,
       playlist,
 
       // Actions
@@ -315,14 +293,12 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
       nextTrack,
       previousTrack,
       selectTrack,
-      handleTrackEnd,
       toggleFloatingBar,
     }),
     [
       isPlaying,
       volume,
       currentTrack,
-      hasError,
       isFloatingBarVisible,
       floatingBarMode,
       isHydrated,
@@ -330,7 +306,6 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
       nextTrack,
       previousTrack,
       selectTrack,
-      handleTrackEnd,
       toggleFloatingBar,
     ],
   );
@@ -342,16 +317,10 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
       <audio
         ref={audioRef}
         src={playlist[currentTrack]?.src}
-        onEnded={handleTrackEnd}
-        onPlay={() => {
-          setIsPlaying(true);
-          setHasError(false);
-        }}
+        onEnded={nextTrack}
+        onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        onError={() => {
-          setHasError(true);
-          setIsPlaying(false);
-        }}
+        onError={() => setIsPlaying(false)}
         preload='metadata'
       />
     </MusicContext.Provider>

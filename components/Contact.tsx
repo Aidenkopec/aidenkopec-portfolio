@@ -94,7 +94,6 @@ const Contact: React.FC = () => {
     e.preventDefault();
     setErrorMessage('');
     setErrorField(undefined);
-    setSubmitSuccess(false);
 
     // Validate locally first
     if (!validateLocally()) {
@@ -134,7 +133,6 @@ const Contact: React.FC = () => {
       setLoading(false);
       setLastSend(`error-${++sendCountRef.current}`);
       console.error('Error sending message:', error);
-      setErrorField(undefined);
       setErrorMessage(
         error instanceof Error
           ? error.message

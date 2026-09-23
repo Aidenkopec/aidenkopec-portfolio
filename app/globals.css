@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
 @theme {
   /* Dynamic Color Palette - References our CSS variables */
@@ -9,11 +8,6 @@
   --color-black-100: var(--black-100);
   --color-black-200: var(--black-200);
   --color-white-100: var(--white-100);
-
-  /* Text and Accent Colors */
-  --color-text-color-variable: var(--text-color-variable);
-  --color-gradient-start: var(--gradient-start);
-  --color-gradient-end: var(--gradient-end);
 
   /* 475px, used by the typography utilities below */
   --breakpoint-xs: 29.6875rem;
@@ -66,7 +60,6 @@
   --white-100: #ffffff;
   --text-color-variable: #ff6b6b;
   --gradient-start: #ff6b6b;
-  --gradient-end: rgba(255, 107, 107, 0);
 }
 
 .cosmicVoyage {
@@ -78,7 +71,6 @@
   --white-100: #f8f5ff;
   --text-color-variable: #a855f7;
   --gradient-start: #a855f7;
-  --gradient-end: rgba(168, 85, 247, 0);
 }
 
 .glacierSapphire {
@@ -90,7 +82,6 @@
   --white-100: #ffffff;
   --text-color-variable: #60a5fa;
   --gradient-start: #60a5fa;
-  --gradient-end: rgba(96, 165, 250, 0);
 }
 
 .auroraJade {
@@ -102,7 +93,6 @@
   --white-100: #ffffff;
   --text-color-variable: #2dd4bf;
   --gradient-start: #2dd4bf;
-  --gradient-end: rgba(45, 212, 191, 0);
 }
 
 /* The homepage is drawn as a star chart over the swarm. These derive from the

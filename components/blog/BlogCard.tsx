@@ -60,15 +60,13 @@ export function BlogCard({
             {/* Content Container */}
             <div className='flex flex-col justify-between p-4 sm:p-5 lg:w-1/2 lg:p-6'>
               <div>
-                {post.featured && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className='mb-3 inline-flex items-center rounded-full bg-[var(--text-color-variable)]/10 px-2.5 py-1 text-xs font-medium text-[var(--text-color-variable)] sm:mb-4 sm:px-3'
-                  >
-                    Featured
-                  </motion.div>
-                )}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className='mb-3 inline-flex items-center rounded-full bg-[var(--text-color-variable)]/10 px-2.5 py-1 text-xs font-medium text-[var(--text-color-variable)] sm:mb-4 sm:px-3'
+                >
+                  Featured
+                </motion.div>
 
                 <motion.h2
                   className='mb-2 line-clamp-3 text-xl font-semibold text-secondary transition-colors duration-200 group-hover:text-[var(--text-color-variable)] sm:mb-3 sm:text-2xl lg:text-3xl xl:text-4xl'
@@ -127,15 +125,13 @@ export function BlogCard({
                     </motion.div>
                   </div>
 
-                  {post.author && (
-                    <motion.div
-                      className='flex items-center gap-1 text-xs'
-                      whileHover={{ color: 'var(--text-color-variable)' }}
-                    >
-                      <User className='h-3 w-3' />
-                      <span>{post.author.name}</span>
-                    </motion.div>
-                  )}
+                  <motion.div
+                    className='flex items-center gap-1 text-xs'
+                    whileHover={{ color: 'var(--text-color-variable)' }}
+                  >
+                    <User className='h-3 w-3' />
+                    <span>{post.author.name}</span>
+                  </motion.div>
                 </div>
               </div>
             </div>
@@ -256,15 +252,13 @@ export function BlogCard({
                 </div>
 
                 {/* Author */}
-                {post.author && (
-                  <motion.div
-                    className='flex items-center gap-1 text-xs sm:mt-0'
-                    whileHover={{ color: 'var(--text-color-variable)' }}
-                  >
-                    <User className='h-3 w-3' />
-                    <span>{post.author.name}</span>
-                  </motion.div>
-                )}
+                <motion.div
+                  className='flex items-center gap-1 text-xs sm:mt-0'
+                  whileHover={{ color: 'var(--text-color-variable)' }}
+                >
+                  <User className='h-3 w-3' />
+                  <span>{post.author.name}</span>
+                </motion.div>
               </div>
             </div>
           </div>

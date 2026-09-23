@@ -74,14 +74,12 @@ export function BlogHeader({ post }: BlogHeaderProps) {
             <span className='text-sm'>{post.readingTime} min read</span>
           </div>
 
-          {post.author && (
-            <div className='text-sm'>
-              by{' '}
-              <span className='font-medium text-secondary'>
-                {post.author.name}
-              </span>
-            </div>
-          )}
+          <div className='text-sm'>
+            by{' '}
+            <span className='font-medium text-secondary'>
+              {post.author.name}
+            </span>
+          </div>
         </div>
 
         {/* Tags */}

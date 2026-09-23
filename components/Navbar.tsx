@@ -293,10 +293,7 @@ const Navbar: React.FC = () => {
                     ? 'text-[var(--text-color-variable)]'
                     : ''
                 }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-
+                onClick={() => {
                   if (!customizationMenuMobile) {
                     // Opening customization menu
                     setToggle(false); // Close mobile dropdown first
