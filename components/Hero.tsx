@@ -34,7 +34,7 @@ const Hero: React.FC = () => {
         <h1 ref={nameRef} className='hero-head-text' data-swarm-slot='name'>
           Aiden Kopec
         </h1>
-        <p className='hero-sub-text'>Full Stack Developer</p>
+        <p className='hero-sub-text'>Full-Stack Developer</p>
         {/* Shown by the swarm once the name has formed, until the first hold. */}
         <p className='hero-hint' aria-hidden='true'>
           <span className='pointer-coarse:hidden'>Press and hold</span>
