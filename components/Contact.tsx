@@ -2,13 +2,13 @@
 import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 
+import SectionHeader from '@/components/chart/SectionHeader';
 import SectionWrapper from '@/components/layout/SectionWrapper';
 import {
   contactSchema,
   firstIssue,
   type ContactField,
 } from '@/lib/contact-schema';
-import { slideIn } from '@/utils';
 
 interface FormData {
   name: string;
@@ -143,209 +143,149 @@ const Contact: React.FC = () => {
     }
   };
 
+  const fieldClass =
+    'border-0 border-b border-white-100/20 bg-transparent px-0 py-3 text-[17px] text-white-100 outline-none transition-colors placeholder:text-white-100/35 focus-visible:border-[var(--text-color-variable)] focus-visible:shadow-[0_1px_0_0_var(--text-color-variable)] aria-[invalid=true]:border-[var(--text-color-variable)]';
+
   return (
     <SectionWrapper idName='contact' label='Contact'>
-      <div className='flex flex-col-reverse gap-10 overflow-hidden xl:mt-12 xl:flex-row'>
-        <motion.div
-          variants={slideIn('left', 'tween', 0.2, 1)}
-          className='flex-[0.75] rounded-2xl glass p-8'
-        >
-          {!submitSuccess ? (
-            // Show Form
-            <>
-              <p className='section-sub-text'>Get in touch</p>
-              <h3 className='section-head-text'>Contact.</h3>
+      <SectionHeader
+        title='Contact'
+        intro="Have a project in mind, or a question about something here? Send a message and I'll reply by email."
+      />
 
-              <form
-                onSubmit={handleSubmit}
-                aria-busy={loading}
-                className='mt-12 flex flex-col gap-8'
-              >
-                {/* Honeypot. `hidden`, not sr-only, so it takes no gap slot. */}
-                <input
-                  type='text'
-                  name='website'
-                  value={form.website}
-                  onChange={handleChange}
-                  className='hidden'
-                  tabIndex={-1}
-                  autoComplete='off'
-                  aria-hidden='true'
-                />
-
-                <label htmlFor='contact-name' className='flex flex-col'>
-                  <span className='mb-4 font-medium text-secondary'>
-                    Your Name
-                  </span>
-                  <input
-                    id='contact-name'
-                    type='text'
-                    name='name'
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="What's your name?"
-                    required
-                    autoComplete='name'
-                    aria-invalid={errorField === 'name'}
-                    aria-describedby={
-                      errorField === 'name' ? 'contact-error' : undefined
-                    }
-                    className='rounded-lg border-none bg-tertiary/40 px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
-                  />
-                </label>
-                <label htmlFor='contact-email' className='flex flex-col'>
-                  <span className='mb-4 font-medium text-secondary'>
-                    Your email
-                  </span>
-                  <input
-                    id='contact-email'
-                    type='email'
-                    name='email'
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="What's your email address?"
-                    required
-                    autoComplete='email'
-                    aria-invalid={errorField === 'email'}
-                    aria-describedby={
-                      errorField === 'email' ? 'contact-error' : undefined
-                    }
-                    className='rounded-lg border-none bg-tertiary/40 px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
-                  />
-                </label>
-                <label htmlFor='contact-message' className='flex flex-col'>
-                  <span className='mb-4 font-medium text-secondary'>
-                    Your Message
-                  </span>
-                  <textarea
-                    id='contact-message'
-                    rows={7}
-                    name='message'
-                    value={form.message}
-                    onChange={handleChange}
-                    placeholder='Please type your message'
-                    required
-                    aria-invalid={errorField === 'message'}
-                    aria-describedby={
-                      errorField === 'message' ? 'contact-error' : undefined
-                    }
-                    className='rounded-lg border-none bg-tertiary/40 px-6 py-4 font-medium text-secondary outline-none placeholder:text-secondary/50 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
-                  />
-                </label>
-
-                <button
-                  type='submit'
-                  className='w-fit rounded-xl bg-tertiary/40 px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/70 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)] disabled:opacity-50'
-                  disabled={loading}
-                >
-                  {loading ? 'Sending...' : 'Send'}
-                </button>
-
-                {/* Error Message */}
-                {errorMessage && (
-                  <motion.div
-                    id='contact-error'
-                    role='alert'
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className='mt-6 rounded-xl border border-red-400/20 bg-gradient-to-r from-red-400/10 to-orange-500/10 p-6 backdrop-blur-sm'
-                  >
-                    <div className='flex items-center space-x-3'>
-                      <div className='flex-shrink-0'>
-                        <div className='flex h-8 w-8 items-center justify-center rounded-full bg-red-400'>
-                          <svg
-                            aria-hidden='true'
-                            className='h-5 w-5 text-secondary'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M6 18L18 6M6 6l12 12'
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className='text-lg font-medium text-red-400'>
-                          Oops! Something went wrong
-                        </h3>
-                        <p className='mt-1 text-secondary'>{errorMessage}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </form>
-            </>
-          ) : (
-            // Show Success Message
-            <motion.div
-              ref={successRef}
-              role='status'
-              tabIndex={-1}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-              className='flex min-h-[500px] flex-col items-center justify-center text-center outline-none'
-            >
-              <div className='mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-green-400'>
-                <svg
-                  aria-hidden='true'
-                  className='h-10 w-10 text-secondary'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M5 13l4 4L19 7'
-                  />
-                </svg>
-              </div>
-
-              <h2 className='mb-4 text-4xl font-bold text-green-400'>
-                Message Sent!
-              </h2>
-              <p className='mb-2 text-xl text-secondary'>
-                Thank you,{' '}
-                <span className='font-semibold text-secondary'>
-                  {form.name}
-                </span>
-                !
-              </p>
-              <p className='mb-8 max-w-md text-lg text-secondary'>
-                I&apos;ve received your message and will get back to you as soon
-                as possible.
-              </p>
-
-              <button
-                onClick={resetForm}
-                className='mb-4 rounded-xl bg-tertiary/40 px-8 py-3 font-bold text-secondary shadow-md shadow-text-color-variable transition-colors outline-none hover:bg-tertiary/70 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--primary-color)]'
-              >
-                Send Another Message
-              </button>
-
-              <p className='text-sm text-secondary/70'>
-                This form will reset automatically in 10 seconds
-              </p>
-            </motion.div>
-          )}
-        </motion.div>
-
-        {/* The swarm draws a galaxy over this box. No transform on it, since
-            the swarm only re-reads its rect on scroll and resize. */}
+      <div className='mt-12 grid gap-10 xl:grid-cols-[1.1fr_1fr] xl:gap-16'>
+        {/* The swarm draws a galaxy over this box, and the flight path ends
+            in it. No transform on it, since the swarm only re-reads its rect
+            on scroll and resize. */}
         <div
           aria-hidden='true'
           data-swarm-slot='galaxy'
           data-swarm-send={loading ? 'sending' : lastSend}
-          className='galaxy-slot h-[350px] md:h-[550px] xl:h-auto xl:flex-1'
+          data-waypoint
+          className='galaxy-slot min-h-[320px] md:min-h-[460px]'
         />
+
+        <div className='self-center'>
+          {!submitSuccess ? (
+            <form
+              onSubmit={handleSubmit}
+              aria-busy={loading}
+              className='flex flex-col gap-8'
+            >
+              {/* Honeypot. `hidden`, not sr-only, so it takes no gap slot. */}
+              <input
+                type='text'
+                name='website'
+                value={form.website}
+                onChange={handleChange}
+                className='hidden'
+                tabIndex={-1}
+                autoComplete='off'
+                aria-hidden='true'
+              />
+
+              <label htmlFor='contact-name' className='flex flex-col gap-1'>
+                <span className='text-[14px] text-white-100/60'>Name</span>
+                <input
+                  id='contact-name'
+                  type='text'
+                  name='name'
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                  autoComplete='name'
+                  aria-invalid={errorField === 'name'}
+                  aria-describedby={
+                    errorField === 'name' ? 'contact-error' : undefined
+                  }
+                  className={fieldClass}
+                />
+              </label>
+              <label htmlFor='contact-email' className='flex flex-col gap-1'>
+                <span className='text-[14px] text-white-100/60'>Email</span>
+                <input
+                  id='contact-email'
+                  type='email'
+                  name='email'
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                  autoComplete='email'
+                  aria-invalid={errorField === 'email'}
+                  aria-describedby={
+                    errorField === 'email' ? 'contact-error' : undefined
+                  }
+                  className={fieldClass}
+                />
+              </label>
+              <label htmlFor='contact-message' className='flex flex-col gap-1'>
+                <span className='text-[14px] text-white-100/60'>Message</span>
+                <textarea
+                  id='contact-message'
+                  rows={5}
+                  name='message'
+                  value={form.message}
+                  onChange={handleChange}
+                  placeholder='What are you working on?'
+                  required
+                  aria-invalid={errorField === 'message'}
+                  aria-describedby={
+                    errorField === 'message' ? 'contact-error' : undefined
+                  }
+                  className={`${fieldClass} resize-none`}
+                />
+              </label>
+
+              <button
+                type='submit'
+                className='w-fit rounded-full bg-[var(--text-color-variable)] px-7 py-3 font-semibold text-[var(--primary-color)] transition-opacity outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--primary-color)] disabled:opacity-50'
+                disabled={loading}
+              >
+                {loading ? 'Sending…' : 'Send message'}
+              </button>
+
+              {errorMessage && (
+                <motion.div
+                  id='contact-error'
+                  role='alert'
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className='border-l-2 border-[var(--text-color-variable)] pl-4'
+                >
+                  <p className='font-medium text-white-100'>Message not sent</p>
+                  <p className='mt-1 text-white-100/70'>{errorMessage}</p>
+                </motion.div>
+              )}
+            </form>
+          ) : (
+            <motion.div
+              ref={successRef}
+              role='status'
+              tabIndex={-1}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className='outline-none'
+            >
+              <h3 className='chart-title'>Message sent</h3>
+              <p className='mt-6 max-w-md text-[17px] leading-[1.7] text-white-100/80'>
+                Thanks, {form.name}. I&apos;ll reply by email.
+              </p>
+
+              <button
+                onClick={resetForm}
+                className='mt-8 rounded-full bg-[var(--text-color-variable)] px-7 py-3 font-semibold text-[var(--primary-color)] transition-opacity outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--primary-color)] disabled:opacity-50'
+              >
+                Send another message
+              </button>
+
+              <p className='mt-4 text-sm text-white-100/50'>
+                This form resets on its own in 10 seconds.
+              </p>
+            </motion.div>
+          )}
+        </div>
       </div>
     </SectionWrapper>
   );

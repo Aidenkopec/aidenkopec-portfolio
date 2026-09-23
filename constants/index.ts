@@ -16,12 +16,6 @@ import profileCard from '@/public/projects/profile-card.webp';
 import spartatech from '@/public/projects/sparta-tech.webp';
 import treeline from '@/public/projects/treeline.webp';
 
-// Service icons (engineering focus) - Static imports
-import backendAutomationErp from '@/public/engineering-focus/backendAutomationErp.png';
-import devopsInfrastructure from '@/public/engineering-focus/devopsInfrastructure.png';
-import frontendDeveloper from '@/public/engineering-focus/frontendDeveloper.png';
-import fullStackDeveloper from '@/public/engineering-focus/fullStackDeveloper.png';
-
 // Type definitions
 interface NavLink {
   id: string;
@@ -30,7 +24,10 @@ interface NavLink {
 
 interface Service {
   title: string;
-  icon: StaticImageData;
+  /** Stars as [x, y, size] in a 100 by 100 box, size 1 (faint) to 3. */
+  stars: [number, number, number][];
+  /** Lines between stars, by index into `stars`. */
+  edges: [number, number][];
 }
 
 interface Technology {
@@ -103,22 +100,87 @@ export const navLinks: NavLink[] = [
   },
 ];
 
+// Each is drawn as a constellation whose figure hints at the work: a stack,
+// an engine, a network and a loop.
 const services: Service[] = [
   {
     title: 'Full-Stack Engineer',
-    icon: fullStackDeveloper,
+    stars: [
+      [18, 14, 2],
+      [80, 22, 3],
+      [24, 50, 1.5],
+      [76, 54, 2],
+      [20, 86, 3],
+      [84, 88, 1.5],
+    ],
+    edges: [
+      [0, 1],
+      [2, 3],
+      [4, 5],
+      [0, 2],
+      [2, 4],
+      [1, 3],
+      [3, 5],
+    ],
   },
   {
     title: 'Backend Engineer',
-    icon: backendAutomationErp,
+    stars: [
+      [50, 10, 3],
+      [88, 38, 2],
+      [74, 84, 1.5],
+      [26, 84, 2],
+      [12, 38, 1.5],
+      [50, 50, 2.5],
+    ],
+    edges: [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [4, 0],
+      [5, 0],
+      [5, 2],
+      [5, 3],
+    ],
   },
   {
     title: 'Systems & API Design',
-    icon: frontendDeveloper,
+    stars: [
+      [48, 52, 3],
+      [12, 16, 1.5],
+      [86, 12, 2],
+      [92, 70, 1.5],
+      [40, 92, 2],
+      [8, 64, 1.5],
+    ],
+    edges: [
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [0, 4],
+      [0, 5],
+      [2, 3],
+    ],
   },
   {
     title: 'DevOps & Infrastructure',
-    icon: devopsInfrastructure,
+    stars: [
+      [12, 50, 2],
+      [30, 16, 1.5],
+      [70, 16, 2.5],
+      [88, 50, 3],
+      [70, 84, 1.5],
+      [30, 84, 2],
+    ],
+    edges: [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [4, 5],
+      [5, 0],
+    ],
   },
 ];
 

@@ -1,7 +1,7 @@
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { ThemeProvider } from 'next-themes';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { EB_Garamond, Geist, Geist_Mono } from 'next/font/google';
 
 import FloatingMusicBar from '@/components/FloatingMusicBar';
 import { InlineScript } from '@/components/InlineScript';
@@ -20,6 +20,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+// Section titles, set like the labels on an old star atlas.
+const ebGaramond = EB_Garamond({
+  variable: '--font-eb-garamond',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
 });
 
 export const viewport: Viewport = {
@@ -102,7 +109,7 @@ export default function RootLayout({
         <InlineScript html={SWARM_INTRO_SCRIPT} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ebGaramond.variable} antialiased`}
       >
         <script
           type='application/ld+json'

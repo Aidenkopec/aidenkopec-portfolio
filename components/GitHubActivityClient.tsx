@@ -1,101 +1,107 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { ArrowUpRight, Check, ChevronDown } from 'lucide-react';
 import { DateTime } from 'luxon';
-import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 
+import SectionHeader from '@/components/chart/SectionHeader';
 import { GITHUB_URL } from '@/constants';
 import {
   formatCommitMessage,
-  getContributionColor,
   type ContributionCalendar,
   type GitHubData,
 } from '@/lib/github-utils';
-import github from '@/public/assets/github.png';
-import { fadeIn, textVariant } from '@/utils';
 
-// Types for component props
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  icon: string;
-  index: number;
-  loading: boolean;
+// One day on the sky chart, in CSS pixels.
+const CELL = 14;
+const MONTH_ROW = 20;
+
+// Brightness of a day's star by contribution level, from faint dust to a
+// star with a halo in the theme's accent.
+const STAR = [
+  { r: 0.9, opacity: 0.18, halo: 0 },
+  { r: 1.6, opacity: 0.6, halo: 0 },
+  { r: 2.3, opacity: 0.85, halo: 0 },
+  { r: 3, opacity: 1, halo: 7 },
+  { r: 3.6, opacity: 1, halo: 10 },
+] as const;
+
+const LEVELS = [
+  { label: 'None', range: '0' },
+  { label: 'Low', range: '1-3' },
+  { label: 'Medium', range: '4-6' },
+  { label: 'High', range: '7-9' },
+  { label: 'Very high', range: '10+' },
+];
+
+const levelOf = (count: number): number =>
+  count === 0 ? 0 : count <= 3 ? 1 : count <= 6 ? 2 : count <= 9 ? 3 : 4;
+
+const Star: React.FC<{ level: number; x: number; y: number }> = ({
+  level,
+  x,
+  y,
+}) => {
+  const star = STAR[level] ?? STAR[0];
+  return (
+    <>
+      {star.halo > 0 && (
+        <circle
+          cx={x}
+          cy={y}
+          r={star.halo}
+          fill='var(--text-color-variable)'
+          opacity={level === 4 ? 0.3 : 0.16}
+        />
+      )}
+      <circle
+        cx={x}
+        cy={y}
+        r={star.r}
+        fill='var(--star)'
+        opacity={star.opacity}
+      />
+    </>
+  );
+};
+
+interface TooltipData {
+  count: number;
+  date: string;
+  x: number;
+  y: number;
 }
 
-interface CommitGraphProps {
+interface SkyChartProps {
   commitCalendar: ContributionCalendar | null;
   loading: boolean;
   selectedYear: string;
-  setSelectedYear: (year: string) => void;
   availableYears: (string | number)[];
   onYearChange: (year: string) => void;
 }
 
-interface TooltipData {
-  content: string;
-  date: string;
-  x: number;
-  y: number;
-  visible: boolean;
-}
-
-// GitHub Stats Card Component
-const StatCard: React.FC<StatCardProps> = ({
-  title,
-  value,
-  icon,
-  index,
-  loading,
-}) => (
-  <motion.div
-    variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
-    className='min-w-[160px] flex-1'
-  >
-    <div className='transform-gpu rounded-xl glass p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
-      <div className='mb-2 flex items-center justify-between'>
-        <div className='text-xl font-bold text-secondary'>
-          {loading ? (
-            <div className='h-6 w-6 animate-pulse rounded bg-gray-600'></div>
-          ) : (
-            value
-          )}
-        </div>
-        {icon && (
-          <div className='text-lg text-[var(--text-color-variable)]'>
-            {icon}
-          </div>
-        )}
-      </div>
-      <p className='text-xs font-medium text-secondary'>{title}</p>
-    </div>
-  </motion.div>
-);
-
-// Commit Graph Component
-const CommitGraph: React.FC<CommitGraphProps> = ({
+// The contribution calendar as a star field: a column per week, a row per
+// weekday, and each day a star as bright as that day was busy.
+const SkyChart: React.FC<SkyChartProps> = ({
   commitCalendar,
   loading,
   selectedYear,
-  setSelectedYear,
   availableYears,
   onYearChange,
 }) => {
-  const [tooltip, setTooltip] = useState<TooltipData>({
-    content: '',
-    date: '',
-    x: 0,
-    y: 0,
-    visible: false,
-  });
-
+  const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Where the chart scrolls sideways on a phone, open on the latest weeks.
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (scroller) scroller.scrollLeft = scroller.scrollWidth;
+  }, [commitCalendar]);
 
   const handleYearChange = (year: string): void => {
-    setSelectedYear(year);
     onYearChange(year);
     setDropdownOpen(false);
   };
@@ -130,316 +136,198 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
     };
   }, [dropdownOpen]);
 
-  const showTooltip = (
-    event: React.MouseEvent,
-    content: string,
-    date: string,
-  ) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-
-    // Use viewport coordinates for fixed positioning
-    const x = rect.left + rect.width / 2;
-    const y = rect.top - 10; // 10px above the element
-
-    setTooltip({
-      content,
-      date,
-      x,
-      y,
-      visible: true,
-    });
-  };
-
-  const hideTooltip = () => {
-    setTooltip((prev) => ({ ...prev, visible: false }));
-  };
-
-  if (loading) {
-    return (
-      <div className='rounded-xl glass p-4'>
-        <h4 className='mb-4 text-[16px] font-semibold text-secondary'>
-          Contribution Activity
-        </h4>
-        <div className='flex items-center justify-center p-4'>
-          <div className='h-6 w-6 animate-spin rounded-full border-b-2 border-[var(--text-color-variable)]'></div>
-        </div>
-      </div>
-    );
-  }
-
   const weeks = commitCalendar?.weeks ?? [];
+  const days = weeks.flatMap((week, w) =>
+    week.contributionDays.map((day, d) => ({ ...day, w, d })),
+  );
 
-  // Generate month labels using Luxon for proper Jan-Dec ordering
-  const monthLabels: { label: string; span: number }[] = [];
-  if (weeks.length > 0) {
-    let currentMonth: string | null = null;
-    let startWeek = 0;
-    weeks.forEach((week, index) => {
-      const firstDayOfWeek = week.contributionDays[0]?.date ?? null;
+  // A label over the first week of each month.
+  const months: { label: string; w: number }[] = [];
+  weeks.forEach((week, w) => {
+    const first = week.contributionDays[0]?.date;
+    if (!first) return;
+    const label = DateTime.fromISO(first).toFormat('MMM');
+    if (months.at(-1)?.label !== label) months.push({ label, w });
+  });
+  // A month with only a week or two showing at either end has no room for its
+  // label.
+  if (months.length > 1 && weeks.length - months.at(-1)!.w < 3) months.pop();
+  if (months.length > 1 && months[1]!.w - months[0]!.w < 3) months.shift();
 
-      if (firstDayOfWeek) {
-        const firstDay = DateTime.fromISO(firstDayOfWeek);
-        const monthName = firstDay.toFormat('MMM'); // Use Luxon's formatting
+  const width = weeks.length * CELL;
+  const height = MONTH_ROW + 7 * CELL;
 
-        if (monthName !== currentMonth) {
-          if (currentMonth !== null) {
-            monthLabels.push({
-              label: currentMonth,
-              span: index - startWeek,
-            });
-          }
-          currentMonth = monthName;
-          startWeek = index;
-        }
-
-        if (index === weeks.length - 1) {
-          monthLabels.push({
-            label: currentMonth,
-            span: index - startWeek + 1,
-          });
-        }
-      }
+  // One handler for the whole chart rather than one per day.
+  const handlePointerMove = (event: React.PointerEvent<SVGSVGElement>) => {
+    const target = (event.target as Element).closest<SVGElement>('[data-day]');
+    const day = target ? days[Number(target.dataset.day)] : undefined;
+    if (!target || !day) {
+      setTooltip(null);
+      return;
+    }
+    const rect = target.getBoundingClientRect();
+    setTooltip({
+      count: day.contributionCount,
+      date: DateTime.fromISO(day.date).toLocaleString(DateTime.DATE_HUGE),
+      x: rect.left + rect.width / 2,
+      y: rect.top - 6,
     });
-  }
+  };
+
+  const period = selectedYear === 'last' ? 'the last year' : selectedYear;
 
   return (
-    <div
-      className='rounded-xl glass p-4 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
-      style={{ position: 'relative', overflow: 'visible' }}
-    >
-      <div className='mb-4 flex items-center justify-between'>
-        <h4 className='text-[16px] font-semibold text-secondary'>
-          {commitCalendar
-            ? `${commitCalendar.totalContributions} contributions in ${
-                selectedYear === 'last' ? 'the last year' : selectedYear
-              }`
-            : 'Contribution Activity'}
-        </h4>
+    <div className='relative'>
+      <div className='flex flex-wrap items-center justify-between gap-4'>
+        <h3 className='text-[17px] text-white-100/80'>
+          {loading ? (
+            'Loading contributions'
+          ) : commitCalendar ? (
+            <>
+              <span className='font-display text-[28px] text-white-100'>
+                {commitCalendar.totalContributions.toLocaleString()}
+              </span>{' '}
+              contributions in {period}
+            </>
+          ) : (
+            'Contribution activity'
+          )}
+        </h3>
 
-        {/* Custom Year Dropdown */}
         <div className='relative' ref={dropdownRef}>
           <button
             ref={triggerRef}
             onClick={() => setDropdownOpen(!dropdownOpen)}
             aria-expanded={dropdownOpen}
             aria-label='Filter contributions by year'
-            className='flex items-center justify-between gap-1.5 rounded-md border border-tertiary bg-black-100/40 px-2.5 py-1.5 text-xs font-medium text-secondary transition-all duration-150 hover:border-[var(--text-color-variable)] hover:bg-[var(--text-color-variable)]/5 sm:px-3 sm:py-2 sm:text-sm'
+            className='flex min-h-11 items-center gap-2 rounded-full border border-[var(--chart-faint)] px-4 text-sm font-medium text-white-100 transition-colors hover:border-[var(--text-color-variable)] focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
           >
-            <span className='flex items-center gap-1.5 text-[11px] sm:text-sm'>
-              <span aria-hidden='true'>📅</span>{' '}
-              {selectedYear === 'last' ? 'Last year' : selectedYear}
-            </span>
-            <span
-              className={`chevron block scale-75 transition-transform duration-150 ${
-                dropdownOpen ? 'rotate-180' : ''
-              }`}
+            {selectedYear === 'last' ? 'Last year' : selectedYear}
+            <ChevronDown
+              aria-hidden='true'
+              className={`h-4 w-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
             />
           </button>
 
           {dropdownOpen && (
-            <div className='absolute top-full right-0 z-20 mt-1.5 min-w-[120px] overflow-hidden rounded-md border border-tertiary bg-black-100 shadow-lg shadow-black/30 sm:min-w-[140px]'>
-              <div className='py-0.5'>
-                {availableYears.map((year) => (
+            <div className='absolute top-full right-0 z-20 mt-2 min-w-[140px] overflow-hidden rounded-xl border border-[var(--chart-faint)] bg-[var(--black-200)]/95 py-1 shadow-lg shadow-black/40 backdrop-blur-md'>
+              {availableYears.map((year) => {
+                const value = year.toString();
+                const selected = selectedYear === value;
+                return (
                   <button
-                    key={year}
-                    onClick={() => handleYearChange(year.toString())}
-                    aria-pressed={selectedYear === year.toString()}
-                    className={`w-full px-3 py-2 text-left text-xs font-medium text-secondary transition-colors duration-150 hover:bg-[var(--text-color-variable)]/10 hover:text-secondary sm:px-4 sm:py-2.5 sm:text-sm ${
-                      selectedYear === year.toString()
-                        ? 'bg-[var(--text-color-variable)]/20 text-[var(--text-color-variable)]'
-                        : ''
+                    key={value}
+                    onClick={() => handleYearChange(value)}
+                    aria-pressed={selected}
+                    className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-[var(--text-color-variable)]/10 ${
+                      selected
+                        ? 'text-[var(--text-color-variable)]'
+                        : 'text-white-100'
                     }`}
                   >
-                    <span className='flex items-center gap-1.5 sm:gap-2'>
-                      <span
-                        aria-hidden='true'
-                        className='text-[10px] sm:text-xs'
-                      >
-                        📅
-                      </span>
-                      <span className='text-[11px] sm:text-sm'>
-                        {year === 'last' ? 'Last year' : year}
-                      </span>
-                      {selectedYear === year.toString() && (
-                        <span
-                          aria-hidden='true'
-                          className='ml-auto text-[10px] text-[var(--text-color-variable)] sm:text-xs'
-                        >
-                          ✓
-                        </span>
-                      )}
-                    </span>
+                    {year === 'last' ? 'Last year' : year}
+                    {selected && (
+                      <Check aria-hidden='true' className='h-4 w-4' />
+                    )}
                   </button>
-                ))}
-              </div>
-
-              {/* Glowing border effect */}
-              <div className='pointer-events-none absolute inset-0 rounded-md border border-[var(--text-color-variable)]/20' />
+                );
+              })}
             </div>
           )}
         </div>
       </div>
 
-      {weeks.length > 0 ? (
-        <div className='w-full'>
-          {/* Month Labels */}
-          <div className='scrollbar-hide overflow-x-auto'>
-            <div
-              className='mx-auto min-w-fit py-6'
-              style={{ width: 'max-content' }}
-            >
-              <div className='mb-2 flex justify-start pl-6 text-xs text-secondary'>
-                {monthLabels.map(({ label, span }, i) => (
-                  <div
-                    key={i}
-                    className='flex-shrink-0 text-center'
-                    style={{
-                      width: `${span * (12 + 2)}px`, // 12px square + 2px gap
-                      minWidth: `${span * (12 + 2)}px`,
-                    }}
-                  >
-                    {label}
-                  </div>
-                ))}
-              </div>
-
-              {/* Day Labels */}
-              <div className='mb-3 flex'>
-                {/* Day of week labels */}
-                <div className='mr-2 flex flex-col justify-start gap-[2px] pt-1 text-xs text-secondary'>
-                  <div className='h-3 text-[10px] leading-3'></div>
-                  <div className='h-3 text-[10px] leading-3'>Mon</div>
-                  <div className='h-3 text-[10px] leading-3'></div>
-                  <div className='h-3 text-[10px] leading-3'>Wed</div>
-                  <div className='h-3 text-[10px] leading-3'></div>
-                  <div className='h-3 text-[10px] leading-3'>Fri</div>
-                  <div className='h-3 text-[10px] leading-3'></div>
-                </div>
-
-                {/* Contribution Grid */}
-                <div className='flex gap-[2px]'>
-                  {weeks.map((week, weekIndex) => (
-                    <div key={weekIndex} className='flex flex-col gap-[2px]'>
-                      {week.contributionDays.map((day, dayIndex) => {
-                        const contributionLevel =
-                          day.contributionCount === 0
-                            ? 0
-                            : day.contributionCount <= 3
-                              ? 1
-                              : day.contributionCount <= 6
-                                ? 2
-                                : day.contributionCount <= 9
-                                  ? 3
-                                  : 4;
-
-                        const date = DateTime.fromISO(day.date);
-                        const formattedDate = date.toLocaleString({
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        });
-
-                        return (
-                          <motion.div
-                            key={`${weekIndex}-${dayIndex}`}
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{
-                              duration: 0.2,
-                              delay: (weekIndex * 7 + dayIndex) * 0.001,
-                            }}
-                            className='hover:ring-opacity-50 h-3 w-3 cursor-pointer rounded-[2px] transition-all duration-200 hover:scale-110 hover:ring-2 hover:ring-[var(--text-color-variable)]'
-                            style={{
-                              backgroundColor:
-                                getContributionColor(contributionLevel),
-                            }}
-                            onMouseEnter={(e) =>
-                              showTooltip(
-                                e,
-                                day.contributionCount === 0
-                                  ? 'No contributions'
-                                  : `${day.contributionCount} contribution${
-                                      day.contributionCount !== 1 ? 's' : ''
-                                    }`,
-                                formattedDate,
-                              )
-                            }
-                            onMouseLeave={hideTooltip}
-                          ></motion.div>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Enhanced Legend */}
-              <div className='mt-4 flex items-center justify-between text-xs text-secondary'>
-                <div className='text-[11px] opacity-75'>
-                  Contribution levels
-                </div>
-                <div className='flex items-center gap-3'>
-                  <div className='flex items-center gap-1'>
-                    <span className='text-[11px]'>Less</span>
-                    <div className='flex gap-1'>
-                      {[
-                        { level: 0, label: 'None', range: '0' },
-                        { level: 1, label: 'Low', range: '1-3' },
-                        { level: 2, label: 'Medium', range: '4-6' },
-                        { level: 3, label: 'High', range: '7-9' },
-                        { level: 4, label: 'Very High', range: '10+' },
-                      ].map(({ level, label, range }) => (
-                        <div
-                          key={level}
-                          role='img'
-                          aria-label={`${label}: ${range} contributions`}
-                          className='h-3 w-3 cursor-help rounded-[2px] transition-transform hover:scale-125'
-                          style={{
-                            backgroundColor: getContributionColor(level),
-                          }}
-                          onMouseEnter={(e) =>
-                            showTooltip(e, label, `${range} contributions`)
-                          }
-                          onMouseLeave={hideTooltip}
-                        ></div>
-                      ))}
-                    </div>
-                    <span className='text-[11px]'>More</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {loading ? (
+        <div
+          role='status'
+          className='mt-6 h-[118px] animate-pulse rounded-lg bg-white-100/5'
+        >
+          <span className='sr-only'>Loading contributions</span>
         </div>
+      ) : weeks.length > 0 ? (
+        <>
+          <div
+            ref={scrollRef}
+            className='scrollbar-hide -mx-2 mt-6 overflow-x-auto px-2 pb-2'
+          >
+            <svg
+              viewBox={`0 0 ${width} ${height}`}
+              className='block h-auto w-full'
+              style={{ minWidth: width }}
+              role='img'
+              aria-label={`Contribution chart: ${commitCalendar?.totalContributions ?? 0} contributions in ${period}`}
+              onPointerMove={handlePointerMove}
+              onPointerLeave={() => setTooltip(null)}
+            >
+              {months.map(({ label, w }) => (
+                <text
+                  key={`${label}-${w}`}
+                  x={w * CELL + 2}
+                  y={12}
+                  className='fill-white-100/50 text-[11px]'
+                >
+                  {label}
+                </text>
+              ))}
+
+              {days.map((day, i) => {
+                const x = day.w * CELL + CELL / 2;
+                const y = MONTH_ROW + day.d * CELL + CELL / 2;
+                return (
+                  <g key={day.date} data-day={i}>
+                    <rect
+                      x={x - CELL / 2}
+                      y={y - CELL / 2}
+                      width={CELL}
+                      height={CELL}
+                      fill='transparent'
+                    />
+                    <Star level={levelOf(day.contributionCount)} x={x} y={y} />
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+
+          <div className='mt-4 flex items-center justify-end gap-3 text-[12px] text-white-100/55'>
+            <span>Fewer</span>
+            <svg
+              width={5 * 22}
+              height={22}
+              viewBox={`0 0 ${5 * 22} 22`}
+              role='img'
+              aria-label={`Brightness key: ${LEVELS.map((l) => `${l.label}, ${l.range}`).join('; ')} contributions`}
+            >
+              {LEVELS.map((_, level) => (
+                <Star key={level} level={level} x={level * 22 + 11} y={11} />
+              ))}
+            </svg>
+            <span>More</span>
+          </div>
+        </>
       ) : (
-        <div className='py-4 text-center text-sm text-secondary'>
+        <p className='mt-6 text-sm text-white-100/70'>
           {commitCalendar
             ? 'No contributions in this period'
             : 'Contribution data is unavailable right now'}
-        </div>
+        </p>
       )}
 
-      {/* Fixed Position Tooltip */}
-      {tooltip.visible && (
+      {tooltip && (
         <div
-          className='pointer-events-none fixed z-[99999] transition-opacity duration-200'
-          style={{
-            left: tooltip.x,
-            top: tooltip.y,
-            transform: 'translate(-50%, -100%)',
-          }}
+          role='tooltip'
+          className='pointer-events-none fixed z-[99999] -translate-x-1/2 -translate-y-full rounded-lg border border-[var(--chart-faint)] bg-[var(--black-200)]/95 px-3 py-2 text-xs whitespace-nowrap text-white-100 shadow-2xl'
+          style={{ left: tooltip.x, top: tooltip.y }}
         >
-          <div className='rounded-lg border border-gray-600 bg-gray-900 px-3 py-2 text-xs whitespace-nowrap text-secondary shadow-2xl'>
-            <div className='font-medium text-secondary'>{tooltip.content}</div>
-            <div className='text-[11px] text-gray-300'>{tooltip.date}</div>
-            {/* Arrow */}
-            <div className='absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-900'></div>
+          <div className='font-medium'>
+            {tooltip.count === 0
+              ? 'No contributions'
+              : `${tooltip.count} contribution${tooltip.count === 1 ? '' : 's'}`}
           </div>
+          <div className='text-[11px] text-white-100/60'>{tooltip.date}</div>
         </div>
       )}
 
-      {/* Custom scrollbar styles */}
       <style jsx global>{`
         .scrollbar-hide {
           -ms-overflow-style: none;
@@ -456,75 +344,24 @@ const CommitGraph: React.FC<CommitGraphProps> = ({
 export const GitHubStats: React.FC<{ githubData: GitHubData }> = ({
   githubData,
 }) => {
-  const loading = false; // Data is already loaded on server
+  const stats = [
+    { label: 'Public repositories', value: githubData.user?.public_repos },
+    { label: 'Stars earned', value: githubData.stats.totalStars },
+    { label: 'Followers', value: githubData.user?.followers },
+    { label: 'Years on GitHub', value: githubData.stats.yearsOnGitHub },
+  ];
 
   return (
-    <div className='mt-8 mb-12 flex flex-wrap justify-center gap-4'>
-      <StatCard
-        title='Public Repositories'
-        value={githubData.user?.public_repos || '---'}
-        icon='📚'
-        index={0}
-        loading={loading}
-      />
-      <StatCard
-        title='Total Stars'
-        value={githubData.stats.totalStars}
-        icon='⭐'
-        index={1}
-        loading={loading}
-      />
-      <StatCard
-        title='Followers'
-        value={githubData.user?.followers || '---'}
-        icon='👥'
-        index={2}
-        loading={loading}
-      />
-      <StatCard
-        title='Years on GitHub'
-        value={githubData.stats.yearsOnGitHub ?? '---'}
-        icon='📅'
-        index={3}
-        loading={loading}
-      />
-    </div>
-  );
-};
-
-// GitHub Link Component
-const GitHubLink: React.FC = () => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <motion.a
-      href={GITHUB_URL}
-      target='_blank'
-      rel='noopener noreferrer'
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className='group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg'
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      <Image
-        src={github}
-        alt='GitHub'
-        width={16}
-        height={16}
-        className={`transition-transform duration-300 ${isHovered ? 'scale-110 rotate-12' : ''}`}
-      />
-      <span
-        className={`text-sm font-medium transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--secondary-color)]'}`}
-      >
-        View GitHub
-      </span>
-      <div
-        className={`transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`}
-      >
-        ↗
-      </div>
-    </motion.a>
+    <dl className='mt-12 grid grid-cols-2 gap-y-8 border-t border-[var(--chart-faint)] pt-8 md:grid-cols-4'>
+      {stats.map(({ label, value }) => (
+        <div key={label} className='flex flex-col-reverse gap-2'>
+          <dt className='text-[14px] text-white-100/55'>{label}</dt>
+          <dd className='font-display text-[48px] leading-none text-white-100 sm:text-[60px]'>
+            {value ?? '---'}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 };
 
@@ -544,6 +381,7 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   ];
 
   const fetchContributionData = async (year: string) => {
+    setSelectedYear(year);
     setLoading(true);
     try {
       const response = await fetch(`/api/github?year=${year}`);
@@ -568,81 +406,74 @@ export const GitHubDashboard: React.FC<{ githubData: GitHubData }> = ({
   };
 
   return (
-    <div className='mb-12 grid grid-cols-1 gap-8'>
-      {/* Full Width - Contribution Graph */}
-      <motion.div
-        variants={fadeIn('up', 'spring', 0.3, 0.75)}
-        className='w-full'
-      >
-        <CommitGraph
-          commitCalendar={contributionData}
-          loading={loading}
-          selectedYear={selectedYear}
-          setSelectedYear={setSelectedYear}
-          availableYears={availableYears}
-          onYearChange={fetchContributionData}
-        />
-      </motion.div>
+    <div className='mt-16 space-y-16'>
+      <SkyChart
+        commitCalendar={contributionData}
+        loading={loading}
+        selectedYear={selectedYear}
+        availableYears={availableYears}
+        onYearChange={fetchContributionData}
+      />
 
-      {/* Open Source Activity Section */}
-      <motion.div
-        variants={fadeIn('up', 'spring', 0.4, 0.75)}
-        className='w-full'
-      >
-        <div className='transform-gpu rounded-xl glass p-4 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--text-color-variable)]'>
-          <h4 className='mb-4 text-[16px] font-semibold text-secondary'>
-            Open Source Activity
-          </h4>
+      <div>
+        <h3 className='text-[17px] text-white-100/80'>Recent public commits</h3>
 
-          {githubData.commits && githubData.commits.length > 0 ? (
-            <div className='space-y-3'>
-              {githubData.commits.slice(0, 5).map((commit, index) => (
-                <motion.div
-                  key={`${commit.sha || commit.date}-${index}`}
-                  variants={fadeIn('up', 'spring', index * 0.1, 0.75)}
-                  className='rounded-lg border border-tertiary bg-black-100/40 p-3 transition-colors duration-300 hover:border-[var(--text-color-variable)]'
-                >
-                  <div className='mb-1 flex items-center gap-3'>
-                    <span className='truncate text-sm font-medium text-secondary'>
-                      {formatCommitMessage(commit.message, 50)}
-                    </span>
-                    <span className='rounded bg-tertiary/60 px-2 py-1 font-mono text-xs text-[var(--text-color-variable)]'>
-                      {commit.sha.substring(0, 7)}
-                    </span>
-                  </div>
-                  <div className='flex items-center gap-4 text-xs text-secondary'>
-                    <span className='flex items-center gap-1'>
-                      📁 {commit.repo}
-                    </span>
-                    <span className='flex items-center gap-1'>
-                      📅 {new Date(commit.date).toLocaleDateString()}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className='py-4 text-center text-sm text-secondary'>
-              No recent public commits - see contribution graph above for full
-              activity
-            </div>
-          )}
-        </div>
-      </motion.div>
+        {githubData.commits && githubData.commits.length > 0 ? (
+          <ol className='mt-4'>
+            {githubData.commits.slice(0, 5).map((commit, index) => (
+              <li
+                key={`${commit.sha || commit.date}-${index}`}
+                className='flex flex-col gap-1 border-t border-[var(--chart-faint)] py-4 sm:flex-row sm:items-baseline sm:gap-6'
+              >
+                <span className='shrink-0 text-[14px] font-medium text-white-100 sm:w-44 sm:truncate'>
+                  {commit.repo}
+                </span>
+                <span className='min-w-0 flex-1 truncate text-[15px] text-white-100/70'>
+                  {formatCommitMessage(commit.message, 80)}
+                </span>
+                <span className='flex shrink-0 items-baseline gap-4 text-[13px] text-white-100/50'>
+                  <time dateTime={commit.date}>
+                    {DateTime.fromISO(commit.date).toRelative()}
+                  </time>
+                  <a
+                    href={`${GITHUB_URL}/${commit.repo}/commit/${commit.sha}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    aria-label={`Commit ${commit.sha.substring(0, 7)} on GitHub`}
+                    className='font-mono text-[var(--text-color-variable)] hover:underline focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] focus-visible:outline-none'
+                  >
+                    {commit.sha.substring(0, 7)}
+                  </a>
+                </span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className='mt-4 border-t border-[var(--chart-faint)] pt-4 text-sm text-white-100/70'>
+            No recent public commits. The chart above shows all activity.
+          </p>
+        )}
+      </div>
     </div>
   );
 };
 
 export const GitHubActivityHeader: React.FC = () => {
   return (
-    <motion.div variants={textVariant()}>
-      <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between'>
-        <div>
-          <p className='section-sub-text'>Measured, not estimated</p>
-          <h2 className='section-head-text'>GitHub Activity.</h2>
-        </div>
-        <GitHubLink />
-      </div>
-    </motion.div>
+    <SectionHeader
+      title='GitHub activity'
+      intro='Pulled live from the GitHub API, not typed in by hand.'
+      action={
+        <a
+          href={GITHUB_URL}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='chart-link'
+        >
+          View GitHub profile
+          <ArrowUpRight aria-hidden='true' className='h-4 w-4' />
+        </a>
+      }
+    />
   );
 };

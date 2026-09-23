@@ -1,107 +1,108 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React from 'react';
 
-import { BlogCard } from '@/components/blog/BlogCard';
+import SectionHeader from '@/components/chart/SectionHeader';
+import SectionWrapper from '@/components/layout/SectionWrapper';
 import { BlogPost } from '@/lib/types';
 
-import SectionWrapper from '@/components/layout/SectionWrapper';
-import { fadeIn, textVariant } from '@/utils';
+// Bar heights of the signal glyph, as a share of its height.
+const SIGNAL = [0.35, 0.7, 0.5, 1, 0.6, 0.85, 0.4];
 
-// Blog Cards Grid Component - uses actual BlogCard component
-const BlogCards: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
-  return (
-    <motion.div
-      variants={fadeIn('up', 'spring', 0.3, 1)}
-      className='grid auto-rows-fr gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-    >
-      {posts.map((post, index) => (
-        <BlogCard
-          key={post.slug}
-          post={post}
-          index={index}
-          className='h-full'
-        />
-      ))}
-    </motion.div>
-  );
-};
+// A small waveform that plays while its post is hovered or focused.
+const Signal: React.FC = () => (
+  <svg
+    aria-hidden='true'
+    viewBox='0 0 40 20'
+    className='signal h-5 w-10 text-[var(--text-color-variable)]'
+  >
+    {SIGNAL.map((height, i) => (
+      <rect
+        key={i}
+        x={i * 6}
+        y={10 - height * 9}
+        width={2.5}
+        height={height * 18}
+        rx={1.25}
+        fill='currentColor'
+        style={{ animationDelay: `${i * 90}ms` }}
+      />
+    ))}
+  </svg>
+);
 
-// Recent Blogs Header Component - matches ProjectsHeader design
-const RecentBlogsHeader: React.FC = () => {
-  return (
-    <motion.div variants={textVariant()}>
-      <p className='section-sub-text'>Latest insights & tutorials</p>
-      <h2 className='section-head-text'>Recent Blog Posts.</h2>
-    </motion.div>
-  );
-};
+// Frontmatter dates are plain days, parsed as UTC midnight, so they are shown
+// in UTC too. In a local zone west of UTC they would read as the day before.
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 
-// Recent Blogs Description Component - matches ProjectsDescription design
-const RecentBlogsDescription: React.FC = () => {
-  return (
-    <div className='flex w-full'>
-      <motion.p
-        variants={fadeIn('up', 'spring', 0.1, 1)}
-        className='mt-3 max-w-3xl text-[17px] leading-[30px] text-secondary'
-      >
-        Dive into my thoughts on software development, AI tools, and emerging
-        technologies. From practical tutorials to industry insights, these posts
-        capture my journey as a developer and the lessons learned along the way.
-      </motion.p>
-    </div>
-  );
-};
-
-// Section Header with View All Link - matches GitHub button styling
-const RecentBlogsSectionHeader: React.FC = () => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <motion.div variants={textVariant()} className='mt-16'>
-      <div className='mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <h3 className='text-[24px] font-bold text-secondary'>
-          Featured Articles
-        </h3>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Link
-            href='/blog'
-            className='group flex items-center gap-2 rounded-lg border border-[var(--black-100)] bg-gradient-to-r from-[var(--tertiary-color)] to-[var(--black-100)] px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-[var(--text-color-variable)] hover:shadow-[var(--text-color-variable)]/20 hover:shadow-lg'
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <span
-              className={`text-sm font-medium transition-colors duration-300 ${isHovered ? 'text-[var(--text-color-variable)]' : 'text-[var(--secondary-color)]'}`}
-            >
-              View All Posts
-            </span>
-            <div
-              className={`transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`}
-            >
-              ↗
-            </div>
-          </Link>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-};
-
+// Posts arrive like transmissions: newest first, the latest with its cover.
 const RecentBlogsClient: React.FC<{ posts: BlogPost[] }> = ({ posts }) => {
   return (
     <SectionWrapper idName='recent-blogs' label='Recent blog posts'>
-      {/* Header Section */}
-      <RecentBlogsHeader />
-      <RecentBlogsDescription />
+      <SectionHeader
+        title='Writing'
+        intro='Notes on what I build and what I learn doing it, including the parts that did not work.'
+        action={
+          <Link href='/blog' className='chart-link'>
+            Read all posts
+          </Link>
+        }
+      />
 
-      {/* Featured Posts Section */}
-      <RecentBlogsSectionHeader />
+      <ol className='mt-12 border-b border-[var(--chart-faint)]'>
+        {posts.map((post, index) => {
+          const cover = index === 0 ? post.coverImage : undefined;
+          return (
+            <li key={post.slug}>
+              <Link
+                href={`/blog/${post.slug}`}
+                className='transmission group grid gap-5 border-t border-[var(--chart-faint)] py-8 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color-variable)] md:grid-cols-[10rem_1fr_auto] md:gap-10 md:py-10'
+              >
+                <div className='flex items-center gap-4 text-[14px] text-white-100/55 md:flex-col md:items-start md:gap-2'>
+                  <time dateTime={post.date}>{formatDate(post.date)}</time>
+                  <span>{post.readingTime} min read</span>
+                  <Signal />
+                </div>
 
-      <div className='mb-20'>
-        <BlogCards posts={posts} />
-      </div>
+                <div className='max-w-2xl'>
+                  <h3
+                    className={`font-display leading-tight text-white-100 italic transition-colors duration-300 group-hover:text-[var(--text-color-variable)] ${
+                      index === 0
+                        ? 'text-[32px] sm:text-[44px]'
+                        : 'text-[26px] sm:text-[32px]'
+                    }`}
+                  >
+                    {post.title}
+                  </h3>
+                  <p className='mt-3 text-[16px] leading-[1.7] text-white-100/70'>
+                    {post.excerpt ?? post.description}
+                  </p>
+                </div>
+
+                {cover && (
+                  <div className='relative aspect-video w-full overflow-hidden rounded-lg border border-[var(--chart-faint)] md:w-72'>
+                    <Image
+                      src={cover}
+                      alt=''
+                      fill
+                      sizes='(min-width: 768px) 288px, 100vw'
+                      className='object-cover transition-transform duration-500 group-hover:scale-105'
+                    />
+                  </div>
+                )}
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
     </SectionWrapper>
   );
 };

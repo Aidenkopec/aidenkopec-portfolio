@@ -41,12 +41,10 @@
   --text-section-head-sm: 3.125rem; /* 50px */
   --text-section-head-md: 3.75rem; /* 60px */
 
-  --text-section-sub-base: 0.875rem; /* 14px */
-  --text-section-sub-sm: 1.125rem; /* 18px */
-
   /* Font Families */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-eb-garamond), ui-serif, Georgia, serif;
 
   /* Consumed by the base layer below */
   --color-background: var(--primary-color);
@@ -105,6 +103,23 @@
   --text-color-variable: #2dd4bf;
   --gradient-start: #2dd4bf;
   --gradient-end: rgba(45, 212, 191, 0);
+}
+
+/* The homepage is drawn as a star chart over the swarm. These derive from the
+   theme, so every theme gets them for free. */
+:root {
+  --chart-line: color-mix(in srgb, var(--text-color-variable) 35%, transparent);
+  --chart-faint: color-mix(in srgb, var(--white-100) 9%, transparent);
+  --star: var(--white-100);
+  /* Where the flight path runs, measured from a section's content edge. It
+     sits in the middle of the section's left padding. */
+  --rail: -28px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --rail: -32px;
+  }
 }
 
 /* Custom Utilities */
@@ -175,15 +190,15 @@
   }
 }
 
-@utility section-sub-text {
-  font-size: var(--text-section-sub-base);
-  color: #ffffff;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  @variant sm {
-    font-size: var(--text-section-sub-sm);
-  }
+/* Section titles on the homepage, lettered like an atlas label. */
+@utility chart-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--white-100);
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
 }
 
 @utility padding-x {
@@ -219,36 +234,13 @@
   border: 1px solid rgb(255 255 255 / 0.08);
 }
 
-/* Accent gradient hairline around a glass card. A masked ring rather than a
-   padded gradient shell, so the translucent fill never shows the gradient. */
-@utility glass-edge {
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    background: linear-gradient(
-      135deg,
-      var(--text-color-variable),
-      transparent 55%,
-      color-mix(in srgb, var(--text-color-variable) 50%, transparent)
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-}
-
 body {
   background: var(--primary-color);
   color: var(--white-100);
   font-family: var(--font-sans);
+  /* next/font puts the font's variable on <body>, below the :root where
+     @theme declares this, so it is resolved again here. */
+  --font-display: var(--font-eb-garamond), ui-serif, Georgia, serif;
 }
 
 /* shadcn/ui base layer - using your theme variables */
@@ -357,6 +349,202 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   );
 }
 
+/* A stop on the flight path. components/chart/FlightPath threads the path
+   through every [data-waypoint] and marks the ones it has passed. */
+.waypoint {
+  position: absolute;
+  left: var(--rail);
+  top: 0.55em;
+  width: 15px;
+  height: 15px;
+  border-radius: 9999px;
+  border: 1px solid var(--chart-line);
+  background: var(--primary-color);
+  transform: translate(-50%, -50%);
+  transition:
+    border-color 0.6s ease,
+    box-shadow 0.6s ease;
+}
+
+.waypoint::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  background: var(--chart-faint);
+  transition: background-color 0.6s ease;
+}
+
+.waypoint[data-reached] {
+  border-color: var(--text-color-variable);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--text-color-variable) 12%, transparent),
+    0 0 22px color-mix(in srgb, var(--text-color-variable) 60%, transparent);
+}
+
+.waypoint[data-reached]::after {
+  background: var(--text-color-variable);
+}
+
+/* Overview: the services as constellations. Lines draw in once the plate is
+   in view (data-in-view, set by components/chart/Constellations). */
+.constellation-edge {
+  stroke: var(--chart-line);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition:
+    stroke-dashoffset 1.6s cubic-bezier(0.6, 0, 0.2, 1) calc(var(--i) * 0.3s),
+    stroke 0.3s ease,
+    stroke-width 0.3s ease;
+}
+
+[data-in-view] .constellation-edge {
+  stroke-dashoffset: 0;
+}
+
+.constellation-star circle {
+  fill: var(--star);
+  transition:
+    fill 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.constellation-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 17px;
+  fill: color-mix(in srgb, var(--white-100) 65%, transparent);
+  transition: fill 0.3s ease;
+}
+
+.constellation:hover .constellation-edge {
+  stroke: var(--text-color-variable);
+  stroke-width: 1.5;
+}
+
+.constellation:hover .constellation-star circle:first-child {
+  fill: var(--text-color-variable);
+  opacity: 0.4;
+}
+
+.constellation:hover .constellation-label {
+  fill: var(--white-100);
+}
+
+/* Experience: each job is a planet on the path. */
+.planet {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  box-shadow:
+    0 0 0 4px var(--primary-color),
+    0 0 0 5px var(--chart-line);
+  transition: box-shadow 0.6s ease;
+}
+
+.planet[data-reached] {
+  box-shadow:
+    0 0 0 4px var(--primary-color),
+    0 0 0 5px var(--text-color-variable),
+    0 0 28px color-mix(in srgb, var(--text-color-variable) 55%, transparent);
+}
+
+@media (min-width: 768px) {
+  .planet {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* The jobs still running carry a slow moon. Phones have no room for it
+   beside the title. */
+.planet-orbit {
+  position: absolute;
+  inset: -14px;
+  border-radius: 9999px;
+  border: 1px dashed var(--chart-line);
+  animation: orbit 24s linear infinite;
+}
+
+.planet-orbit::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 9999px;
+  background: var(--star);
+  box-shadow: 0 0 8px var(--text-color-variable);
+}
+
+@media (max-width: 767px) {
+  .planet-orbit {
+    display: none;
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Writing: each post's waveform plays while the post is hovered or focused. */
+.signal rect {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: signal 0.9s ease-in-out infinite alternate;
+  animation-play-state: paused;
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+}
+
+.transmission:hover .signal rect,
+.transmission:focus-visible .signal rect {
+  animation-play-state: running;
+  opacity: 1;
+}
+
+@keyframes signal {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0.25);
+  }
+}
+
+/* A quiet text link used beside section titles. */
+.chart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--white-100);
+  text-decoration: underline;
+  text-decoration-color: var(--chart-line);
+  text-underline-offset: 6px;
+  transition:
+    color 0.3s ease,
+    text-decoration-color 0.3s ease;
+}
+
+.chart-link:hover {
+  color: var(--text-color-variable);
+  text-decoration-color: var(--text-color-variable);
+}
+
+.chart-link:focus-visible {
+  outline: 2px solid var(--text-color-variable);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
 /* Accent light behind the ring's front panel, where the eye lands first. */
 .project-stage::before {
   content: '';
@@ -412,7 +600,8 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   align-items: center;
   justify-content: center;
   gap: 0.875rem;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--chart-faint);
   outline: none;
   transition:
     transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -443,7 +632,7 @@ html[data-hero-in-view] .navbar-logo:not(:focus-visible) {
   mask-composite: exclude;
 }
 
-/* A faint wash of the same light across the glass. */
+/* A faint wash of the same light across the cell. */
 .tech-tile::after {
   background: radial-gradient(
     260px circle at var(--mx) var(--my),
