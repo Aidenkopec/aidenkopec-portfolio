@@ -385,7 +385,6 @@ export type {
   NavLink,
   Project,
   ProjectLink,
-  ProjectMetric,
   ProjectTier,
   Service,
   Technology,

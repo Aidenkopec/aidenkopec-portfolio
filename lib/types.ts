@@ -21,17 +21,8 @@ export interface BlogPost extends BlogMetadata {
   content?: string;
 }
 
-export interface BlogPostsResponse {
-  posts: BlogPost[];
-  totalPosts: number;
-  totalPages: number;
-  currentPage: number;
-}
-
 export interface BlogTag {
   name: string;
   count: number;
   slug: string;
 }
-
-export type { BlogMetadata };

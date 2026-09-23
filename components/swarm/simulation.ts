@@ -88,7 +88,7 @@ export const NO_WELL: Well = {
   response: 0,
 };
 
-export type StepInput = {
+type StepInput = {
   time: number;
   delta: number;
   /** Canvas size in CSS pixels. */

@@ -13,7 +13,7 @@ interface UserAcknowledgmentEmailProps {
   userName: string;
 }
 
-export const UserAcknowledgmentEmail = ({
+const UserAcknowledgmentEmail = ({
   userName,
 }: UserAcknowledgmentEmailProps) => (
   <Html>

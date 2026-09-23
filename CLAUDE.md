@@ -104,7 +104,8 @@ npm run format:check
   - **`app/api/`** - API endpoints (contact, blog, GitHub data)
   - **`app/blog/`** - Blog pages (list view, individual posts, tag filtering)
 - **`components/`** - React components organized by feature
-  - **`canvas/`** - Three.js/React Three Fiber 3D components (Earth, Stars, Computers, Ball)
+  - **`canvas/`** - Three.js/React Three Fiber 3D components (ProjectRing)
+  - **`swarm/`** - Particle swarm hero scene
   - **`blog/`** - Blog-related UI components (BlogCard, BlogContent, BlogNavigation, etc.)
   - **`emails/`** - React Email components for transactional emails
   - **`ui/`** - Reusable UI components and animations
@@ -153,13 +154,12 @@ npm run format:check
 ### 3D Components
 
 - **Three.js Integration** via `@react-three/fiber` and `@react-three/drei`
-- Components: Stars, Earth, Computers, Ball, WavyLines
+- Components: swarm hero (`components/swarm/`), ProjectRing (`components/canvas/`)
 - Used on hero section and throughout the site for visual appeal
 
 ### Styling
 
 - **Tailwind CSS v4** with plugins:
-  - `@tailwindcss/typography` - for prose styling
   - `prettier-plugin-tailwindcss` - for class sorting
 - **Custom color system** - uses CSS variables (e.g., `bg-primary-color`, `text-primary-text`)
 - **Motion libraries** - `framer-motion` and `motion` for animations
@@ -216,7 +216,7 @@ Required for full functionality:
 
 - Image optimization with Next.js Image component
 - Caching strategies for GitHub and blog data
-- Lazy-loaded 3D components (Stars, Earth)
+- Lazy-loaded 3D components (swarm hero, ProjectRing)
 - MDX is compiled at build time
 - Recent blogs limited to 3 posts for homepage
 - Repository display limited to 6 repos

@@ -8,7 +8,7 @@
  */
 
 /** The slug expression both sides already used, unchanged. */
-export function slugify(input: string): string {
+function slugify(input: string): string {
   return input
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')

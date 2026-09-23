@@ -15,8 +15,6 @@
   --color-gradient-start: var(--gradient-start);
   --color-gradient-end: var(--gradient-end);
 
-  /* Background Patterns - Dynamic (now using WavyLines component) */
-
   /* 475px, used by the typography utilities below */
   --breakpoint-xs: 29.6875rem;
 

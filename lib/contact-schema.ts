@@ -43,7 +43,7 @@ export const contactSchema = z.object(
   { error: 'Invalid request' },
 );
 
-export type ContactInput = z.infer<typeof contactSchema>;
+type ContactInput = z.infer<typeof contactSchema>;
 
 /** First message, for the form's single-error display. */
 export function firstError(error: z.ZodError): string {

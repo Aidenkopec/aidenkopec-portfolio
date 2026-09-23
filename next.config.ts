@@ -53,17 +53,6 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Content addressed by filename: the models changed extension when they
-        // were recompressed, so a year is safe.
-        source: '/models/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
         // Not immutable: CREDITS.md has these tracks slated for re-sourcing under
         // the same filenames, so a year long immutable cache would strand the old
         // audio on every repeat visitor.

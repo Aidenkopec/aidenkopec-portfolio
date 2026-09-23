@@ -17,8 +17,8 @@ contents and reading time per post (`lib/blog.ts`). The GitHub section pulls pro
 repositories and the contribution calendar through a mix of REST and GraphQL, cached with
 `React.cache` and ISR (`lib/github-service.ts`). The contact form posts to `/api/contact`,
 which renders React Email templates from `components/emails/` and sends them via Resend.
-The 3D scenes — stars, globe, the workstation on the hero — are React Three Fiber and live
-in `components/canvas/`, lazy loaded so they stay out of the critical path. Styling is
+The 3D scenes (the particle swarm hero in `components/swarm/` and the project ring in
+`components/canvas/`) are React Three Fiber, lazy loaded so they stay out of the critical path. Styling is
 Tailwind CSS v4 driven by CSS custom properties, which is what makes the four colour themes
 swap at runtime.
 
